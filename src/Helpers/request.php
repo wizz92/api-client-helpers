@@ -2,12 +2,11 @@
 use Illuminate\Http\Request;
 
 function apiRequestProxy(Request $request)
-{
     $method = $request->method();
     $root = $request->root();
     $requestString = $request->fullUrl();
-    $requestString = str_replace($root.'/api', '', $requestString);
-    $query = env('secret_url').$requestString;
+    $requestString = str_replace($root.config('services.speedyapi.url'), '', $requestString);
+    $query = config('services.speedyapi.secret_url').$requestString;
     session_write_close();
     $ch = curl_init(); 
     curl_setopt($ch, CURLOPT_URL, $query); 
