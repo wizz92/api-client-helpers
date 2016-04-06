@@ -9,13 +9,17 @@
     "homepage": "https://github.com/wizz92/api-client-helpers",
     "license": "MIT",
     "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Wizz\\ApiClientHelpers\\": "src/"
         }
     },
     "require": {
-        "php" : ">=5.4.0"
+        "php" : ">=5.4.0",
+        "illuminate/cache": "5.0.*|5.1.*|5.2.*",
+    	"illuminate/config": "5.0.*|5.1.*|5.2.*",
+    	"illuminate/http": "5.1.*"
     },
     "extra": {
         "branch-alias": {

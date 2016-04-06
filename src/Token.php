@@ -1,9 +1,6 @@
 <?php 
 namespace Wizz\ApiClientHelpers;
-use Config;
-/**
-* 
-*/
+
 class Token
 {
     
@@ -58,12 +55,11 @@ class Token
     }
     private function prepareQuery($request)
     {
-        $config = Config::get('services.speedyapi');
         $form_params =
             [
-                'grant_type' => $config['grant_type'],
-                'client_id' => $config['client_id'],
-                'client_secret' => $config['client_secret'],
+                'grant_type' => config('api_configs.grant_type'),
+                'client_id' => config('api_configs.client_id'),
+                'client_secret' => config('api_configs.client_secret'),
             ];
         // $q = $config['url'].'/oauth/access_token'.'?'.http_build_query($form_params);
         $q = $config['secret_url'].'/oauth/access_token'.'?'.http_build_query($form_params);

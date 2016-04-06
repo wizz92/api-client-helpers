@@ -5,8 +5,8 @@ function apiRequestProxy(Request $request)
     $method = $request->method();
     $root = $request->root();
     $requestString = $request->fullUrl();
-    $requestString = str_replace($root.config('services.speedyapi.url'), '', $requestString);
-    $query = config('services.speedyapi.secret_url').$requestString;
+    $requestString = str_replace($root.config('api_configs.url'), '', $requestString);
+    $query = config('api_configs.secret_url').$requestString;
     session_write_close();
     $ch = curl_init(); 
     curl_setopt($ch, CURLOPT_URL, $query); 
@@ -35,14 +35,15 @@ function apiRequestProxy(Request $request)
             }
             $data['files'] = $files;
         }
-        if ($method == "POST") 
-        {
-            $data = array_sign($data);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        } else 
-        {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        }
+        $data = ($method == "POST") ? array_sign($data) : http_build_query($data);
+        // if ($method == "POST") 
+        // {
+            // $data = array_sign($data);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        // } else 
+        // {
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        // }
     }
     $res = curl_exec($ch);
     curl_close($ch);
