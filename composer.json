@@ -1,0 +1,10 @@
+{
+    "name": "wizz/api-client-helpers",
+    "authors": [
+        {
+            "name": "wizz92",
+            "email": "wizz92@gmail.com"
+        }
+    ],
+    "require": {}
+}
