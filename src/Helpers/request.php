@@ -2,6 +2,7 @@
 use Illuminate\Http\Request;
 
 function apiRequestProxy(Request $request)
+{
     $method = $request->method();
     $root = $request->root();
     $requestString = $request->fullUrl();
