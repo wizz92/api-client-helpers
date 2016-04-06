@@ -7,11 +7,20 @@
         }
     ],
     "homepage": "https://github.com/wizz92/api-client-helpers",
+    "license": "MIT",
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Wizz\\ApiClientHelpers\\": "src"
         }
     },
-    "require": {}
+    "require": {
+        "php" : ">=5.4.0",
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3"
+        }
+    }
 }
+
