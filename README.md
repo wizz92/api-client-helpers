@@ -18,8 +18,10 @@ edit config/app.php, add
 
 Wizz\ApiClientHelpers\ApiClientHelpersServiceProvider::class,
 
-to providers array
-.
+to providers array.
+
+
+use php artisan vendor:publish to publish api_configs.php file.
 
 # Usage
 
