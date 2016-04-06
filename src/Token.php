@@ -62,7 +62,6 @@ class Token
                 'client_secret' => config('api_configs.client_secret'),
             ];
         // $q = $config['url'].'/oauth/access_token'.'?'.http_build_query($form_params);
-        $q = config('api_configs.client_secret').'/oauth/access_token'.'?'.http_build_query($form_params);
-        return $q;
+        return config('api_configs.secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
     }
 }
