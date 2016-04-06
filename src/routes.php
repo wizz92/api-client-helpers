@@ -1,6 +1,16 @@
 <?php 
 use Illuminate\Http\Request;
 
+Route::get('/r/{slug?}', function(Request $request, $slug)
+{ 
+	// route to redirect to api
+
+	$u = config('api_configs.secret_url').'/'.$slug;
+
+	return redirect()->to($u);
+
+})->where('slug', '.+');
+
 Route::any('api/{slug?}', function($slug, Request $request) 
 {
 	$method = $request->method();

@@ -55,13 +55,11 @@ class Token
     }
     private function prepareQuery($request)
     {
-        $form_params =
-            [
-                'grant_type' => config('api_configs.grant_type'),
-                'client_id' => config('api_configs.client_id'),
-                'client_secret' => config('api_configs.client_secret'),
-            ];
-        // $q = $config['url'].'/oauth/access_token'.'?'.http_build_query($form_params);
+        $form_params = [
+            'grant_type' => config('api_configs.grant_type'),
+            'client_id' => config('api_configs.client_id'),
+            'client_secret' => config('api_configs.client_secret'),
+        ];
         return config('api_configs.secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
     }
 }
