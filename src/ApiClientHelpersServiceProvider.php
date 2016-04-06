@@ -14,7 +14,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'configs/api_config.php' => config_path('api_config.php'),
+            __DIR__.'/configs/api_configs.php' => config_path('api_configs.php'),
         ]);
         //
     }
@@ -32,7 +32,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
         include __DIR__.'/Helpers/cookies.php';
         include __DIR__.'/Helpers/request.php';
         $this->mergeConfigFrom(
-            __DIR__.'configs/api_config.php', 'api_config'
+            __DIR__.'/configs/api_configs.php', 'api_configs'
         );
         $this->app->make('Wizz\ApiClientHelpers\Token');
     }
