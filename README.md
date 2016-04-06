@@ -1,4 +1,3 @@
 # api-client-helpers
 
-some new staff
-еуы еуе ц 
+This is pack of helper class to make speedy api client work

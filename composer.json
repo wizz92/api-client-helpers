@@ -6,10 +6,11 @@
             "email": "wizz92@gmail.com"
         }
     ],
+    "homepage": "https://github.com/wizz92/api-client-helpers",
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Wizz\\ApiClientHelpers\\": "vendor/wizz/api-client-helpers/src"
+            "Wizz\\ApiClientHelpers\\": "src"
         }
     },
     "require": {}
