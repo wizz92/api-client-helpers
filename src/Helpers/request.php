@@ -1,5 +1,6 @@
 <?php 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 function apiRequestProxy(Request $request)
 {
