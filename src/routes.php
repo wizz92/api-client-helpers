@@ -1,10 +1,9 @@
 <?php 
 use Illuminate\Http\Request;
+use use \Wizz\ApiClientHelpers\Token;
 
 Route::get('/r/{slug?}', function(Request $request, $slug)
 { 
-	// route to redirect to api
-
 	$u = config('api_configs.secret_url').'/'.$slug;
 
 	return redirect()->to($u);
@@ -33,6 +32,20 @@ Route::any('api/{slug?}', function($slug, Request $request)
 			return response()->download(public_path().'/files/'.$filename);
         }
 	}
+	if (strpos('qwe'.$slug, 'documents')) 
+	{
+		$chunks = explode('/', $slug);
+		$filename = array_get($chunks, count($chunks) - 1);
+        if ($filename) 
+        {
+            file_put_contents(public_path().'/documents/'.$filename, $res);
+			return response()->download(public_path().'/documents/'.$filename);
+        }
+	}
+	if (strpos('qwe'.$slug, 'actions/print') || strpos('qwe'.$slug, 'superstats')) 
+	{
+		return $res;
+	}
 	if (strpos('qwe'.$res, 'Whoops,')) {
 		if (! json_decode($res)) {
 			return response()->json([
@@ -45,3 +58,19 @@ Route::any('api/{slug?}', function($slug, Request $request)
 	return response()->json(json_decode($res));
 
 })->where('slug', '.*');
+
+
+Route::get('{slug?}', function($slug, Token $token, Request $request) 
+{
+	
+	if(!$token->init($request))
+	{
+		return $token->errors;
+	}
+	return view('index')
+		->with('access_token', $token->getToken())
+		->with('bootstrap', $token->getBootstrapData())
+		;
+
+})->where('slug', '.+');
+
