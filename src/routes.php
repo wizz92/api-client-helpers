@@ -1,6 +1,6 @@
 <?php 
 use Illuminate\Http\Request;
-use use \Wizz\ApiClientHelpers\Token;
+use \Wizz\ApiClientHelpers\Token;
 
 Route::get('/r/{slug?}', function(Request $request, $slug)
 { 
