@@ -1,8 +1,7 @@
 <?php 
-use Illuminate\Http\Request;
 use \Wizz\ApiClientHelpers\Token;
 
-Route::get('/r/{slug?}', function(Request $request, $slug)
+Route::get('/r/{slug?}', function($slug)
 { 
 	$u = config('api_configs.secret_url').'/'.$slug;
 
@@ -10,13 +9,11 @@ Route::get('/r/{slug?}', function(Request $request, $slug)
 
 })->where('slug', '.+');
 
-Route::any('api/{slug?}', function($slug, Request $request) 
+Route::any('api/{slug?}', function($slug) 
 {
-	// $method = $request->method();
 	$method = $_SERVER['REQUEST_METHOD'];
-	$res = apiRequestProxy($request);
-	// dd($method);
-	
+	$res = apiRequestProxy();
+
 	$data = explode("\r\n\r\n", $res);
 	$headers = (count($data) == 3) ? $data[1] : $data[0];
 	$res = (count($data) == 3) ? $data[2] : $data[1];
@@ -42,11 +39,10 @@ Route::any('api/{slug?}', function($slug, Request $request)
             file_put_contents(public_path().'/documents/'.$filename, $res);
 			return response()->download(public_path().'/documents/'.$filename);
         }
-	} elseif (strpos('q'.$slug, 'actions/print') || strpos('q'.$slug, 'superstats')) 
+	} elseif (strpos('q'.$slug, 'actions/print')) 
 	{
 		return $res;
-	} elseif (strpos('q'.$res, 'Whoops,')) 
-	{
+	} elseif (strpos('q'.$res, 'Whoops,')) {
 		if (! json_decode($res)) {
 			return response()->json([
 				'status' => 400,
@@ -60,10 +56,10 @@ Route::any('api/{slug?}', function($slug, Request $request)
 })->where('slug', '.*');
 
 
-Route::get('{slug?}', function($slug, Token $token, Request $request) 
+Route::get('{slug?}', function($slug, Token $token) 
 {
 	
-	if(!$token->init($request))
+	if(!$token->init())
 	{
 		return $token->errors;
 	}

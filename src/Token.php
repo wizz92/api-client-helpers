@@ -8,25 +8,16 @@ class Token
     public $errors;
     public $cookies;
 
-    public function getFromRemote($query, $method = 'POST')
-    {
-        $ch = curl_init(); 
-        curl_setopt($ch, CURLOPT_URL, $query); 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $o = curl_exec($ch); 
-        curl_close($ch);
-        return json_decode($o);
-    }
     protected function getFromBootstrap($query)
     {   
            // dd($query);
-           $ch = curl_init(); 
-	        curl_setopt($ch, CURLOPT_URL, $query); 
-	        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	        $o = curl_exec($ch); 
-	        curl_close($ch);
-	        $output = json_decode($o);
-	        // dd($out)
+            $ch = curl_init(); 
+            curl_setopt($ch, CURLOPT_URL, $query); 
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $o = curl_exec($ch); 
+            curl_close($ch);
+            $output = json_decode($o);
+            // dd($out)
             if(!is_object($output))
             {
                 $this->errors = $o;
@@ -49,11 +40,11 @@ class Token
         
         return $this->data->access_token;
     }
-    public function init($request)
+    public function init()
     {
-        return $this->getFromBootstrap($this->prepareQuery($request));
+        return $this->getFromBootstrap($this->prepareQuery());
     }
-    private function prepareQuery($request)
+    private function prepareQuery()
     {
         $form_params = [
             'grant_type' => config('api_configs.grant_type'),
