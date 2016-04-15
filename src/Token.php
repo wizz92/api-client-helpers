@@ -37,7 +37,6 @@ class Token
     }
     public function getToken()
     {
-        
         return $this->data->access_token;
     }
     public function init()
