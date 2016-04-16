@@ -1,6 +1,6 @@
 <?php 
 use \Wizz\ApiClientHelpers\Token;
-
+use \Illuminate\Http\Request;
 Route::get('/r/{slug?}', function($slug)
 { 
 	$u = config('api_configs.secret_url').'/'.$slug;
@@ -9,11 +9,11 @@ Route::get('/r/{slug?}', function($slug)
 
 })->where('slug', '.+');
 
-Route::any('api/{slug?}', function($slug) 
+Route::any('api/{slug?}', function($slug, Request $request) 
 {
-	$method = $_SERVER['REQUEST_METHOD'];
-	$res = apiRequestProxy();
-
+	$method = array_get($_SERVER, 'REQUEST_METHOD');
+	// dd($request->cookie());
+	$res = apiRequestProxy($request);
 	$data = explode("\r\n\r\n", $res);
 	$headers = (count($data) == 3) ? $data[1] : $data[0];
 	$res = (count($data) == 3) ? $data[2] : $data[1];
@@ -41,7 +41,9 @@ Route::any('api/{slug?}', function($slug)
         }
 	} elseif (strpos('q'.$slug, 'actions/print')) 
 	{
+		
 		return $res;
+
 	} elseif (strpos('q'.$res, 'Whoops,')) {
 		if (! json_decode($res)) {
 			return response()->json([
@@ -51,6 +53,7 @@ Route::any('api/{slug?}', function($slug)
 			]);
 		}
 	}
+	// dd($res);
 	return response()->json(json_decode($res));
 
 })->where('slug', '.*');

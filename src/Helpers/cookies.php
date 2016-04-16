@@ -2,13 +2,14 @@
 use Illuminate\Http\Request;
 
 
-function parse_cookies($header) {
+function parse_cookies($header, $named = true) {
 	
 	$parts = explode(";",$header);
 		$cookie = [];
 	foreach ($parts as $i => $part) {
 		$cook = explode("=",$part);
-		if ($i == 0) {
+		if ($i == 0 && $named) 
+		{
 			$cookie['name'] = trim($cook[0]);
 			$cookie['value'] = $cook[1];
 		} else
@@ -22,7 +23,9 @@ function parse_cookies($header) {
 function getCookieStringFromRequest(Request $request)
 {
 	$cookies = $request->cookie();
- 	$cookieArray = array();
+	// $cookies = parse_cookies($_SERVER['HTTP_COOKIE'], false);
+	// dd($cookies);
+ 	$cookieArray = [];
 	foreach ($cookies as $cookieName => $cookieValue) {
 	     $cookieArray[] = "{$cookieName}={$cookieValue}";
 	}

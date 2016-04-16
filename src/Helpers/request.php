@@ -1,20 +1,23 @@
 <?php 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use \Illuminate\Http\Request;
 
-function apiRequestProxy()
+function apiRequestProxy(Request $request)
 {
-    $requestString = $_SERVER['PATH_INFO'];
-    $method = $_SERVER['REQUEST_METHOD'];
-    $root = $_SERVER['HTTP_HOST'];
-    $data = ($method == "GET") ? $_GET : $_POST;
-
+    $requestString = array_get($_SERVER, 'PATH_INFO');
+    $method = array_get($_SERVER, 'REQUEST_METHOD');
+    $root = array_get($_SERVER, 'HTTP_HOST');
+    // $data = ($method == "GET") ? $_GET : $_POST;
+    $data = $request->all();
+    // $cookie_string = array_get($_SERVER, 'HTTP_COOKIE');
+    $cookie_string = getCookieStringFromRequest($request);
     // TODO: add advanced IP getter
-    $data['ip'] = $_SERVER['REMOTE_ADDR'];
+    $data['ip'] = $request->ip();
+    // $data['ip'] = array_get($_SERVER, 'REMOTE_ADDR');
     $data['app_id'] = config('api_configs.client_id');
     $requestString = str_replace(config('api_configs.url'), '', $requestString);
     $query = config('api_configs.secret_url').$requestString;
-    $query .= ($method == "GET") ? http_build_query($data) : '';
-
+    $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
     session_write_close();
     $ch = curl_init(); 
     curl_setopt($ch, CURLOPT_URL, $query); 
@@ -22,7 +25,7 @@ function apiRequestProxy()
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_HEADER, true); 
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); 
-    curl_setopt($ch, CURLOPT_COOKIE, $_SERVER['HTTP_COOKIE']);
+    curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
 
     if (in_array($method, ["PUT", "POST", "DELETE"])) 
     {
