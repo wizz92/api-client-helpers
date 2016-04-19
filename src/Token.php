@@ -31,18 +31,32 @@ class Token
             $this->data = $output->data;
             return true;
     }
+    
     public function getBootstrapData()
     {
-        return $this->data->bootstrap;
+        if (is_object($this->data)) 
+        {
+            return $this->data->bootstrap;
+        }
+        
+        return [];
     }
+
     public function getToken()
     {
-        return $this->data->access_token;
+        if (is_object($this->data)) 
+        {
+            return $this->data->access_token;
+        }
+
+        return '';
     }
+
     public function init()
     {
         return $this->getFromBootstrap($this->prepareQuery());
     }
+
     private function prepareQuery()
     {
         $form_params = [
