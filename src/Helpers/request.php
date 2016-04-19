@@ -4,7 +4,7 @@ use \Illuminate\Http\Request;
 
 function apiRequestProxy(Request $request)
 {
-    $requestString = array_get($_SERVER, 'PATH_INFO');
+    $requestString = array_get($_SERVER, 'REQUEST_URI');
     $method = array_get($_SERVER, 'REQUEST_METHOD');
     $root = array_get($_SERVER, 'HTTP_HOST');
     // $data = ($method == "GET") ? $_GET : $_POST;
