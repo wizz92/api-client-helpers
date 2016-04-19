@@ -25,26 +25,7 @@ use php artisan vendor:publish to publish api_configs.php file.
 
 # Usage
 
-init your token in router
-
-use \Wizz\ApiClientHelpers\Token;
-
-
-Route::get(
-			'{slug?}', function($slug, Token $token, Request $request) 
-		{
-			
-			if(!$token->init($request))
-			{
-				return $token->errors;
-			}
-			return view('index')
-				->with('access_token', $token->getToken())
-				->with('bootstrap', $token->getBootstrapData())
-				;
-
-		}
-		)->where('slug', '.+');
+it will just work
 
 That's all. 
 
