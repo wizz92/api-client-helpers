@@ -59,17 +59,17 @@ Route::any('api/{slug?}', function($slug, Request $request)
 })->where('slug', '.*');
 
 
-Route::get('{slug?}', function($slug, Token $token) 
-{
+// Route::get('{slug?}', function($slug, Token $token) 
+// {
 	
-	if(!$token->init())
-	{
-		return $token->errors;
-	}
-	return view('index')
-		->with('access_token', $token->getToken())
-		->with('bootstrap', $token->getBootstrapData())
-		;
+// 	if(!$token->init())
+// 	{
+// 		return $token->errors;
+// 	}
+// 	return view('index')
+// 		->with('access_token', $token->getToken())
+// 		->with('bootstrap', $token->getBootstrapData())
+// 		;
 
-})->where('slug', '.+');
+// })->where('slug', '.+');
 
