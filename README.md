@@ -23,6 +23,8 @@ to providers array.
 
 use php artisan vendor:publish to publish api_configs.php file.
 
+create upload and documents folders in public directory
+
 # Usage
 
 it will just work
