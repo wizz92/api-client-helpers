@@ -1,5 +1,6 @@
 <?php 
 namespace Wizz\ApiClientHelpers;
+use \Illuminate\Http\Request;
 
 class Token
 {
@@ -7,10 +8,19 @@ class Token
     protected $data = '';
     public $errors;
     public $cookies;
+    public $request;
+
+    // public function __construct(Request $request)
+    // {
+    //     $this->request = $request;
+    //     dd($_SERVER);
+    //     dd($request->url());
+    // }
 
     protected function getFromBootstrap($query)
     {   
-           // dd($query);
+            $addition = array_get($_SERVER, 'QUERY_STRING', '');
+            $query .= '&'.$addition;
             $ch = curl_init(); 
             curl_setopt($ch, CURLOPT_URL, $query); 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
