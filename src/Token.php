@@ -20,17 +20,28 @@ class Token
     protected function getFromBootstrap($query)
     {   
             $addition = array_get($_SERVER, 'QUERY_STRING', '');
-            $query .= '&'.$addition;
+            $query .= ($addition) ? '&'.$addition : '';
+            // dd($query);
+            $cookie_string = getCookieStringFromRequest(request());
+            
+            session_write_close();
             $ch = curl_init(); 
             curl_setopt($ch, CURLOPT_URL, $query); 
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $o = curl_exec($ch); 
+            curl_setopt($ch, CURLOPT_HEADER, true); 
+            curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
+            $res = curl_exec($ch); 
             curl_close($ch);
-            $output = json_decode($o);
-            // dd($out)
+
+            $data = explode("\r\n\r\n", $res);
+            $headers = (count($data) == 3) ? $data[1] : $data[0];
+            $res = (count($data) == 3) ? $data[2] : $data[1];
+            $cookies = setCookiesFromCurlResponse($headers);
+            $output = json_decode($res);
             if(!is_object($output))
             {
-                $this->errors = $o;
+                $this->errors = $res;
                 return 'false';
             }
             if(property_exists($output, 'errors') && count($output->errors) > 0)
