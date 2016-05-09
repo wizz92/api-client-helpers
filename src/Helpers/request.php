@@ -7,14 +7,13 @@ function apiRequestProxy(Request $request)
     $requestString = array_get($_SERVER, 'REQUEST_URI');
     $method = array_get($_SERVER, 'REQUEST_METHOD');
     $root = array_get($_SERVER, 'HTTP_HOST');
-    // $data = ($method == "GET") ? $_GET : $_POST;
     $data = $request->all();
     // $cookie_string = array_get($_SERVER, 'HTTP_COOKIE');
     $cookie_string = getCookieStringFromRequest($request);
     // TODO: add advanced IP getter
     $data['ip'] = $request->ip();
-    // $data['ip'] = array_get($_SERVER, 'REMOTE_ADDR');
     $data['app_id'] = config('api_configs.client_id');
+    $data['access_token'] = session('access_token');
     $requestString = str_replace(config('api_configs.url'), '', $requestString);
     $query = config('api_configs.secret_url').$requestString;
     $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
