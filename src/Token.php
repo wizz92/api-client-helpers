@@ -80,7 +80,7 @@ class Token
         {
             $access_token = $this->data->access_token;
 
-            session('access_token' => $access_token);
+            session(['access_token' => $access_token]);
             
             return $access_token;
         }
