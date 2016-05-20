@@ -36,7 +36,7 @@ class Token
         if (Cache::has($cache_key)) 
         {
             $output = Cache::get($cache_key);
-            
+
         } else
         {
 
@@ -60,6 +60,7 @@ class Token
             $cookies = setCookiesFromCurlResponse($headers);
 
             $output = json_decode($res);
+
             Cache::put($cache_key, $output, 100);
             
         }
@@ -73,8 +74,10 @@ class Token
             $this->errors = $output->errors;
             return false;
         }
+
         $this->data = $output->data;
-        return true;
+
+        return;
     }
     
     public function getBootstrapData()
