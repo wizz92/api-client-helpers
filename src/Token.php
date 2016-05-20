@@ -35,7 +35,7 @@ class Token
         $cache_key = 'bootstrap_data_from_api';
         if (Cache::has($cache_key)) 
         {
-            $output = cache($cache_key);
+            $output = Cache::get($cache_key);
         } else
         {
 
