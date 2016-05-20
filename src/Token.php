@@ -36,6 +36,7 @@ class Token
         if (Cache::has($cache_key)) 
         {
             $output = Cache::get($cache_key);
+            
         } else
         {
 
