@@ -77,7 +77,7 @@ class Token
 
         $this->data = $output->data;
 
-        return;
+        return true;
     }
     
     public function getBootstrapData()
