@@ -39,9 +39,8 @@ Route::any('api/{slug?}', function($slug, Request $request)
             file_put_contents(public_path().'/documents/'.$filename, $res);
 			return response()->download(public_path().'/documents/'.$filename);
         }
-	} elseif (strpos('q'.$slug, 'actions/print')) 
+	} elseif (strpos('q'.$slug, 'actions/print') || strpos('q'.$slug, 'admin/stats/giving')) 
 	{
-		
 		return $res;
 
 	} elseif (strpos('q'.$res, 'Whoops,')) {
