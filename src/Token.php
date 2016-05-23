@@ -33,7 +33,8 @@ class Token
     protected function getFromBootstrap($query)
     {   
         $cache_key = 'bootstrap_data_from_api';
-        if (Cache::has($cache_key)) 
+        if (false) 
+        // if (Cache::has($cache_key)) 
         {
             $output = Cache::get($cache_key);
 
