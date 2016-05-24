@@ -19,7 +19,7 @@ Route::any('api/{slug?}', function($slug, Request $request)
 	$res = (count($data) == 3) ? $data[2] : $data[1];
     $cookies = setCookiesFromCurlResponse($headers);
 
-	if (strpos('q'.$slug, 'download')) 
+	if (contains('q'.$slug, config('api_configs.file_routes'))) 
 	{
 		$headers = http_parse_headers($headers);
 		$filename = array_get($headers[0], 'content-disposition');
@@ -39,7 +39,7 @@ Route::any('api/{slug?}', function($slug, Request $request)
             file_put_contents(public_path().'/documents/'.$filename, $res);
 			return response()->download(public_path().'/documents/'.$filename);
         }
-	} elseif (strpos('q'.$slug, 'actions/print') || strpos('q'.$slug, 'admin/stats/giving')) 
+	} elseif (contains('q'.$slug, config('api_configs.view_routes'))) 
 	{
 		return $res;
 
