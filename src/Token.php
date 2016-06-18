@@ -35,16 +35,16 @@ class Token
         
 
         $cache_key = 'bootstrap_data_from_api';
-        if (false) 
-        // if (Cache::has($cache_key)) 
+        // if (false) 
+        if (Cache::has($cache_key)) 
         {
             $output = Cache::get($cache_key);
 
         } else
         {
-            $addition = array_get($_SERVER, 'QUERY_STRING', '');
-            $query .= ($addition) ? '&'.$addition : '';
-            // session(['addition' => request()->all()]);
+            // $addition = array_get($_SERVER, 'QUERY_STRING', '');
+            // $query .= ($addition) ? '&'.$addition : '';
+            session(['addition' => request()->all()]);
 
             $cookie_string = getCookieStringFromRequest(request());
             

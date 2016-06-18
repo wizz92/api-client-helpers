@@ -15,7 +15,7 @@ function apiRequestProxy(Request $request)
     $data['app_id'] = config('api_configs.client_id');
     $data['access_token'] = session('access_token');
     
-    // $data = array_merge($data, session('addition'));
+    $data = array_merge($data, session('addition'));
 
     $requestString = str_replace(config('api_configs.url'), '', $requestString);
     $query = config('api_configs.secret_url').$requestString;
