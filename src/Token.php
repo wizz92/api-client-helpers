@@ -46,15 +46,15 @@ class Token
             // $query .= ($addition) ? '&'.$addition : '';
             session(['addition' => request()->all()]);
 
-            $cookie_string = getCookieStringFromRequest(request());
+            // $cookie_string = getCookieStringFromRequest(request());
             
-            session_write_close();
+            // session_write_close();
             $ch = curl_init(); 
             curl_setopt($ch, CURLOPT_URL, $query); 
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_HEADER, true); 
-            curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
+            // curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
             $res = curl_exec($ch); 
             curl_close($ch);
 
