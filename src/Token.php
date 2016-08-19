@@ -32,26 +32,29 @@ class Token
 
     protected function getFromBootstrap($query)
     {   
+        
+
         $cache_key = 'bootstrap_data_from_api';
-        if (false) 
-        // if (Cache::has($cache_key)) 
+        // if (false) 
+        if (Cache::has($cache_key)) 
         {
             $output = Cache::get($cache_key);
 
         } else
         {
+            // $addition = array_get($_SERVER, 'QUERY_STRING', '');
+            // $query .= ($addition) ? '&'.$addition : '';
+            session(['addition' => request()->all()]);
 
-            $addition = array_get($_SERVER, 'QUERY_STRING', '');
-            $query .= ($addition) ? '&'.$addition : '';
-            $cookie_string = getCookieStringFromRequest(request());
+            // $cookie_string = getCookieStringFromRequest(request());
             
-            session_write_close();
+            // session_write_close();
             $ch = curl_init(); 
             curl_setopt($ch, CURLOPT_URL, $query); 
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_HEADER, true); 
-            curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
+            // curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
             $res = curl_exec($ch); 
             curl_close($ch);
 
