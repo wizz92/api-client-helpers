@@ -9,7 +9,7 @@ Route::get('/r/{slug?}', function($slug)
 
 })->where('slug', '.+');
 
-Route::any('api/{slug?}', function($slug, Request $request) 
+Route::any('api/{slug?}', function(Request $request, $slug = '/') 
 {
 	$method = array_get($_SERVER, 'REQUEST_METHOD');
 	$res = apiRequestProxy($request);
