@@ -1,66 +1,23 @@
 <?php 
-use \Wizz\ApiClientHelpers\Token;
-use \Illuminate\Http\Request;
-Route::get('/r/{slug?}', function($slug)
-{ 
-	$u = config('api_configs.secret_url').'/'.$slug;
 
-	return redirect()->to($u);
+Route::get('/r/{slug?}', '\Wizz\ApiClientHelpers\ACHController@redirect')->where('slug', '.+');
 
-})->where('slug', '.+');
+Route::any('api/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
 
-Route::any('api/{slug?}', function(Request $request, $slug = '/') 
+Route::get('/t/check', '\Wizz\ApiClientHelpers\ACHController@check');
+
+if(env('use_frontend_repo') === true)
 {
-	$method = array_get($_SERVER, 'REQUEST_METHOD');
-	$res = apiRequestProxy($request);
-	$data = explode("\r\n\r\n", $res);
-	$headers = (count($data) == 3) ? $data[1] : $data[0];
-	$res = (count($data) == 3) ? $data[2] : $data[1];
-    $cookies = setCookiesFromCurlResponse($headers);
+	/*
 
-	if (contains_string($slug, config('api_configs.file_routes'))) 
-	{
-		$headers = http_parse_headers($headers);
-		$filename = array_get($headers[0], 'content-disposition');
-        if ($filename) 
-        {
-            
-            preg_match('/filename="(.*)"/', $filename, $filename);
+	This check is here to ensure that we are not fucking up projects,
 
-            $filename = clear_string_from_shit($filename[1]);
+	where frontend_repo is not explicitly enabled.
 
-            file_put_contents(public_path().'/files/'.$filename, $res);
-			
-			return response()->download(public_path().'/files/'.$filename);
-        
-        }
-        
-	} elseif (contains_string($slug, ['documents'])) 
-	{
-		$chunks = explode('/', $slug);
-		$filename = array_get($chunks, count($chunks) - 1);
-        if ($filename) 
-        {
-            $filename = clear_string_from_shit($filename);
-            file_put_contents(public_path().'/documents/'.$filename, $res);
-			return response()->download(public_path().'/documents/'.$filename);
-        }
-	} elseif (contains_string($slug, config('api_configs.view_routes'))) 
-	{
-		return $res;
+	*/
+	Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontend_repo')->where('slug', '.+');
+	
+	Route::get('/t/clear_cache', '\Wizz\ApiClientHelpers\ACHController@clear_cache');
 
-	} elseif (strpos('q'.$res, 'Whoops,')) {
-		if (! json_decode($res)) {
-			return response()->json([
-				'status' => 400,
-				'errors' => ['Whoops, something went wrong. Please contact our support to receive discount and further assistance'],
-				'alerts' => []
-			]);
-		}
-	}
-	// dd($res);
-	return response()->json(json_decode($res));
-
-})->where('slug', '.*');
-
+}
 
