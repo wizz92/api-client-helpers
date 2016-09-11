@@ -77,7 +77,7 @@ class ACHController extends Controller
 
         if(!app()->environment('production')) return false;
 
-        if($slug && ! Cache::has($slug)) return false;
+        if($slug && !Cache::has($slug)) return false;
 
         return true;
     }
@@ -89,13 +89,17 @@ class ACHController extends Controller
     */
     public function frontend_repo($slug)
     {
+        $additions = request()->all();
+        if ($additions) {
+            session(['addition' => $additions]);
+        }
 
         if(!$this->validate_frontend_config()) return $this->error_message;
 
         if ($this->should_we_cache($slug)) return Cache::get($slug);
 
         try {
-            
+
             $url = ($slug == '/') ? env('frontend_repo_url') : env('frontend_repo_url').$slug;
     
             $arrContextOptions = array(
@@ -150,6 +154,21 @@ class ACHController extends Controller
         }
     }
 
+    protected $file_types = [
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+    ];
+
+    protected $view_types = [
+        'text/html;charset=UTF-8',
+        'text/html',
+    ];
     /*
 
     Prozy function for api by @wizz.
@@ -165,40 +184,29 @@ class ACHController extends Controller
         $res = (count($data) == 3) ? $data[2] : $data[1];
         $cookies = setCookiesFromCurlResponse($headers);
 
-        if (contains_string($slug, config('api_configs.file_routes'))) 
-        {
-            $headers = http_parse_headers($headers);
-            $filename = array_get($headers[0], 'content-disposition');
-            if ($filename) 
-            {
-                
-                preg_match('/filename="(.*)"/', $filename, $filename);
-
-                $filename = clear_string_from_shit($filename[1]);
-
-                file_put_contents(public_path().'/files/'.$filename, $res);
-                
-                return response()->download(public_path().'/files/'.$filename);
-            
-            }
-            
-        } 
-        elseif (contains_string($slug, ['documents'])) 
-        {
-            $chunks = explode('/', $slug);
-            $filename = array_get($chunks, count($chunks) - 1);
-            if ($filename) 
-            {
-                $filename = clear_string_from_shit($filename);
-                file_put_contents(public_path().'/documents/'.$filename, $res);
-                return response()->download(public_path().'/documents/'.$filename);
-            }
-        } 
-        elseif (contains_string($slug, config('api_configs.view_routes'))) 
-        {
-            return $res;
-
-        } elseif (strpos('q'.$res, 'Whoops,')) {
+        $headers = array_get(http_parse_headers($headers), 0);
+        
+        $content_type = array_get($headers, 'content-type');
+        switch ($content_type) {
+            case 'application/json':
+                return response()->json(json_decode($res));
+                break;
+            case in_array($content_type, $this->view_types):
+                return $res;
+                break;
+            case 'text/plain':
+                return $res;
+                break;
+            case in_array($content_type, $this->file_types):
+                $path = getPathFromHeaderOrRoute(array_get($headers, 'content-disposition'), $slug);
+                file_put_contents($path, $res);
+                return response()->download($path);
+                break;
+            default:
+                # code...
+                break;
+        }
+        if (strpos('q'.$res, 'Whoops,')) {
             if (! json_decode($res)) {
                 return response()->json([
                     'status' => 400,
@@ -207,9 +215,6 @@ class ACHController extends Controller
                 ]);
             }
         }
-
-        return response()->json(json_decode($res));
-
     }
 
     /*

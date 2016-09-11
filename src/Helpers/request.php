@@ -4,20 +4,15 @@ use \Illuminate\Http\Request;
 
 function apiRequestProxy(Request $request)
 {
-    $requestString = array_get($_SERVER, 'REQUEST_URI');
-    $method = array_get($_SERVER, 'REQUEST_METHOD');
-    $root = array_get($_SERVER, 'HTTP_HOST');
+    $requestString = str_replace(config('api_configs.url'), '', $request->path());
+    $method = $request->method();
     $data = $request->all();
-    // $cookie_string = array_get($_SERVER, 'HTTP_COOKIE');
-    $cookie_string = getCookieStringFromRequest($request);
-    // TODO: add advanced IP getter
+    $cookie_string = getCookieStringFromArray($request->cookie());
     $data['ip'] = $request->ip();
     $data['app_id'] = config('api_configs.client_id');
-    $data['access_token'] = session('access_token');
     $addition = (session('addition')) ? session('addition') : [];
     $data = array_merge($data, $addition);
 
-    $requestString = str_replace(config('api_configs.url'), '', $requestString);
     $query = config('api_configs.secret_url').$requestString;
     $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
     session_write_close();
@@ -43,6 +38,25 @@ function apiRequestProxy(Request $request)
     $res = curl_exec($ch);
     curl_close($ch);
     return $res;
+}
+
+function getPathFromHeaderOrRoute($contentDisposition, $slug)
+{
+    if ($contentDisposition) {
+        preg_match('/filename="(.*)"/', $contentDisposition, $filename);
+        $filename = clear_string_from_shit($filename[1]);
+        $path = public_path().'/files/'.$filename;
+        return $path;
+    }
+    $chunks = explode('/', $slug);
+    $filename = array_get($chunks, count($chunks) - 1);
+    if ($filename) 
+    {
+        $filename = clear_string_from_shit($filename);
+        $path = public_path().'/documents/'.$filename;
+        return response()->download($path);
+    }
+
 }
 
 function prepare_files_for_curl(array $data, $file_field = 'files')

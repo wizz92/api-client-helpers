@@ -20,16 +20,13 @@ function parse_cookies($header, $named = true) {
 	return $cookie;
 }
 
-function getCookieStringFromRequest(Request $request)
+function getCookieStringFromArray(array $cookies)
 {
-	$cookies = $request->cookie();
-	// $cookies = parse_cookies($_SERVER['HTTP_COOKIE'], false);
-	// dd($cookies);
- 	$cookieArray = [];
+ 	$cookies_string = '';
 	foreach ($cookies as $cookieName => $cookieValue) {
-	     $cookieArray[] = "{$cookieName}={$cookieValue}";
+		$cookies_string .= $cookieName.'='.$cookieValue.'; ';
 	}
- 	return implode('; ', $cookieArray);
+ 	return $cookies_string;
 }
 
 function getCookieFromCurlResponce($response)
