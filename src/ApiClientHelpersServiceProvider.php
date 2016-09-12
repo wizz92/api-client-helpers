@@ -26,19 +26,15 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
         include __DIR__.'/ACHController.php';
         include __DIR__.'/routes.php';
-        // include __DIR__.'/views/not_found.blade.php';
         include __DIR__.'/Helpers/array.php';
         include __DIR__.'/Helpers/cookies.php';
         include __DIR__.'/Helpers/request.php';
         $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
-        $this->mergeConfigFrom(
-            __DIR__.'/configs/api_configs.php', 'api_configs'
-        );
+        $this->mergeConfigFrom(__DIR__.'/configs/api_configs.php', 'api_configs');
         $this->app->make('Wizz\ApiClientHelpers\Token');
         $this->app->make('Wizz\ApiClientHelpers\ACHController');
-
+        $this->app->make('Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware');
     }
 }
