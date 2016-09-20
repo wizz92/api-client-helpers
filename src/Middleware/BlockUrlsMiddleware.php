@@ -3,7 +3,6 @@
 namespace Wizz\ApiClientHelpers\Middleware;
 
 use Closure;
-// use Input;
 use Log;
 
 class BlockUrlsMiddleware
@@ -33,17 +32,15 @@ class BlockUrlsMiddleware
         }
         
         foreach (config('api_configs.list_of_urls_to_block') as $url => $destination) {
-            
+
             $host = ($utm_host && strpos($utm_host, $url) !== false) ? $utm_host : false;
-            // dd($host);
+
             $host = (!$host && $from_url && strpos($from_url, $url) !== false) ? $from_url : $host;
-            $s = 'Blocking visitor for utm from ' . $utm_host . '.';
-            if($request->has('rt'))
-            {
-                $s = $s . ' Link code was ' . $request->input('rt');
-            }
-            Log::info($s);
+            
             if ($host) {
+                $s = 'Blocking visitor for utm from ' . $host . '.';
+                $s = $request->has('rt') ? $s . ' Link code was ' . $request->input('rt') : $s;
+                Log::info($s);
                 return redirect($destination);
             }
         }
