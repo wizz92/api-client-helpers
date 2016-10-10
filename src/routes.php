@@ -8,6 +8,31 @@ Route::get('/t/check', '\Wizz\ApiClientHelpers\ACHController@check');
 
 Route::get('/t/clear_cache', '\Wizz\ApiClientHelpers\ACHController@clear_cache');
 
+Route::get('clients/payments/success', function(){
+	$params = http_build_query(request()->all());
+	return redirect()->to('https://api.speedy.company/clients/payments/success?'.$params);
+})->where('slug', '.+');
+
+Route::get('clients/payments/failure', function(){
+	$params = http_build_query(request()->all());
+	return redirect()->to('https://api.speedy.company/clients/payments/failure?'.$params);
+})->where('slug', '.+');
+
+Route::get('clients/payments/failure', function(){
+	$params = http_build_query(request()->all());
+	return redirect()->to('https://api.speedy.company/clients/payments/failure?'.$params);
+})->where('slug', '.+');
+
+Route::get('clients/payments/cancel', function(){
+	$params = http_build_query(request()->all());
+	return redirect()->to('https://api.speedy.company/clients/payments/cancel?'.$params);
+})->where('slug', '.+');
+
+Route::get('clients/payments/pending', function(){
+	$params = http_build_query(request()->all());
+	return redirect()->to('https://api.speedy.company/clients/payments/pending?'.$params);
+})->where('slug', '.+');
+
 if(env('use_frontend_repo') === true)
 {
 	/*
