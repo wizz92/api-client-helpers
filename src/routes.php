@@ -18,17 +18,17 @@ Route::get('clients/payments/failure', function(){
 	return redirect()->to('https://api.speedy.company/clients/payments/failure?'.$params);
 })->where('slug', '.+');
 
-Route::get('clients/payments/failure', function(){
+Route::get('payments/failure', function(){
 	$params = http_build_query(request()->all());
 	return redirect()->to('https://api.speedy.company/clients/payments/failure?'.$params);
 })->where('slug', '.+');
 
-Route::get('clients/payments/cancel', function(){
+Route::get('payments/cancel', function(){
 	$params = http_build_query(request()->all());
 	return redirect()->to('https://api.speedy.company/clients/payments/cancel?'.$params);
 })->where('slug', '.+');
 
-Route::get('clients/payments/pending', function(){
+Route::get('payments/pending', function(){
 	$params = http_build_query(request()->all());
 	return redirect()->to('https://api.speedy.company/clients/payments/pending?'.$params);
 })->where('slug', '.+');
