@@ -202,6 +202,13 @@ class ACHController extends Controller
                 file_put_contents($path, $res);
                 return response()->download($path);
                 break;
+            case "application/xml":
+                $xml = new \SimpleXMLElement($res);
+                return $xml->asXML();
+                break;
+            case 'text/plain; charset=UTF-8':
+                return $res;
+                break;
             default:
                 # code...
                 break;
