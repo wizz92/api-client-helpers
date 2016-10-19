@@ -1,7 +1,0 @@
-\Bugsnag::notifyError('Api responded with error', "Blah", 
-[
-	'request' => request(),
-	'cookies' => $cookies,
-	'headers' => $headers,
-
-]);
