@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Cache;
+use File;
 
 class ACHController extends Controller
 {
@@ -167,7 +168,7 @@ class ACHController extends Controller
 
     protected $view_types = [
         'text/html;charset=UTF-8',
-        'text/html',
+        'text/html'
     ];
     /*
 
@@ -183,7 +184,6 @@ class ACHController extends Controller
         $headers = (count($data) == 3) ? $data[1] : $data[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
         $cookies = setCookiesFromCurlResponse($headers);
-
         $headers = array_get(http_parse_headers($headers), 0);
         
         $content_type = array_get($headers, 'content-type');
@@ -207,7 +207,8 @@ class ACHController extends Controller
                 return $xml->asXML();
                 break;
             case 'text/plain; charset=UTF-8':
-                return $res;
+                $filename = getFilenameFromHeader(array_get($headers, 'content-disposition'));
+                if ($filename == 'robots.txt') File::put(public_path().'/robots.txt',$res);
                 break;
             default:
                 # code...

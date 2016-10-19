@@ -2,7 +2,7 @@
 
 Route::get('/sitemap.xml', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 
-Route::get('/robots.txt', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
+Route::get('/robots_generator', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 
 Route::get('/r/{slug?}', '\Wizz\ApiClientHelpers\ACHController@redirect')->where('slug', '.+');
 

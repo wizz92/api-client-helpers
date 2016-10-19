@@ -13,7 +13,7 @@ function apiRequestProxy(Request $request)
     $addition = (session('addition')) ? session('addition') : [];
     $data = array_merge($data, $addition);
 
-    $query = config('api_configs.secret_url').$requestString;
+    $query = config('api_configs.secret_url').'/'.$requestString;
     $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
     session_write_close();
     $ch = curl_init(); 
@@ -38,6 +38,17 @@ function apiRequestProxy(Request $request)
     $res = curl_exec($ch);
     curl_close($ch);
     return $res;
+}
+
+function getFilenameFromHeader($contentDisposition)
+{
+    if (!$contentDisposition) {
+        return false;
+    }
+
+    preg_match('/filename="(.*)"/', $contentDisposition, $filename);
+    $filename = clear_string_from_shit($filename[1]);
+    return $filename;
 }
 
 function getPathFromHeaderOrRoute($contentDisposition, $slug)
