@@ -206,8 +206,18 @@ class ACHController extends Controller
                 # code...
                 break;
         }
+\Bugsnag::notifyError('Api responded with error', "Blah",
+[
+        'request' => request(),
+        'cookies' => $cookies,
+        'headers' => $headers,
+        'res' =>$res
+
+]);
+
         if (strpos('q'.$res, 'Whoops,')) {
             if (! json_decode($res)) {
+                
                 return response()->json([
                     'status' => 400,
                     'errors' => [$this->error_message],
