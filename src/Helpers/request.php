@@ -13,7 +13,7 @@ function apiRequestProxy(Request $request)
     $addition = (session('addition')) ? session('addition') : [];
     $data = array_merge($data, $addition);
 
-    $query = config('api_configs.secret_url').'/'.$requestString;
+    $query = config('api_configs.secret_url').$requestString;
     $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
     session_write_close();
     $ch = curl_init(); 
