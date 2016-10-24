@@ -156,6 +156,9 @@ class ACHController extends Controller
     }
 
     protected $file_types = [
+        'image/jpeg',
+        'image/png',
+        'image/tiff',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/pdf',
         'application/msword',
@@ -219,15 +222,6 @@ class ACHController extends Controller
                 # code...
                 break;
         }
-\Bugsnag::notifyError('Api responded with error', "Blah",
-[
-        'request' => request(),
-        'cookies' => $cookies,
-        'headers' => $headers,
-        'res' =>$res
-
-]);
-
         if (strpos('q'.$res, 'Whoops,')) {
             if (! json_decode($res)) {
                 
