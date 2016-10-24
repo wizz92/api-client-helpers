@@ -180,6 +180,11 @@ class ACHController extends Controller
         $method = array_get($_SERVER, 'REQUEST_METHOD');
         $res = apiRequestProxy(request());
         $data = explode("\r\n\r\n", $res);
+        if(preg_match('/^HTTP\/\d\.\d\s+(301|302)/',$data[0]))
+        {
+            $headers = array_get(http_parse_headers($data[0]), 0);
+            return redirect()->to(array_get($headers, 'location'));
+        }
         $headers = (count($data) == 3) ? $data[1] : $data[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
         $cookies = setCookiesFromCurlResponse($headers);
