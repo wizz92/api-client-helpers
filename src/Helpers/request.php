@@ -40,6 +40,17 @@ function apiRequestProxy(Request $request)
     return $res;
 }
 
+function getFilenameFromHeader($contentDisposition)
+{
+    if (!$contentDisposition) {
+        return false;
+    }
+
+    preg_match('/filename="(.*)"/', $contentDisposition, $filename);
+    $filename = clear_string_from_shit($filename[1]);
+    return $filename;
+}
+
 function getPathFromHeaderOrRoute($contentDisposition, $slug)
 {
     if ($contentDisposition) {
