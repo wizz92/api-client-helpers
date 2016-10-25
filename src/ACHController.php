@@ -159,6 +159,7 @@ class ACHController extends Controller
         'image/jpeg',
         'image/png',
         'image/tiff',
+        'text/csv',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/pdf',
         'application/msword',

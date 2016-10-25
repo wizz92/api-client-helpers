@@ -16,6 +16,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/configs/api_configs.php' => config_path('api_configs.php'),
         ]);
+        include __DIR__.'/routes.php';
         //
     }
 
@@ -27,7 +28,6 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     public function register()
     {
         include __DIR__.'/ACHController.php';
-        include __DIR__.'/routes.php';
         include __DIR__.'/Helpers/array.php';
         include __DIR__.'/Helpers/cookies.php';
         include __DIR__.'/Helpers/request.php';
