@@ -126,7 +126,7 @@ class ACHController extends Controller
 
             if(strpos($http_code, '238') > -1) return response(view('api-client-helpers::not_found'), 410); // code 238 is used for our internal communication between frontend repo and client site, so that we do not ignore errors (410 is an error);
 
-            if ($this->should_we_cache($slug)) Cache::put($slug, $page, config('api_configs.cache_frontend_for'));
+            if ($this->should_we_cache()) Cache::put($slug, $page, config('api_configs.cache_frontend_for'));
 
             return $page;
 
@@ -232,7 +232,9 @@ class ACHController extends Controller
                 if ($filename == 'robots.txt') File::put(public_path().'/robots.txt',$res);
                 break;
             default:
-                # code...
+                $path = getPathFromHeaderOrRoute(array_get($headers, 'content-disposition'), $slug);
+                file_put_contents($path, $res);
+                return response()->download($path);
                 break;
         }
         if (strpos('q'.$res, 'Whoops,')) {
