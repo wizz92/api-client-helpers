@@ -233,7 +233,8 @@ class ACHController extends Controller
                 if ($filename == 'robots.txt') File::put(public_path().'/robots.txt',$res);
                 break;
             default:
-                $path = getPathFromHeaderOrRoute(array_get($headers, 'content-disposition'), $slug);
+                $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
+                $path = getPathFromHeaderOrRoute($shit, $slug);
                 file_put_contents($path, $res);
                 return response()->download($path);
                 break;
