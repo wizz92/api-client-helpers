@@ -219,7 +219,8 @@ class ACHController extends Controller
                 return $res;
                 break;
             case in_array($content_type, $this->file_types):
-                $path = getPathFromHeaderOrRoute(array_get($headers, 'content-disposition'), $slug);
+                $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
+                $path = getPathFromHeaderOrRoute($shit, $slug);
                 file_put_contents($path, $res);
                 return response()->download($path);
                 break;
