@@ -121,7 +121,7 @@ class ACHController extends Controller
             ); 
 
             $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
-
+            $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
             if(strpos($http_code, '238') > -1) return response(view('api-client-helpers::not_found'), 410); // code 238 is used for our internal communication between frontend repo and client site, so that we do not ignore errors (410 is an error);
