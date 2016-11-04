@@ -97,7 +97,11 @@ class ACHController extends Controller
 
         if(!$this->validate_frontend_config()) return $this->error_message;
 
-        if ($this->should_we_cache($slug)) return Cache::get($slug);
+        if ($this->should_we_cache($slug)) {
+            $page = Cache::get($slug);
+            $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
+            return $page;
+        }
 
         try {
 
@@ -121,12 +125,12 @@ class ACHController extends Controller
             ); 
 
             $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
-            $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
             if(strpos($http_code, '238') > -1) return response(view('api-client-helpers::not_found'), 410); // code 238 is used for our internal communication between frontend repo and client site, so that we do not ignore errors (410 is an error);
 
             if ($this->should_we_cache()) Cache::put($slug, $page, config('api_configs.cache_frontend_for'));
+            $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
 
             return $page;
 
