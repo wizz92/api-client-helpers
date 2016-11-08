@@ -184,6 +184,7 @@ class ACHController extends Controller
 
     protected $view_types = [
         'text/html;charset=UTF-8',
+        'text/html; charset=UTF-8',
         'text/html'
     ];
     /*
