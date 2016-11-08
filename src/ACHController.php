@@ -205,7 +205,9 @@ class ACHController extends Controller
         if(preg_match('/^HTTP\/\d\.\d\s+(301|302)/',$data[0]))
         {
             $headers = array_get(http_parse_headers($data[0]), 0);
-            return redirect()->to(array_get($headers, 'location'));
+            return redirect()
+                ->to(array_get($headers, 'location'))
+                ->header('referer', 'https://api.speedy.company');
         }
         $headers = (count($data) == 3) ? $data[1] : $data[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
