@@ -189,7 +189,9 @@ class ACHController extends Controller
     protected $view_types = [
         'text/html;charset=UTF-8',
         'text/html; charset=UTF-8',
-        'text/html'
+        'text/html',
+        'text/html;charset=ISO-8859-1',
+        'text/html; charset=ISO-8859-1',
     ];
     /*
 
@@ -197,11 +199,11 @@ class ACHController extends Controller
 
     */
     public function proxy($slug = '/')
-    {
-
+    {   
         $method = array_get($_SERVER, 'REQUEST_METHOD');
         $res = apiRequestProxy(request());
         $data = explode("\r\n\r\n", $res);
+
         if(preg_match('/^HTTP\/\d\.\d\s+(301|302)/',$data[0]))
         {
             $headers = array_get(http_parse_headers($data[0]), 0);
@@ -209,11 +211,10 @@ class ACHController extends Controller
                 ->to(array_get($headers, 'location'))
                 ->header('referer', 'https://api.speedy.company');
         }
+        $data = http_parse_headers($res);
+        $cookies = setCookiesFromCurlResponse($res);
         $headers = (count($data) == 3) ? $data[1] : $data[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
-        $cookies = setCookiesFromCurlResponse($headers);
-        $headers = array_get(http_parse_headers($headers), 0);
-        
         $content_type = array_get($headers, 'content-type');
         switch ($content_type) {
             case 'application/json':
