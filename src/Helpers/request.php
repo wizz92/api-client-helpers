@@ -23,6 +23,7 @@ function apiRequestProxy(Request $request)
     curl_setopt($ch, CURLOPT_HEADER, true); 
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); 
     curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 
     if (in_array($method, ["PUT", "POST", "DELETE"])) 
     {

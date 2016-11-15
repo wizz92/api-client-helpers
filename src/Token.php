@@ -53,7 +53,8 @@ class Token
             curl_setopt($ch, CURLOPT_URL, $query); 
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HEADER, true); 
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
             // curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
             $res = curl_exec($ch); 
             curl_close($ch);
