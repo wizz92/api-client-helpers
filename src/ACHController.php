@@ -203,6 +203,7 @@ class ACHController extends Controller
         $method = array_get($_SERVER, 'REQUEST_METHOD');
         $res = apiRequestProxy(request());
         $data = explode("\r\n\r\n", $res);
+        $data2 = http_parse_headers($res);
 
         if(preg_match('/^HTTP\/\d\.\d\s+(301|302)/',$data[0]))
         {
@@ -211,10 +212,10 @@ class ACHController extends Controller
                 ->to(array_get($headers, 'location'))
                 ->header('referer', 'https://api.speedy.company');
         }
-        $data = http_parse_headers($res);
         $cookies = setCookiesFromCurlResponse($res);
-        $headers = (count($data) == 3) ? $data[1] : $data[0];
+        $headers = (count($data2) == 3) ? $data2[1] : $data2[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
+        
         $content_type = array_get($headers, 'content-type');
         switch ($content_type) {
             case 'application/json':
