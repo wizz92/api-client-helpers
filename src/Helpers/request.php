@@ -4,7 +4,9 @@ use \Illuminate\Http\Request;
 
 function apiRequestProxy(Request $request)
 {
-    $requestString = str_replace(config('api_configs.url'), '', $request->path());
+    $path = $request->path();
+    $path = strpos($path, '/') === 0 ? $path : '/'.$path;
+    $requestString = str_replace(config('api_configs.url'), '', $path);
     $method = $request->method();
     $data = $request->all();
     $cookie_string = getCookieStringFromArray($request->cookie());
