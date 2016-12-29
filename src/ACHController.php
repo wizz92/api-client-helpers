@@ -239,7 +239,7 @@ class ACHController extends Controller
                 break;
             case 'text/plain; charset=UTF-8':
                 $filename = getFilenameFromHeader(array_get($headers, 'content-disposition'));
-                if ($filename == 'robots.txt') File::put(public_path().'/robots.txt',$res);
+                if ($filename == 'robots.txt') \File::put(public_path().'/robots.txt',$res);
                 break;
             default:
                 $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
