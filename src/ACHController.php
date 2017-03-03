@@ -16,7 +16,7 @@ class ACHController extends Controller
     */
     public function __construct()
     {
-        $one = "Sorry, looks like something went wrong. "; 
+        $one = "Sorry, looks like something went wrong. ";
 
         $two = (env('support_email')) ? "Please contact us at <a href='mailto:".env('support_email')."'>".env('support_email')."</a>" : "Please contact us via email";
 
@@ -64,7 +64,7 @@ class ACHController extends Controller
 
     /*
 
-    Function to see if we should be caching response from frontend repo. 
+    Function to see if we should be caching response from frontend repo.
 
     If $slug is passed, it will also check whether this $slug is already in cache;
 
@@ -105,7 +105,7 @@ class ACHController extends Controller
         try {
 
             $url = ($slug == '/') ? env('frontend_repo_url') : env('frontend_repo_url').$slug;
-    
+
             $arrContextOptions = array(
                 "ssl" => array(
                     "verify_peer" => false,
@@ -121,12 +121,15 @@ class ACHController extends Controller
                     'header' => 'User-Agent: '.request()->header('user-agent').'\r\n',
                     // 'ignore_errors' => true
                 )
-            ); 
+            );
 
             $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
             if(strpos($http_code, '238') > -1) return response(view('api-client-helpers::not_found'), 410); // code 238 is used for our internal communication between frontend repo and client site, so that we do not ignore errors (410 is an error);
+            if(strpos($http_code, '239') > -1) return redirect()->to('/', 301);
+            if(strpos($http_code, '240') > -1) return redirect()->to('/', 302);
+
 
             if ($this->should_we_cache()) Cache::put($slug, $page, config('api_configs.cache_frontend_for'));
             $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
@@ -134,7 +137,7 @@ class ACHController extends Controller
             return $page;
 
         }
-        catch (Exception $e) 
+        catch (Exception $e)
         {
             \Log::info($e);
             return $this->error_message;
@@ -198,7 +201,7 @@ class ACHController extends Controller
 
     */
     public function proxy($slug = '/')
-    {   
+    {
         $method = array_get($_SERVER, 'REQUEST_METHOD');
         $res = apiRequestProxy(request());
         $data = explode("\r\n\r\n", $res);
@@ -214,7 +217,7 @@ class ACHController extends Controller
         $cookies = setCookiesFromCurlResponse($res);
         $headers = (count($data2) == 3) ? $data2[1] : $data2[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
-        
+
         $content_type = array_get($headers, 'content-type');
         switch ($content_type) {
             case 'application/json':
@@ -249,7 +252,7 @@ class ACHController extends Controller
         }
         if (strpos('q'.$res, 'Whoops,')) {
             if (! json_decode($res)) {
-                
+
                 return response()->json([
                     'status' => 400,
                     'errors' => [$this->error_message],
@@ -267,7 +270,7 @@ class ACHController extends Controller
     public function redirect($slug)
     {
 
-        if(!$this->validate_redirect_config()) return $this->error_message; 
+        if(!$this->validate_redirect_config()) return $this->error_message;
 
         return redirect()->to(env('secret_url').'/'.$slug);
     }
