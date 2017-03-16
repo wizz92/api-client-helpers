@@ -24,6 +24,8 @@ class ACHController extends Controller
 
         $this->error_message = $one.$two.$three;
         $this->security_code = config('api_configs.security_code');
+        $this->redirect_code = config('api_configs.not_found_redirect_code', 301);
+        $this->redirect_mode = config('api_configs.not_found_redirect_mode');
     }
 
     /*
@@ -126,10 +128,19 @@ class ACHController extends Controller
             $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
-            if(strpos($http_code, '238') > -1) return response(view('api-client-helpers::not_found'), 410); // code 238 is used for our internal communication between frontend repo and client site, so that we do not ignore errors (410 is an error);
-            if(strpos($http_code, '239') > -1) return redirect()->to('/', 301);
-            if(strpos($http_code, '240') > -1) return redirect()->to('/', 302);
-
+            if(strpos($http_code, '238') > -1) 
+            {
+                // code 238 is used for our internal communication between frontend repo and client site, 
+                // so that we do not ignore errors (410 is an error);
+                if($this->redirect_mode === "view") 
+                {
+                    return response(view('api-client-helpers::not_found'), $this->redirect_code); 
+                }
+                else //if($this->redirect_mode === "http")
+                { // changed this to else, so that we use http redirect by default even if nothing is specified
+                    return redirect()->to('/', $this->redirect_code); 
+                }
+            }
 
             if ($this->should_we_cache()) Cache::put($slug, $page, config('api_configs.cache_frontend_for'));
             $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
