@@ -26,6 +26,9 @@ class ACHController extends Controller
         $this->security_code = config('api_configs.security_code');
         $this->redirect_code = config('api_configs.not_found_redirect_code', 301);
         $this->redirect_mode = config('api_configs.not_found_redirect_mode');
+
+        $this->version = "1.1.1";
+
     }
 
     /*
@@ -295,10 +298,12 @@ class ACHController extends Controller
     {
         if(request()->input('code') !== $this->security_code) return;
 
-        return 'frontend_repo is '.$this->is_ok('validate_frontend_config').'<br/>'
-            .'redirect is '.$this->is_ok('validate_redirect_config').'<br/>'
-            .'caching is '.$this->is_ok('should_we_cache').'<br/>'
-            ;
+        return [
+            'frontend_repo' => $this->is_ok('validate_frontend_config'),
+            'redirect' => $this->is_ok('validate_redirect_config'),
+            'caching' => $this->is_ok('should_we_cache'),
+            'version' => $this->version
+        ];
     }
 
 }
