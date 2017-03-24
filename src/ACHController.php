@@ -27,7 +27,7 @@ class ACHController extends Controller
         $this->redirect_code = config('api_configs.not_found_redirect_code', 301);
         $this->redirect_mode = config('api_configs.not_found_redirect_mode');
 
-        $this->version = "1.1.3";
+        $this->version = "1.1.4";
 
     }
 
@@ -175,13 +175,13 @@ class ACHController extends Controller
     */
     public function clear_cache()
     {
-        if(request()->input('code') !== $this->security_code) return [result => 'no access'];;
+        if(request()->input('code') !== $this->security_code) return ['result' => 'no access'];;
         try {
             \Artisan::call('cache:clear');
-            return [result => 'success'];
+            return ['result' => 'success'];
         } catch (Exception $e) {
             \Log::info($e);
-            return [result => 'error'];
+            return ['result' => 'error'];
         }
     }
 
