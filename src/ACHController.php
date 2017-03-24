@@ -175,13 +175,13 @@ class ACHController extends Controller
     */
     public function clear_cache()
     {
-        if(request()->input('code') !== $this->security_code) return;
+        if(request()->input('code') !== $this->security_code) return [result: 'no access'];;
         try {
             \Artisan::call('cache:clear');
-            return 'success';
+            return [result: 'success'];
         } catch (Exception $e) {
             \Log::info($e);
-            return "Sorry, looks like something went wrong.";
+            return [result: 'error'];
         }
     }
 
