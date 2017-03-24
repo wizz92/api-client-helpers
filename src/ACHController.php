@@ -27,7 +27,7 @@ class ACHController extends Controller
         $this->redirect_code = config('api_configs.not_found_redirect_code', 301);
         $this->redirect_mode = config('api_configs.not_found_redirect_mode');
 
-        $this->version = "1.1.1";
+        $this->version = "1.1.2";
 
     }
 
@@ -87,6 +87,16 @@ class ACHController extends Controller
         return true;
     }
 
+    protected function CK($slug) //CK = Cache Key
+    {
+        $ua = strtolower(request()->header('User-Agent'));
+        if($ua && strrpos($ua, 'msie') > -1)
+        {
+            $slug = "_ie_".$slug;
+        }
+        return $slug;
+    }
+
     /*
 
     The actual function for handling frontend repo requests.
@@ -101,8 +111,8 @@ class ACHController extends Controller
 
         if(!$this->validate_frontend_config()) return $this->error_message;
 
-        if ($this->should_we_cache($slug)) {
-            $page = Cache::get($slug);
+        if ($this->should_we_cache($this->CK($slug))) {
+            $page = Cache::get($this->CK($slug));
             $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
             return $page;
         }
@@ -145,7 +155,7 @@ class ACHController extends Controller
                 }
             }
 
-            if ($this->should_we_cache()) Cache::put($slug, $page, config('api_configs.cache_frontend_for'));
+            if ($this->should_we_cache()) Cache::put($this->CK($slug), $page, config('api_configs.cache_frontend_for'));
             $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
 
             return $page;
