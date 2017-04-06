@@ -27,7 +27,7 @@ class ACHController extends Controller
         $this->redirect_code = config('api_configs.not_found_redirect_code', 301);
         $this->redirect_mode = config('api_configs.not_found_redirect_mode');
 
-        $this->version = "1.1.4";
+        $this->version = "1.1.5";
 
     }
 
