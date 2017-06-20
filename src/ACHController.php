@@ -209,6 +209,8 @@ class ACHController extends Controller
         'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         'application/vnd.ms-powerpoint',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain',
+        'text/plain; charset=UTF-8',
 
     ];
 
