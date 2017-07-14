@@ -133,7 +133,11 @@ class ACHController extends Controller
                 'http' => array(
                     'method'=>"GET",
                     'follow_location' => 1,
-                    'header' => 'User-Agent: '.request()->header('user-agent').'\r\n',
+                    'header' => [
+                        'User-Agent: '.request()->header('user-agent').'\r\n',
+                        'Referrer: '.asset('/').'\r\n',
+                    ],
+
                     // 'ignore_errors' => true
                 )
             );
@@ -141,17 +145,17 @@ class ACHController extends Controller
             $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
-            if(strpos($http_code, '238') > -1) 
+            if(strpos($http_code, '238') > -1)
             {
-                // code 238 is used for our internal communication between frontend repo and client site, 
+                // code 238 is used for our internal communication between frontend repo and client site,
                 // so that we do not ignore errors (410 is an error);
-                if($this->redirect_mode === "view") 
+                if($this->redirect_mode === "view")
                 {
-                    return response(view('api-client-helpers::not_found'), $this->redirect_code); 
+                    return response(view('api-client-helpers::not_found'), $this->redirect_code);
                 }
                 else //if($this->redirect_mode === "http")
                 { // changed this to else, so that we use http redirect by default even if nothing is specified
-                    return redirect()->to('/', $this->redirect_code); 
+                    return redirect()->to('/', $this->redirect_code);
                 }
             }
 
