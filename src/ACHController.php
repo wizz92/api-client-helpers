@@ -102,7 +102,7 @@ class ACHController extends Controller
     The actual function for handling frontend repo requests.
 
     */
-    public function frontend_repo($slug)
+    public function frontend_repo($slug, Request $req)
     {
         $additions = request()->all();
         if ($additions) {
