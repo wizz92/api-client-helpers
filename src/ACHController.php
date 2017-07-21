@@ -120,6 +120,7 @@ class ACHController extends Controller
         try {
 
             $url = ($slug == '/') ? env('frontend_repo_url') : env('frontend_repo_url').$slug;
+            $url = $url . '?' . http_build_query($req->all());
 
             $arrContextOptions = array(
                 "ssl" => array(
