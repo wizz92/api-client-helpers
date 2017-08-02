@@ -97,6 +97,14 @@ class ACHController extends Controller
         return $slug;
     }
 
+    public function splitUrlIntoSegments($url)
+    {
+        $url_without_query_string = explode('?', $url)[0];
+        return array_values(array_filter(explode('/', $url_without_query_string), function ($var) {
+            return ($var) ? true : false;
+        }));
+    }
+
     /*
 
     The actual function for handling frontend repo requests.
@@ -121,6 +129,55 @@ class ACHController extends Controller
 
             $url = ($slug == '/') ? env('frontend_repo_url') : env('frontend_repo_url').$slug;
             $url = $url . '?' . http_build_query($req->all());
+
+            //checking sites with multilingual
+            $multilingualSites = [
+                'dev.educashion.net',
+            ];
+
+            $domain = url();
+            if (array_search(parse_url($domain)['host'], $multilingualSites) !== false)
+            {
+                $languages = [
+                    'ru',
+                    'en',
+                ];
+
+                //getting language from url
+                $url_segments = $this->splitUrlIntoSegments($req->path());
+                $langFromUrl = array_get($url_segments, 0, 'ru');
+                $langFromUrl = array_search($langFromUrl, $languages) >= 0 ? $langFromUrl : 'ru';
+
+                //if user tries to change language via switcher rewrite language_from_request cookie
+                if ($req->input('change_lang'))
+                {
+                    setcookie('language_from_request', $req->input('change_lang'), time() + 60 * 30, '/');
+                    if ($langFromUrl !== $req->input('change_lang'))
+                    {
+                        return redirect($req->input('change_lang') == 'ru' ? '/' : '/' . $req->input('change_lang') . '/ ');
+                    }
+                }
+                if ($slug == '/')
+                {
+                    if (!array_key_exists("language_from_request", $_COOKIE))
+                    {
+                        //setting language_from_request cookie from accept-language
+                        $langFromRequest = substr(locale_accept_from_http($req->header('accept-language')), 0, 2);
+                        setcookie('language_from_request', $langFromRequest, time() + 60 * 30, '/');
+                        if ($langFromUrl !== $langFromRequest)
+                        {
+                            return redirect($langFromRequest == 'ru' ? '/' : '/' . $langFromRequest . '/ ');
+                        }
+                    }
+                    else
+                    {
+                        if ($langFromUrl !== $_COOKIE['language_from_request'])
+                        {
+                            return redirect($_COOKIE['language_from_request'] == 'ru' ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
+                        }
+                    }
+                }
+            }
 
             $arrContextOptions = array(
                 "ssl" => array(
