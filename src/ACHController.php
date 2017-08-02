@@ -97,6 +97,14 @@ class ACHController extends Controller
         return $slug;
     }
 
+    public function splitUrlIntoSegments($url)
+    {
+        $url_without_query_string = explode('?', $url)[0];
+        return array_values(array_filter(explode('/', $url_without_query_string), function ($var) {
+            return ($var) ? true : false;
+        }));
+    }
+
     /*
 
     The actual function for handling frontend repo requests.
@@ -122,6 +130,55 @@ class ACHController extends Controller
             $url = ($slug == '/') ? env('frontend_repo_url') : env('frontend_repo_url').$slug;
             $url = $url . '?' . http_build_query($req->all());
 
+            //checking sites with multilingual
+            $multilingualSites = [
+                'dev.educashion.net',
+            ];
+
+            $domain = url();
+            if (array_search(parse_url($domain)['host'], $multilingualSites) !== false)
+            {
+                $languages = [
+                    'ru',
+                    'en',
+                ];
+
+                //getting language from url
+                $url_segments = $this->splitUrlIntoSegments($req->path());
+                $langFromUrl = array_get($url_segments, 0, 'ru');
+                $langFromUrl = array_search($langFromUrl, $languages) >= 0 ? $langFromUrl : 'ru';
+
+                //if user tries to change language via switcher rewrite language_from_request cookie
+                if ($req->input('change_lang'))
+                {
+                    setcookie('language_from_request', $req->input('change_lang'), time() + 60 * 30, '/');
+                    if ($langFromUrl !== $req->input('change_lang'))
+                    {
+                        return redirect($req->input('change_lang') == 'ru' ? '/' : '/' . $req->input('change_lang') . '/ ');
+                    }
+                }
+                if ($slug == '/')
+                {
+                    if (!array_key_exists("language_from_request", $_COOKIE))
+                    {
+                        //setting language_from_request cookie from accept-language
+                        $langFromRequest = substr(locale_accept_from_http($req->header('accept-language')), 0, 2);
+                        setcookie('language_from_request', $langFromRequest, time() + 60 * 30, '/');
+                        if ($langFromUrl !== $langFromRequest)
+                        {
+                            return redirect($langFromRequest == 'ru' ? '/' : '/' . $langFromRequest . '/ ');
+                        }
+                    }
+                    else
+                    {
+                        if ($langFromUrl !== $_COOKIE['language_from_request'])
+                        {
+                            return redirect($_COOKIE['language_from_request'] == 'ru' ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
+                        }
+                    }
+                }
+            }
+
             $arrContextOptions = array(
                 "ssl" => array(
                     "verify_peer" => false,
@@ -134,7 +191,11 @@ class ACHController extends Controller
                 'http' => array(
                     'method'=>"GET",
                     'follow_location' => 1,
-                    'header' => 'User-Agent: '.request()->header('user-agent').'\r\n',
+                    'header' => [
+                        'User-Agent: '.request()->header('user-agent').'\r\n',
+                        'Referrer: '.asset('/').'\r\n',
+                    ],
+
                     // 'ignore_errors' => true
                 )
             );
@@ -142,17 +203,17 @@ class ACHController extends Controller
             $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
-            if(strpos($http_code, '238') > -1) 
+            if(strpos($http_code, '238') > -1)
             {
-                // code 238 is used for our internal communication between frontend repo and client site, 
+                // code 238 is used for our internal communication between frontend repo and client site,
                 // so that we do not ignore errors (410 is an error);
-                if($this->redirect_mode === "view") 
+                if($this->redirect_mode === "view")
                 {
-                    return response(view('api-client-helpers::not_found'), $this->redirect_code); 
+                    return response(view('api-client-helpers::not_found'), $this->redirect_code);
                 }
                 else //if($this->redirect_mode === "http")
                 { // changed this to else, so that we use http redirect by default even if nothing is specified
-                    return redirect()->to('/', $this->redirect_code); 
+                    return redirect()->to('/', $this->redirect_code);
                 }
             }
 
