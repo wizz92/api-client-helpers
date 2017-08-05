@@ -133,7 +133,6 @@ class ACHController extends Controller
             //checking sites with multilingual
             $multilingualSites = [
                 'dev.educashion.net',
-                'localhost'
             ];
 
             $domain = url();
