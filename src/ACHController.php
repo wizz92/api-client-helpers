@@ -152,6 +152,7 @@ class ACHController extends Controller
                 if ($req->input('change_lang'))
                 {
                     setcookie('language_from_request', $req->input('change_lang'), time() + 60 * 30, '/');
+                    $_COOKIE['language_from_request'] = $req->input('change_lang');
                     if ($langFromUrl !== $req->input('change_lang'))
                     {
                         return redirect($req->input('change_lang') == 'ru' ? '/' : '/' . $req->input('change_lang') . '/ ');
