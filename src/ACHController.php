@@ -361,7 +361,7 @@ class ACHController extends Controller
 
         if(!$this->validate_redirect_config()) return $this->error_message;
 
-        return redirect()->to(env('secret_url').'/'.$slug);
+        return redirect()->to(env('secret_url').'/'.$slug.'?'.http_build_query($request->all()));
     }
 
     /*
