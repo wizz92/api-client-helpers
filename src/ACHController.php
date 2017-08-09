@@ -135,7 +135,7 @@ class ACHController extends Controller
                 'dev.educashion.net',
             ];
 
-            $domain = url();
+            $domain = $req->url();
             if (array_search(parse_url($domain)['host'], $multilingualSites) !== false)
             {
                 $languages = [
