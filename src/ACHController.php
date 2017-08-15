@@ -201,6 +201,20 @@ class ACHController extends Controller
                 )
             );
 
+            if(config('api_configs.multidomain_mode'))
+            {
+                if(app()->environment('production')) 
+                {
+                    $new_url = preg_replace('|[^\d\w ]+|i', '-', explode('/', $_SERVER['HTTP_HOST']));
+                    $url = 'https://pdnapi.site.supplies/'.$new_url[0];
+                } 
+                else 
+                {
+                    $new_url = explode('/', $_SERVER['REQUEST_URI']);
+                    $url = 'http://127.0.0.1:8000/'.$new_url[1];
+                }
+            }
+
             $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
