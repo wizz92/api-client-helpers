@@ -209,7 +209,7 @@ class ACHController extends Controller
                 if(app()->environment('production')) 
                 {
                     $new_url = preg_replace('|[^\d\w ]+|i', '-', $_SERVER['HTTP_HOST']);
-                    $url = 'https://pdnapi.site.supplies/'.$new_url.$_SERVER['REQUEST_URI'];
+                    $url = 'https://pbnapi.site.supplies/'.$new_url.$_SERVER['REQUEST_URI'];
                 } 
                 else 
                 {
