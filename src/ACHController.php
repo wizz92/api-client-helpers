@@ -119,10 +119,13 @@ class ACHController extends Controller
 
         if(!$this->validate_frontend_config()) return $this->error_message;
 
-        if ($this->should_we_cache($this->CK($slug))) {
-            $page = Cache::get($this->CK($slug));
-            $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
-            return $page;
+        if(!config('api_configs.multidomain_mode'))
+        {
+            if ($this->should_we_cache($this->CK($slug))) {
+                $page = Cache::get($this->CK($slug));
+                $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
+                return $page;
+            }
         }
 
         try {
@@ -208,13 +211,12 @@ class ACHController extends Controller
             {
                 if(app()->environment('production')) 
                 {
-                    $new_url = preg_replace('|[^\d\w ]+|i', '-', explode('/', $_SERVER['HTTP_HOST']));
-                    $url = 'https://pdnapi.site.supplies/'.$new_url[0];
+                    $new_url = preg_replace('|[^\d\w ]+|i', '-', $_SERVER['HTTP_HOST']);
+                    $url = 'https://pbnapi.site.supplies/'.$new_url.$_SERVER['REQUEST_URI'];
                 } 
                 else 
                 {
-                    $new_url = explode('/', $_SERVER['REQUEST_URI']);
-                    $url = 'http://127.0.0.1:8000/'.$new_url[1];
+                    $url = 'http://localhost:8000'.$_SERVER['REQUEST_URI'];
                 }
             }
 
