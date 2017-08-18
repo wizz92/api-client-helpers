@@ -133,6 +133,7 @@ class ACHController extends Controller
             //checking sites with multilingual
             $multilingualSites = [
                 'dev.educashion.net',
+                'beegclient.site.supplies'
             ];
 
             $domain = $req->url();
@@ -140,13 +141,15 @@ class ACHController extends Controller
             {
                 $languages = [
                     'ru',
+                    'de',
                     'en',
                 ];
 
                 //getting language from url
                 $url_segments = $this->splitUrlIntoSegments($req->path());
-                $langFromUrl = array_get($url_segments, 0, 'ru');
-                $langFromUrl = array_search($langFromUrl, $languages) >= 0 ? $langFromUrl : 'ru';
+                $mainUrl = env('MAIN_URL') ? env('MAIN_URL') : 'ru';
+                $langFromUrl = array_get($url_segments, 0, $mainUrl);
+                $langFromUrl = array_search($langFromUrl, $languages) >= 0 ? $langFromUrl : $mainUrl;
 
                 //if user tries to change language via switcher rewrite language_from_request cookie
                 if ($req->input('change_lang'))
@@ -155,7 +158,7 @@ class ACHController extends Controller
                     $_COOKIE['language_from_request'] = $req->input('change_lang');
                     if ($langFromUrl !== $req->input('change_lang'))
                     {
-                        return redirect($req->input('change_lang') == 'ru' ? '/' : '/' . $req->input('change_lang') . '/ ');
+                        return redirect($req->input('change_lang') == $mainUrl ? '/' : '/' . $req->input('change_lang') . '/ ');
                     }
                 }
                 if ($slug == '/')
@@ -167,14 +170,14 @@ class ACHController extends Controller
                         setcookie('language_from_request', $langFromRequest, time() + 60 * 30, '/');
                         if ($langFromUrl !== $langFromRequest)
                         {
-                            return redirect($langFromRequest == 'ru' ? '/' : '/' . $langFromRequest . '/ ');
+                            return redirect($langFromRequest == $mainUrl ? '/' : '/' . $langFromRequest . '/ ');
                         }
                     }
                     else
                     {
                         if ($langFromUrl !== $_COOKIE['language_from_request'])
                         {
-                            return redirect($_COOKIE['language_from_request'] == 'ru' ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
+                            return redirect($_COOKIE['language_from_request'] == $mainUrl ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
                         }
                     }
                 }
