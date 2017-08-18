@@ -131,28 +131,16 @@ class ACHController extends Controller
         try {
 
             $url = ($slug == '/') ? env('frontend_repo_url') : env('frontend_repo_url').$slug;
-            $url = $url . '?' . http_build_query($req->all());
-
+            $query = [];
             //checking sites with multilingual
-            $multilingualSites = [
-                'dev.educashion.net',
-                'beegclient.site.supplies'
-            ];
-
             $domain = $req->url();
-            if (array_search(parse_url($domain)['host'], $multilingualSites) !== false)
+            if (array_search(parse_url($domain)['host'], config('api_configs.multilingualSites')) !== false)
             {
-                $languages = [
-                    'ru',
-                    'de',
-                    'en',
-                ];
-
                 //getting language from url
                 $url_segments = $this->splitUrlIntoSegments($req->path());
-                $mainUrl = env('MAIN_URL') ? env('MAIN_URL') : 'ru';
+                $mainUrl = env('MAIN_LANGUAGE') ? env('MAIN_LANGUAGE') : 'en';
                 $langFromUrl = array_get($url_segments, 0, $mainUrl);
-                $langFromUrl = array_search($langFromUrl, $languages) >= 0 ? $langFromUrl : $mainUrl;
+                $langFromUrl = array_search($langFromUrl, config('api_configs.languages')) >= 0 ? $langFromUrl : $mainUrl;
 
                 //if user tries to change language via switcher rewrite language_from_request cookie
                 if ($req->input('change_lang'))
@@ -184,7 +172,12 @@ class ACHController extends Controller
                         }
                     }
                 }
+                $query = [
+                    'lang' => $langFromUrl,
+                    'main_language' => env('MAIN_LANGUAGE')
+                ];
             }
+            $url = $url . '?' . http_build_query(array_merge($req->all(), $query));
 
             $arrContextOptions = array(
                 "ssl" => array(
