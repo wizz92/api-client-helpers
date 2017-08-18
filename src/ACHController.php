@@ -112,7 +112,7 @@ class ACHController extends Controller
         $input = request()->all();
         $input['domain'] = request()->root();
         
-        $conf = $this->from_config()['conf'];
+        $conf = $this->from_config();
         $input = array_merge($input, $conf);
         
         session(['addition' => $input]);
@@ -126,7 +126,7 @@ class ACHController extends Controller
 
         try {
 
-            $front = $this->from_config()['front']; 
+            $front = $conf['frontend_repo_url']; 
             $url = ($slug == '/') ? $front : $front.$slug;
             $url = $url . '?' . http_build_query($input);
 
@@ -369,12 +369,8 @@ class ACHController extends Controller
         $conf['app_id'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.app_id') : config('api_configs.domains.'.$dom.'.app_id');
         $conf['codeName'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.codeName') : config('api_configs.domains.'.$dom.'.codeName');
 
-        $front = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url'); 
-
-        return [
-            'conf' => $conf,
-            'front' => $front,
-        ];
+       $conf['frontend_repo_url'] = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url');
+        return $conf;
     }
 
 }
