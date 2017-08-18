@@ -128,25 +128,16 @@ class ACHController extends Controller
 
             $front = $conf['frontend_repo_url']; 
             $url = ($slug == '/') ? $front : $front.$slug;
-            $url = $url . '?' . http_build_query($input);
-
-            //checking sites with multilingual
-            $multilingualSites = [
-                'dev.educashion.net',
-            ];
+            $query = [];
 
             $domain = $req->url();
-            if (array_search(parse_url($domain)['host'], $multilingualSites) !== false)
+            if (array_search(parse_url($domain)['host'], config('api_configs.multilingualSites')) !== false)
             {
-                $languages = [
-                    'ru',
-                    'en',
-                ];
-
                 //getting language from url
                 $url_segments = $this->splitUrlIntoSegments($req->path());
-                $langFromUrl = array_get($url_segments, 0, 'ru');
-                $langFromUrl = array_search($langFromUrl, $languages) >= 0 ? $langFromUrl : 'ru';
+                $mainLanguage = env('MAIN_LANGUAGE') ? env('MAIN_LANGUAGE') : 'en';
+                $langFromUrl = array_get($url_segments, 0, $mainLanguage);
+                $langFromUrl = gettype(array_search($langFromUrl, config('api_configs.languages'))) == 'integer' ? $langFromUrl : $mainLanguage;
 
                 //if user tries to change language via switcher rewrite language_from_request cookie
                 if ($req->input('change_lang'))
@@ -155,7 +146,7 @@ class ACHController extends Controller
                     $_COOKIE['language_from_request'] = $req->input('change_lang');
                     if ($langFromUrl !== $req->input('change_lang'))
                     {
-                        return redirect($req->input('change_lang') == 'ru' ? '/' : '/' . $req->input('change_lang') . '/ ');
+                        return redirect($req->input('change_lang') == $mainLanguage ? '/' : '/' . $req->input('change_lang') . '/ ');
                     }
                 }
                 if ($slug == '/')
@@ -167,19 +158,23 @@ class ACHController extends Controller
                         setcookie('language_from_request', $langFromRequest, time() + 60 * 30, '/');
                         if ($langFromUrl !== $langFromRequest)
                         {
-                            return redirect($langFromRequest == 'ru' ? '/' : '/' . $langFromRequest . '/ ');
+                            return redirect($langFromRequest == $mainLanguage ? '/' : '/' . $langFromRequest . '/ ');
                         }
                     }
                     else
                     {
                         if ($langFromUrl !== $_COOKIE['language_from_request'])
                         {
-                            return redirect($_COOKIE['language_from_request'] == 'ru' ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
+                            return redirect($_COOKIE['language_from_request'] == $mainLanguage ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
                         }
                     }
                 }
+                $query = [
+                    'lang' => $langFromUrl,
+                    'main_language' => env('MAIN_LANGUAGE')
+                ];
             }
-            // dd($url);
+            $url = $url . '?' . http_build_query(array_merge($req->all(), $query));
             $page = file_get_contents($url, false, stream_context_create(arrContextOptions()));
 
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
