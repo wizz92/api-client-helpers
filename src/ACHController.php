@@ -74,27 +74,24 @@ class ACHController extends Controller
     If $slug is passed, it will also check whether this $slug is already in cache;
 
     */
-    protected function should_we_cache($slug = false)
+    protected function should_we_cache($ck = false)
     {
         if(env('use_cache_frontend') === false) return false;
 
         if(request()->input('cache') === 'false') return false;
 
         if(!app()->environment('production')) return false;
-
-        if($slug && !Cache::has($slug)) return false;
+        if($ck && !Cache::has($ck)) return false;
 
         return true;
     }
 
     protected function CK($slug) //CK = Cache Key
     {
+        $slug = request()->getHttpHost().$slug;
         $ua = strtolower(request()->header('User-Agent'));
-        if($ua && strrpos($ua, 'msie') > -1)
-        {
-            $slug = "_ie_".$slug;
-        }
-        return $slug;
+        $slug = $ua && strrpos($ua, 'msie') > -1 ? "_ie_".$slug : $slug;
+        return md5($slug);
     }
 
     public function splitUrlIntoSegments($url)
@@ -112,26 +109,26 @@ class ACHController extends Controller
     */
     public function frontend_repo($slug, Request $req)
     {
-        $additions = request()->all();
-        if ($additions) {
-            session(['addition' => $additions]);
-        }
-
+        $input = request()->all();
+        $input['domain'] = request()->root();
+        
+        $conf = $this->from_config();
+        $input = array_merge($input, $conf);
+        
+        session(['addition' => $input]);
         if(!$this->validate_frontend_config()) return $this->error_message;
-
-        if(!config('api_configs.multidomain_mode'))
-        {
-            if ($this->should_we_cache($this->CK($slug))) {
-                $page = Cache::get($this->CK($slug));
-                $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
-                return $page;
-            }
+        
+        $ck = $this->CK($slug);
+        if ($this->should_we_cache($ck)) {
+            $page = Cache::get($ck);
+            return insertToken($page);
         }
 
         try {
 
-            $url = ($slug == '/') ? env('frontend_repo_url') : env('frontend_repo_url').$slug;
-            $url = $url . '?' . http_build_query($req->all());
+            $front = $conf['frontend_repo_url']; 
+            $url = ($slug == '/') ? $front : $front.$slug;
+            $url = $url . '?' . http_build_query($input);
 
             //checking sites with multilingual
             $multilingualSites = [
@@ -182,42 +179,9 @@ class ACHController extends Controller
                     }
                 }
             }
+            // dd($url);
+            $page = file_get_contents($url, false, stream_context_create(arrContextOptions()));
 
-            $arrContextOptions = array(
-                "ssl" => array(
-                    "verify_peer" => false,
-                    "verify_peer_name" => false,
-                    'follow_location' => 1,
-                    'method' => "GET",
-                    'header' => 'User-Agent: '.request()->header('user-agent').'\r\n',
-                    // 'ignore_errors' => true
-                ),
-                'http' => array(
-                    'method'=>"GET",
-                    'follow_location' => 1,
-                    'header' => [
-                        'User-Agent: '.request()->header('user-agent').'\r\n',
-                        'Referrer: '.asset('/').'\r\n',
-                    ],
-
-                    // 'ignore_errors' => true
-                )
-            );
-
-            if(config('api_configs.multidomain_mode'))
-            {
-                if(app()->environment('production')) 
-                {
-                    $new_url = preg_replace('|[^\d\w ]+|i', '-', $_SERVER['HTTP_HOST']);
-                    $url = 'https://pbnapi.site.supplies/'.$new_url.$_SERVER['REQUEST_URI'];
-                } 
-                else 
-                {
-                    $url = 'http://localhost:8000'.$_SERVER['REQUEST_URI'];
-                }
-            }
-
-            $page = file_get_contents($url, false, stream_context_create($arrContextOptions));
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
             if(strpos($http_code, '238') > -1)
@@ -233,16 +197,15 @@ class ACHController extends Controller
                     return redirect()->to('/', $this->redirect_code);
                 }
             }
+            //dd($this->should_we_cache());
 
-            if ($this->should_we_cache()) Cache::put($this->CK($slug), $page, config('api_configs.cache_frontend_for'));
-            $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
-
-            return $page;
+            if ($this->should_we_cache()) Cache::put($ck, $page, config('api_configs.cache_frontend_for'));
+            return insertToken($page);
 
         }
         catch (Exception $e)
         {
-            \Log::info($e);
+            // \Log::info($e);
             return $this->error_message;
         }
     }
@@ -259,7 +222,7 @@ class ACHController extends Controller
             \Artisan::call('cache:clear');
             return ['result' => 'success'];
         } catch (Exception $e) {
-            \Log::info($e);
+            // \Log::info($e);
             return ['result' => 'error'];
         }
     }
@@ -395,6 +358,19 @@ class ACHController extends Controller
             'caching' => $this->is_ok('should_we_cache'),
             'version' => $this->version
         ];
+    }
+
+    public function from_config() 
+    {
+        $path = request()->path();
+        $host = request()->getHttpHost();
+        $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
+
+        $conf['app_id'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.app_id') : config('api_configs.domains.'.$dom.'.app_id');
+        $conf['codeName'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.codeName') : config('api_configs.domains.'.$dom.'.codeName');
+
+       $conf['frontend_repo_url'] = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url');
+        return $conf;
     }
 
 }
