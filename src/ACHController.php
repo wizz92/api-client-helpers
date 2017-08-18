@@ -119,13 +119,10 @@ class ACHController extends Controller
 
         if(!$this->validate_frontend_config()) return $this->error_message;
 
-        if(!config('api_configs.multidomain_mode'))
-        {
-            if ($this->should_we_cache($this->CK($slug))) {
-                $page = Cache::get($this->CK($slug));
-                $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
-                return $page;
-            }
+        if ($this->should_we_cache($this->CK($slug))) {
+            $page = Cache::get($this->CK($slug));
+            $page = str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
+            return $page;
         }
 
         try {
@@ -209,11 +206,11 @@ class ACHController extends Controller
                 if(app()->environment('production')) 
                 {
                     $new_url = preg_replace('|[^\d\w ]+|i', '-', $_SERVER['HTTP_HOST']);
-                    $url = 'https://pbnapi.site.supplies/'.$new_url.$_SERVER['REQUEST_URI'];
+                    $url = env('secret_url').$new_url.$_SERVER['REQUEST_URI'];
                 } 
                 else 
                 {
-                    $url = 'http://localhost:8000'.$_SERVER['REQUEST_URI'];
+                    $url = env('APP_URL').$_SERVER['REQUEST_URI'];
                 }
             }
 
