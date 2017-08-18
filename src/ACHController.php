@@ -80,7 +80,7 @@ class ACHController extends Controller
 
         if(request()->input('cache') === 'false') return false;
 
-        //if(!app()->environment('production')) return false;
+        if(!app()->environment('production')) return false;
         if($ck && !Cache::has($ck)) return false;
 
         return true;
