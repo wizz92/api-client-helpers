@@ -112,12 +112,7 @@ class ACHController extends Controller
         $input = request()->all();
         $input['domain'] = request()->root();
         
-        $path = request()->path();
-        $host = request()->getHttpHost();
-        $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
-
-        $conf['app_id'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.app_id') : config('api_configs.domains.'.$dom.'.app_id');
-        $conf['codeName'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.codeName') : config('api_configs.domains.'.$dom.'.codeName');
+        $conf = $this->from_config()['conf'];
         $input = array_merge($input, $conf);
         
         session(['addition' => $input]);
@@ -131,7 +126,7 @@ class ACHController extends Controller
 
         try {
 
-            $front = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url'); 
+            $front = $this->from_config()['front']; 
             $url = ($slug == '/') ? $front : $front.$slug;
             $url = $url . '?' . http_build_query($input);
 
@@ -362,6 +357,23 @@ class ACHController extends Controller
             'redirect' => $this->is_ok('validate_redirect_config'),
             'caching' => $this->is_ok('should_we_cache'),
             'version' => $this->version
+        ];
+    }
+
+    public function from_config() 
+    {
+        $path = request()->path();
+        $host = request()->getHttpHost();
+        $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
+
+        $conf['app_id'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.app_id') : config('api_configs.domains.'.$dom.'.app_id');
+        $conf['codeName'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.codeName') : config('api_configs.domains.'.$dom.'.codeName');
+
+        $front = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url'); 
+
+        return [
+            'conf' => $conf,
+            'front' => $front,
         ];
     }
 
