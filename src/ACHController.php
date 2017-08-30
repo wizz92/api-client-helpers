@@ -135,18 +135,18 @@ class ACHController extends Controller
             {
                 //getting language from url
                 $url_segments = $this->splitUrlIntoSegments($req->path());
-                $mainLanguage = env('MAIN_LANGUAGE') ? env('MAIN_LANGUAGE') : 'en';
-                $langFromUrl = array_get($url_segments, 0, $mainLanguage);
-                $langFromUrl = gettype(array_search($langFromUrl, config('api_configs.languages'))) == 'integer' ? $langFromUrl : $mainLanguage;
+                $main_language = env('MAIN_LANGUAGE') ? env('MAIN_LANGUAGE') : 'en';
+                $language_from_url = array_get($url_segments, 0, $main_language);
+                $language_from_url = gettype(array_search($language_from_url, config('api_configs.languages'))) == 'integer' ? $language_from_url : $main_language;
 
                 //if user tries to change language via switcher rewrite language_from_request cookie
                 if ($req->input('change_lang'))
                 {
                     setcookie('language_from_request', $req->input('change_lang'), time() + 60 * 30, '/');
                     $_COOKIE['language_from_request'] = $req->input('change_lang');
-                    if ($langFromUrl !== $req->input('change_lang'))
+                    if ($language_from_url !== $req->input('change_lang'))
                     {
-                        return redirect($req->input('change_lang') == $mainLanguage ? '/' : '/' . $req->input('change_lang') . '/ ');
+                        return redirect($req->input('change_lang') == $main_language ? '/' : '/' . $req->input('change_lang') . '/ ');
                     }
                 }
                 if ($slug == '/')
@@ -154,23 +154,24 @@ class ACHController extends Controller
                     if (!array_key_exists("language_from_request", $_COOKIE))
                     {
                         //setting language_from_request cookie from accept-language
-                        $langFromRequest = substr(locale_accept_from_http($req->header('accept-language')), 0, 2);
-                        setcookie('language_from_request', $langFromRequest, time() + 60 * 30, '/');
-                        if ($langFromUrl !== $langFromRequest)
+                        $language_from_request = substr(locale_accept_from_http($req->header('accept-language')), 0, 2);
+                        $language_from_request = gettype(array_search($language_from_request, config('api_configs.languages'))) == 'boolean' ? $mainLanguage : $language_from_request;
+                        setcookie('language_from_request', $language_from_request, time() + 60 * 30, '/');
+                        if ($language_from_url !== $language_from_request)
                         {
-                            return redirect($langFromRequest == $mainLanguage ? '/' : '/' . $langFromRequest . '/ ');
+                            return redirect($language_from_request == $main_language ? '/' : '/' . $language_from_request . '/ ');
                         }
                     }
                     else
                     {
-                        if ($langFromUrl !== $_COOKIE['language_from_request'])
+                        if ($language_from_url !== $_COOKIE['language_from_request'])
                         {
-                            return redirect($_COOKIE['language_from_request'] == $mainLanguage ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
+                            return redirect($_COOKIE['language_from_request'] == $main_language ? '/' : '/' . $_COOKIE['language_from_request'] . '/ ');
                         }
                     }
                 }
                 $query = [
-                    'lang' => $langFromUrl,
+                    'lang' => $language_from_url,
                     'main_language' => env('MAIN_LANGUAGE')
                 ];
             }
