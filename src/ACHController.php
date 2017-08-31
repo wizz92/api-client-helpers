@@ -168,7 +168,7 @@ class ACHController extends Controller
                     {
                         //setting language_from_request cookie from accept-language
                         $language_from_request = substr(locale_accept_from_http($req->header('accept-language')), 0, 2);
-                        $language_from_request = gettype(array_search($language_from_request, config('api_configs.languages'))) == 'boolean' ? $mainLanguage : $language_from_request;
+                        $language_from_request = gettype(array_search($language_from_request, config('api_configs.languages'))) == 'boolean' ? $main_language : $language_from_request;
                         setcookie('language_from_request', $language_from_request, time() + 60 * 30, '/');
                         if ($language_from_url !== $language_from_request)
                         {
