@@ -112,15 +112,18 @@ class ACHController extends Controller
         $input = request()->all();
         $input['domain'] = request()->root();
 
-        //store hit and write hit_id in cookie
-        $hitsQuery = [
-            'rt' => array_get($input, 'rt', null),
-            'app_id' => config('api_configs.client_id')
-        ];
-        $query = config('api_configs.secret_url') . '/hits/?' . http_build_query($hitsQuery);
-        $res = file_get_contents($query);
-        $res = json_decode($res)->data;
-        \Cookie::queue('hit_id', $res->id, time()+60*60*24*30, '/');
+        if (config('api_configs.tracking_hits'))
+        {
+            //store hit and write hit_id in cookie
+            $hitsQuery = [
+                'rt' => array_get($input, 'rt', null),
+                'app_id' => config('api_configs.client_id')
+            ];
+            $query = config('api_configs.secret_url') . '/hits/?' . http_build_query($hitsQuery);
+            $res = file_get_contents($query);
+            $res = json_decode($res)->data;
+            \Cookie::queue('hit_id', $res->id, time()+60*60*24*30, '/');
+        }
         
         $conf = $this->from_config();
         $input = array_merge($input, $conf);
