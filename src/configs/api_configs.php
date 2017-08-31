@@ -17,15 +17,12 @@ return [
     'secret_url'   		=> env('secret_url', 'http://localhost:8001'),
     'grant_type' 		=> env('grant_type','client_credentials'),
     'languages' => [
-        'ru',
-        'de',
         'en'
     ],
-
     'multilingualSites' => [
-        'dev.educashion.net',
-        'beegclient.site.supplies'
+        'localhost'
     ],
+    'tracking_hits' => true,
 
     'security_code' 	=> env('security_code', 'qwe123'),
 
