@@ -371,22 +371,12 @@ class ACHController extends Controller
 
     public function from_config() 
     {
-
-        $path = request()->path();
         $host = request()->getHttpHost();
         $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
 
-        if(!config('api_configs.multidomain_mode')) 
-        {
-            $conf['frontend_repo_url'] = env('frontend_repo_url');
-            
-            return $conf;
-        }
-
-        $conf['app_id'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.app_id') : config('api_configs.domains.'.$dom.'.app_id');
-        $conf['codeName'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.codeName') : config('api_configs.domains.'.$dom.'.codeName');
+        $conf['app_id'] = config('api_configs.domains.'.$dom) ? config('api_configs.domains.'.$dom.'.app_id') : config('api_configs.client_id');
         $conf['frontend_repo_url'] = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url');
-       
+
         return $conf;
     }
 
