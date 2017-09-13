@@ -124,9 +124,9 @@ class ACHController extends Controller
             $res = json_decode($res)->data;
             \Cookie::queue('hit_id', $res->id, time()+60*60*24*30, '/');
         }
-        
-        $conf = $this->from_config();
-        $input = array_merge($input, $conf);
+
+            $conf = $this->from_config();
+            $input = array_merge($input, $conf);
         
         session(['addition' => $input]);
         if(!$this->validate_frontend_config()) return $this->error_message;
@@ -379,14 +379,12 @@ class ACHController extends Controller
 
     public function from_config() 
     {
-        $path = request()->path();
         $host = request()->getHttpHost();
         $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
 
-        $conf['app_id'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.app_id') : config('api_configs.domains.'.$dom.'.app_id');
-        $conf['codeName'] = config('api_configs.domains.'.$dom.'.'.$path) ? config('api_configs.domains.'.$dom.'.'.$path.'.codeName') : config('api_configs.domains.'.$dom.'.codeName');
+        $conf['app_id'] = config('api_configs.domains.'.$dom) ? config('api_configs.domains.'.$dom.'.app_id') : config('api_configs.client_id');
+        $conf['frontend_repo_url'] = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url');
 
-       $conf['frontend_repo_url'] = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url');
         return $conf;
     }
 
