@@ -170,7 +170,7 @@ class ACHController extends Controller
                         'main_language' => env('MAIN_LANGUAGE')
                     ];
                 }
-                if ($slug == '/' && $req->get('l') !== 'ru')
+                if ($slug == '/' && $req->get('l') !== $main_language)
                 {
                     if (!array_key_exists("language_from_request", $_COOKIE))
                     {
