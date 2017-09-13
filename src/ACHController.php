@@ -162,7 +162,15 @@ class ACHController extends Controller
                         return redirect($req->input('change_lang') == $main_language ? '/' : '/' . $req->input('change_lang') . '/ ');
                     }
                 }
-                if ($slug == '/')
+                if ($req->get('l') == $main_language)
+                {
+                    setcookie('language_from_request', $main_language, time() + 60 * 30, '/');
+                    $query = [
+                        'lang' => $main_language,
+                        'main_language' => env('MAIN_LANGUAGE')
+                    ];
+                }
+                if ($slug == '/' && $req->get('l') !== 'ru')
                 {
                     if (!array_key_exists("language_from_request", $_COOKIE))
                     {
