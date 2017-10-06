@@ -140,7 +140,7 @@ class ACHController extends Controller
         try {
             $front = $conf['frontend_repo_url'];
             
-            if(config('api_configs.multidomain_dev') || config('api_configs.multidomain')) {
+            if(config('api_configs.multidomain_mode_dev') || config('api_configs.multidomain_mode')) {
                 $slug = !strlen($slug) ? $slug : '/';
             }
 
@@ -383,11 +383,11 @@ class ACHController extends Controller
     public function from_config() 
     {
         $uri_host = explode('/', request()->getRequestUri());
-        if(config('api_configs.multidomain') && app()->environment('local')) {
+        if(config('api_configs.multidomain_mode') && app()->environment('local')) {
             $host = $uri_host[1];
             $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
         }
-        elseif(config('api_configs.multidomain_dev') && $uri_host[1]) {
+        elseif(config('api_configs.multidomain_mode_dev') && $uri_host[1]) {
             $host = $uri_host[1];
             $dom = config('api_configs.change_project.'.$host);
         }
@@ -398,7 +398,7 @@ class ACHController extends Controller
         $keys = [
             'client_id',
             'frontend_repo_url',
-            'main_language',
+            'main_language', 
             'multilingualSites',
             'languages',
             'tracking_hits',
