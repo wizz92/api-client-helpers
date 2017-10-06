@@ -383,35 +383,29 @@ class ACHController extends Controller
     public function from_config() 
     {
         $uri_host = explode('/', request()->getRequestUri());
-        if(config('api_configs.multidomain_mode') && app()->environment('local')) {
-            $host = $uri_host[1];
-            $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
-        }
-        elseif(config('api_configs.multidomain_mode_dev') && $uri_host[1]) {
-            $host = $uri_host[1];
+        $host = $uri_host[1];
+
+        if (config('api_configs.multidomain_mode_dev') && $uri_host[1]) {
             $dom = config('api_configs.change_project.'.$host);
-        }
-        else {
-            $host = request()->getHttpHost();
+        } else {
+            $has_multidomain = config('api_configs.multidomain_mode') && app()->environment('local'); 
+            $host = !$has_multidomain ? request()->getHttpHost() : $host;
             $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
         }
         $keys = [
             'client_id',
             'frontend_repo_url',
-            'main_language', 
+            'main_language',
             'multilingualSites',
             'languages',
             'tracking_hits',
             'cache_frontend_for'
         ];
-        $api = 'api_configs.domains.';
+        $has_domains = array_key_exists($dom, config('api_configs.domains')); 
+        $str = $has_domains ? 'api_configs.domains.'.$dom.'.' : 'api_configs.';
         
-        foreach($keys as $key) {
-            if(array_key_exists($dom, config('api_configs.domains'))) {
-                $conf[$key] = config($api.$dom.'.'.$key);
-            } else {
-                $conf[$key] = config('api_configs.'.$key);
-            }
+        foreach ($keys as $key) {
+            $conf[$key] = config($str.$key);
         }
         return $conf;
     }
