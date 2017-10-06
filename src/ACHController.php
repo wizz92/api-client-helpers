@@ -111,21 +111,21 @@ class ACHController extends Controller
     {
         $input = request()->all();
         $input['domain'] = request()->root();
+        $conf = $this->from_config();
 
-        if (config('api_configs.tracking_hits'))
+        if ($conf['tracking_hits'])
         {
             //store hit and write hit_id in cookie
             $hitsQuery = [
                 'rt' => array_get($input, 'rt', null),
-                'app_id' => config('api_configs.client_id')
+                'client_id' => $conf['client_id'],
             ];
-            $query = config('api_configs.secret_url') . '/hits/?' . http_build_query($hitsQuery);
+            $query = env('secret_url') . '/hits/?' . http_build_query($hitsQuery);
             $res = file_get_contents($query);
             $res = json_decode($res)->data;
             \Cookie::queue('hit_id', $res->id, time()+60*60*24*30, '/');
         }
 
-            $conf = $this->from_config();
             $input = array_merge($input, $conf);
         
         session(['addition' => $input]);
@@ -138,19 +138,23 @@ class ACHController extends Controller
         }
 
         try {
+            $front = $conf['frontend_repo_url'];
+            
+            if(config('api_configs.multidomain_dev') || config('api_configs.multidomain')) {
+                $slug = !strlen($slug) ? $slug : '/';
+            }
 
-            $front = $conf['frontend_repo_url']; 
             $url = ($slug == '/') ? $front : $front.$slug;
             $query = [];
-
             $domain = $req->url();
-            if (array_search(parse_url($domain)['host'], config('api_configs.multilingualSites')) !== false)
+
+            if (array_search(parse_url($domain)['host'], $conf['multilingualSites']) !== false)
             {
                 //getting language from url
                 $url_segments = $this->splitUrlIntoSegments($req->path());
-                $main_language = env('MAIN_LANGUAGE') ? env('MAIN_LANGUAGE') : 'en';
+                $main_language = $conf['main_language'] ? $conf['main_language'] : 'en';
                 $language_from_url = array_get($url_segments, 0, $main_language);
-                $language_from_url = gettype(array_search($language_from_url, config('api_configs.languages'))) == 'integer' ? $language_from_url : $main_language;
+                $language_from_url = gettype(array_search($language_from_url, $conf['languages'])) == 'integer' ? $language_from_url : $main_language;
 
                 //if user tries to change language via switcher rewrite language_from_request cookie
                 if ($req->input('change_lang'))
@@ -167,7 +171,7 @@ class ACHController extends Controller
                     setcookie('language_from_request', $main_language, time() + 60 * 30, '/');
                     $query = [
                         'lang' => $main_language,
-                        'main_language' => env('MAIN_LANGUAGE')
+                        'main_language' => $conf['main_language']
                     ];
                 }
                 if ($slug == '/' && $req->get('l') !== $main_language)
@@ -176,7 +180,7 @@ class ACHController extends Controller
                     {
                         //setting language_from_request cookie from accept-language
                         $language_from_request = substr(locale_accept_from_http($req->header('accept-language')), 0, 2);
-                        $language_from_request = gettype(array_search($language_from_request, config('api_configs.languages'))) == 'boolean' ? $main_language : $language_from_request;
+                        $language_from_request = gettype(array_search($language_from_request, $conf['languages'])) == 'boolean' ? $main_language : $language_from_request;
                         setcookie('language_from_request', $language_from_request, time() + 60 * 30, '/');
                         if ($language_from_url !== $language_from_request)
                         {
@@ -193,7 +197,7 @@ class ACHController extends Controller
                 }
                 $query = [
                     'lang' => $language_from_url,
-                    'main_language' => env('MAIN_LANGUAGE')
+                    'main_language' => $conf['main_language']
                 ];
             }
             $url = $url . '?' . http_build_query(array_merge($req->all(), $query));
@@ -214,9 +218,8 @@ class ACHController extends Controller
                     return redirect()->to('/', $this->redirect_code);
                 }
             }
-            //dd($this->should_we_cache());
 
-            if ($this->should_we_cache()) Cache::put($ck, $page, config('api_configs.cache_frontend_for'));
+            if ($this->should_we_cache()) Cache::put($ck, $page, $conf['cache_frontend_for']);
             return insertToken($page);
 
         }
@@ -379,13 +382,37 @@ class ACHController extends Controller
 
     public function from_config() 
     {
-        $host = request()->getHttpHost();
-        $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
-
-        $conf['app_id'] = config('api_configs.domains.'.$dom) ? config('api_configs.domains.'.$dom.'.app_id') : config('api_configs.client_id');
-        $conf['frontend_repo_url'] = config('api_configs.domains.'.$dom.'.frontend_repo_url') ? config('api_configs.domains.'.$dom.'.frontend_repo_url') : env('frontend_repo_url');
-
+        $uri_host = explode('/', request()->getRequestUri());
+        if(config('api_configs.multidomain') && app()->environment('local')) {
+            $host = $uri_host[1];
+            $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
+        }
+        elseif(config('api_configs.multidomain_dev') && $uri_host[1]) {
+            $host = $uri_host[1];
+            $dom = config('api_configs.change_project.'.$host);
+        }
+        else {
+            $host = request()->getHttpHost();
+            $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
+        }
+        $keys = [
+            'client_id',
+            'frontend_repo_url',
+            'main_language',
+            'multilingualSites',
+            'languages',
+            'tracking_hits',
+            'cache_frontend_for'
+        ];
+        $api = 'api_configs.domains.';
+        
+        foreach($keys as $key) {
+            if(array_key_exists($dom, config('api_configs.domains'))) {
+                $conf[$key] = config($api.$dom.'.'.$key);
+            } else {
+                $conf[$key] = config('api_configs.'.$key);
+            }
+        }
         return $conf;
     }
-
 }
