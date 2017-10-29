@@ -88,7 +88,7 @@ class ACHController extends Controller
 
     protected function CK($slug) //CK = Cache Key
     {
-        $slug = request()->getHttpHost().$slug;
+        $slug = request()->fullUrl(); //request()->getHttpHost().$slug;
         $ua = strtolower(request()->header('User-Agent'));
         $slug = $ua && strrpos($ua, 'msie') > -1 ? "_ie_".$slug : $slug;
         return md5($slug);
