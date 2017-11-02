@@ -127,6 +127,7 @@ class ACHController extends Controller
         }
 
             $input = array_merge($input, $conf);
+            if(array_key_exists('page', $input)) unset($input['page']);
         
         session(['addition' => $input]);
         if(!$this->validate_frontend_config()) return $this->error_message;
