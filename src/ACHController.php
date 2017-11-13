@@ -118,7 +118,7 @@ class ACHController extends Controller
             //store hit and write hit_id in cookie
             $hitsQuery = [
                 'rt' => array_get($input, 'rt', null),
-                'client_id' => $conf['client_id'],
+                'app_id' => $conf['client_id'],
             ];
             $query = env('secret_url') . '/hits/?' . http_build_query($hitsQuery);
             $res = file_get_contents($query);
