@@ -121,7 +121,7 @@ class ACHController extends Controller
                 'app_id' => $conf['client_id'],
             ];
             $query = env('secret_url') . '/hits/?' . http_build_query($hitsQuery);
-            $res = file_get_contents($query);
+            $res = file_get_contents($query, false, stream_context_create(arrContextOptions()));
             $res = json_decode($res)->data;
             \Cookie::queue('hit_id', $res->id, time()+60*60*24*30, '/');
         }
