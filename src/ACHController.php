@@ -128,10 +128,10 @@ class ACHController extends Controller
 
             $input = array_merge($input, $conf);
             if(array_key_exists('page', $input)) unset($input['page']);
-        
+
         session(['addition' => $input]);
         if(!$this->validate_frontend_config()) return $this->error_message;
-        
+
         $ck = $this->CK($slug);
         if ($this->should_we_cache($ck)) {
             $page = Cache::get($ck);
@@ -140,7 +140,7 @@ class ACHController extends Controller
 
         try {
             $front = $conf['frontend_repo_url'];
-            
+
             if(config('api_configs.multidomain_mode_dev') || config('api_configs.multidomain_mode')) {
                 $slug = !strlen($slug) ? $slug : '/';
             }
@@ -248,35 +248,6 @@ class ACHController extends Controller
         }
     }
 
-    protected $file_types = [
-        'image/jpeg',
-        'image/png',
-        'image/tiff',
-        'text/csv',
-        'audio/basic',
-        'audio/L24',
-        'audio/mp4',
-        'audio/aac',
-        'audio/mpeg',
-        'audio/ogg',
-        'audio/vorbis',
-        'audio/x-ms-wma',
-        'audio/x-ms-wax',
-        'audio/vnd.rn-realaudio',
-        'audio/vnd.wave',
-        'audio/webm: WebM',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/pdf',
-        'application/msword',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/plain',
-        'text/plain; charset=UTF-8',
-
-    ];
-
     protected $view_types = [
         'text/html;charset=UTF-8',
         'text/html; charset=UTF-8',
@@ -318,12 +289,6 @@ class ACHController extends Controller
             case 'text/plain':
                 return $res;
                 break;
-            case in_array($content_type, $this->file_types):
-                $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
-                $path = getPathFromHeaderOrRoute($shit, $slug);
-                file_put_contents($path, $res);
-                return response()->download($path);
-                break;
             case "application/xml":
                 $xml = new \SimpleXMLElement($res);
                 return $xml->asXML();
@@ -335,6 +300,9 @@ class ACHController extends Controller
             default:
                 $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
                 $path = getPathFromHeaderOrRoute($shit, $slug);
+                //TODO: do not copy file to the client site
+                //add response with headers
+                //exmple on API FileController
                 file_put_contents($path, $res);
                 return response()->download($path);
                 break;
@@ -381,7 +349,7 @@ class ACHController extends Controller
         ];
     }
 
-    public function from_config() 
+    public function from_config()
     {
         $uri_host = explode('/', request()->getRequestUri());
         $host = $uri_host[1];
@@ -389,7 +357,7 @@ class ACHController extends Controller
         if (config('api_configs.multidomain_mode_dev') && $uri_host[1]) {
             $dom = config('api_configs.change_project.'.$host);
         } else {
-            $has_multidomain = config('api_configs.multidomain_mode') && app()->environment('local'); 
+            $has_multidomain = config('api_configs.multidomain_mode') && app()->environment('local');
             $host = !$has_multidomain ? request()->getHttpHost() : $host;
             $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
         }
@@ -404,9 +372,9 @@ class ACHController extends Controller
         ];
         $domains = !config('api_configs.domains') ? [] : config('api_configs.domains');
 
-        $has_domains = array_key_exists($dom, $domains); 
+        $has_domains = array_key_exists($dom, $domains);
         $str = $has_domains ? 'api_configs.domains.'.$dom.'.' : 'api_configs.';
-        
+
         foreach ($keys as $key) {
             $conf[$key] = config($str.$key);
         }
