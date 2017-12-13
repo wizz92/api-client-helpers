@@ -24,8 +24,7 @@ class TestConfig extends Orchestra\Testbench\TestCase
 
     public function testReturnsFullConfigIfInputIsEmpty(){
         $_SERVER['SERVER_NAME'] = 'domain.net';
-        dd(conf());
-        $this->assertEquals(conf(), 'domain.net.client_secret');
+        $this->assertTrue(is_array(conf()));
     }
     
 }
