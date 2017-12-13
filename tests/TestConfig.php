@@ -2,11 +2,6 @@
 
 class TestConfig extends Orchestra\Testbench\TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     protected function getEnvironmentSetUp($app)
     {
         $myArray = include __DIR__ .'/../src/configs/api_configs.php';
