@@ -35,3 +35,11 @@ All routes with prefix api will be proxy redirected to secret_url from .env file
 
 
 
+
+Funcs:
+1. Receive and cache pages from remote page server.
+2. proxy all requests to secret API
+3. handles redirects
+4. can work in multi site mode. (serve many websites from 1 client)
+5. can block users with certain utm_marks or user_agents
+6. can store all configs in db

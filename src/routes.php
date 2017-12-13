@@ -11,7 +11,7 @@ Route::any('api/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('
 Route::get('/t/check', '\Wizz\ApiClientHelpers\ACHController@check');
 
 Route::get('/t/clear_cache', '\Wizz\ApiClientHelpers\ACHController@clear_cache');
-
+// TODO do we need this here?
 Route::get('clients/payments/success', function(){
 	$params = http_build_query(request()->all());
 	return redirect()->to('https://api.speedy.company/clients/payments/success?'.$params);
@@ -36,7 +36,7 @@ Route::get('payments/pending', function(){
 	$params = http_build_query(request()->all());
 	return redirect()->to('https://api.speedy.company/clients/payments/pending?'.$params);
 })->where('slug', '.+');
-
+// TODO change to use in multisite mode.
 if(env('use_frontend_repo') === true)
 {
 	/*

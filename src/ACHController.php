@@ -308,6 +308,7 @@ class ACHController extends Controller
                 return response()->download($path);
                 break;
         }
+        // should not be here
         if (strpos('q'.$res, 'Whoops,')) {
             if (! json_decode($res)) {
 
@@ -327,7 +328,7 @@ class ACHController extends Controller
     */
     public function redirect($slug, Request $request)
     {
-
+// TODO needs fix to work in multi client mode
         if(!$this->validate_redirect_config()) return $this->error_message;
 
         return redirect()->to(env('secret_url').'/'.$slug.'?'.http_build_query($request->all()));
