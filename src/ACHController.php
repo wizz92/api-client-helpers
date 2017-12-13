@@ -111,7 +111,7 @@ class ACHController extends Controller
     {
         $input = request()->all();
         $input['domain'] = request()->root();
-        $conf = $this->from_config();
+        $conf = from_config();
 
         if ($conf['tracking_hits'])
         {
@@ -120,6 +120,7 @@ class ACHController extends Controller
                 'rt' => array_get($input, 'rt', null),
                 'app_id' => $conf['client_id'],
             ];
+            //TODO rewrite hits tracking.
             $query = env('secret_url') . '/hits/?' . http_build_query($hitsQuery);
             $res = file_get_contents($query, false, stream_context_create(arrContextOptions()));
             $res = json_decode($res)->data;
@@ -351,35 +352,4 @@ class ACHController extends Controller
         ];
     }
 
-    public function from_config()
-    {
-        $uri_host = explode('/', request()->getRequestUri());
-        $host = $uri_host[1];
-
-        if (config('api_configs.multidomain_mode_dev') && $uri_host[1]) {
-            $dom = config('api_configs.change_project.'.$host);
-        } else {
-            $has_multidomain = config('api_configs.multidomain_mode') && app()->environment('local');
-            $host = !$has_multidomain ? request()->getHttpHost() : $host;
-            $dom = preg_replace('|[^\d\w ]+|i', '-', $host);
-        }
-        $keys = [
-            'client_id',
-            'frontend_repo_url',
-            'main_language',
-            'multilingualSites',
-            'languages',
-            'tracking_hits',
-            'cache_frontend_for'
-        ];
-        $domains = !config('api_configs.domains') ? [] : config('api_configs.domains');
-
-        $has_domains = array_key_exists($dom, $domains);
-        $str = $has_domains ? 'api_configs.domains.'.$dom.'.' : 'api_configs.';
-
-        foreach ($keys as $key) {
-            $conf[$key] = config($str.$key);
-        }
-        return $conf;
-    }
 }

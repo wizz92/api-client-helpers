@@ -15,4 +15,8 @@ return array(
     '58571171fd5812e6e447dce228f52f4d' => $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
     '6124b4c8570aa390c21fafd04a26c69f' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     '71bb8847bb228d540f28a5b9c7d11790' => $baseDir . '/src/Helpers/array.php',
+    '0039b399b36c17ba9268eb5e064551ac' => $baseDir . '/src/Helpers/cookies.php',
+    '8b53096bc34382fb00e0623345bf600f' => $baseDir . '/src/Helpers/request.php',
+    '8cbb26af923838dd672bf32b5a2a9fa4' => $baseDir . '/src/Helpers/domain.php',
+    'd002f671a35f293320d8dbd833ce954d' => $baseDir . '/src/configs/api_configs.php',
 );

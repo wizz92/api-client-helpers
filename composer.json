@@ -17,7 +17,9 @@
         "files": [
             "src/Helpers/array.php",
             "src/Helpers/cookies.php",
-            "src/Helpers/request.php"
+            "src/Helpers/request.php",
+            "src/Helpers/domain.php",
+            "src/configs/api_configs.php"
         ]
     },
     "require": {
