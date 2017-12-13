@@ -19,4 +19,6 @@ return array(
     '8b53096bc34382fb00e0623345bf600f' => $baseDir . '/src/Helpers/request.php',
     '8cbb26af923838dd672bf32b5a2a9fa4' => $baseDir . '/src/Helpers/domain.php',
     'd002f671a35f293320d8dbd833ce954d' => $baseDir . '/src/configs/api_configs.php',
+    '8d784428ee97ea9379b3fc15ce43a0a3' => $baseDir . '/src/Helpers/validation.php',
+    '3b7b9d3eb568cfe533a951c579401a2e' => $baseDir . '/src/Helpers/cache.php',
 );

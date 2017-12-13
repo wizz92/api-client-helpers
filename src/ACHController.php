@@ -18,7 +18,7 @@ class ACHController extends Controller
     {
         $one = "Sorry, looks like something went wrong. ";
 
-        $two = (env('support_email')) ? "Please contact us at <a href='mailto:".env('support_email')."'>".env('support_email')."</a>" : "Please contact us via email";
+        $two = (conf('support_email')) ? "Please contact us at <a href='mailto:".conf('support_email')."'>".conf('support_email')."</a>" : "Please contact us via email";
 
         $three = ' for further assistance.';
 
@@ -29,69 +29,6 @@ class ACHController extends Controller
 
         $this->version = "1.2";
 
-    }
-
-    /*
-
-    Little helper for our check function.
-
-    */
-    protected function is_ok($func)
-    {
-        return ($this->$func()) ? 'OK' : 'OFF';
-    }
-
-    /*
-
-    Validating that all our configs necessary for frontend repo are in place.
-
-    */
-    protected function validate_frontend_config()
-    {
-        if(! env('frontend_repo_url')) return false;
-
-        if(substr(env('frontend_repo_url'), -1) != '/') return false;
-
-        return true;
-    }
-
-    /*
-
-    Validating that all our configs necessary for redirect are in place.
-
-    */
-    protected function validate_redirect_config()
-    {
-        if(! env('secret_url')) return false;
-
-        return true;
-    }
-
-    /*
-
-    Function to see if we should be caching response from frontend repo.
-
-    If $slug is passed, it will also check whether this $slug is already in cache;
-
-    */
-    protected function should_we_cache($ck = false)
-    {
-        if(env('use_cache_frontend') === false) return false;
-
-        if(request()->input('cache') === 'false') return false;
-
-        if(!app()->environment('production')) return false;
-        if($ck && !Cache::has($ck)) return false;
-
-        return true;
-    }
-
-    protected function CK($slug) //CK = Cache Key
-    {
-        $slug = request()->fullUrl(); //request()->getHttpHost().$slug;
-        $ua = strtolower(request()->header('User-Agent'));
-        $slug = $ua && strrpos($ua, 'msie') > -1 ? "_ie_".$slug : $slug;
-        return md5($slug);
     }
 
     public function splitUrlIntoSegments($url)
@@ -111,17 +48,16 @@ class ACHController extends Controller
     {
         $input = request()->all();
         $input['domain'] = request()->root();
-        $conf = conf();
 
-        if ($conf['tracking_hits'])
+        if (conf('tracking_hits'))
         {
             //store hit and write hit_id in cookie
             $hitsQuery = [
                 'rt' => array_get($input, 'rt', null),
-                'app_id' => $conf['client_id'],
+                'app_id' => conf('client_id'),
             ];
             //TODO rewrite hits tracking.
-            $query = env('secret_url') . '/hits/?' . http_build_query($hitsQuery);
+            $query = conf('secret_url') . '/hits/?' . http_build_query($hitsQuery);
             $res = file_get_contents($query, false, stream_context_create(arrContextOptions()));
             $res = json_decode($res)->data;
             \Cookie::queue('hit_id', $res->id, time()+60*60*24*30, '/');
@@ -133,14 +69,14 @@ class ACHController extends Controller
         session(['addition' => $input]);
         if(!$this->validate_frontend_config()) return $this->error_message;
 
-        $ck = $this->CK($slug);
+        $ck = CK($slug);
         if ($this->should_we_cache($ck)) {
             $page = Cache::get($ck);
             return insertToken($page);
         }
 
         try {
-            $front = $conf['frontend_repo_url'];
+            $front = conf('frontend_repo_url');
 
             if(config('api_configs.multidomain_mode_dev') || config('api_configs.multidomain_mode')) {
                 $slug = !strlen($slug) ? $slug : '/';
@@ -150,13 +86,13 @@ class ACHController extends Controller
             $query = [];
             $domain = $req->url();
 
-            if (array_search(parse_url($domain)['host'], $conf['multilingualSites']) !== false)
+            if (array_search(parse_url($domain)['host'], conf('multilingualSites')) !== false)
             {
                 //getting language from url
                 $url_segments = $this->splitUrlIntoSegments($req->path());
-                $main_language = $conf['main_language'] ? $conf['main_language'] : 'en';
+                $main_language = conf('main_language') ? conf('main_language') : 'en';
                 $language_from_url = array_get($url_segments, 0, $main_language);
-                $language_from_url = gettype(array_search($language_from_url, $conf['languages'])) == 'integer' ? $language_from_url : $main_language;
+                $language_from_url = gettype(array_search($language_from_url, conf('languages'))) == 'integer' ? $language_from_url : $main_language;
 
                 //if user tries to change language via switcher rewrite language_from_request cookie
                 if ($req->input('change_lang'))
@@ -173,7 +109,7 @@ class ACHController extends Controller
                     setcookie('language_from_request', $main_language, time() + 60 * 30, '/');
                     $query = [
                         'lang' => $main_language,
-                        'main_language' => $conf['main_language']
+                        'main_language' => conf('main_language')
                     ];
                 }
                 if ($slug == '/' && $req->get('l') !== $main_language)
@@ -182,7 +118,7 @@ class ACHController extends Controller
                     {
                         //setting language_from_request cookie from accept-language
                         $language_from_request = substr(locale_accept_from_http($req->header('accept-language')), 0, 2);
-                        $language_from_request = gettype(array_search($language_from_request, $conf['languages'])) == 'boolean' ? $main_language : $language_from_request;
+                        $language_from_request = gettype(array_search($language_from_request, conf('languages'))) == 'boolean' ? $main_language : $language_from_request;
                         setcookie('language_from_request', $language_from_request, time() + 60 * 30, '/');
                         if ($language_from_url !== $language_from_request)
                         {
@@ -199,7 +135,7 @@ class ACHController extends Controller
                 }
                 $query = [
                     'lang' => $language_from_url,
-                    'main_language' => $conf['main_language']
+                    'main_language' => conf('main_language')
                 ];
             }
             $url = $url . '?' . http_build_query(array_merge($req->all(), $query));
@@ -221,7 +157,7 @@ class ACHController extends Controller
                 }
             }
 
-            if ($this->should_we_cache()) Cache::put($ck, $page, $conf['cache_frontend_for']);
+            if ($this->should_we_cache()) Cache::put($ck, $page, conf('cache_frontend_for'));
             return insertToken($page);
 
         }
@@ -332,7 +268,7 @@ class ACHController extends Controller
 // TODO needs fix to work in multi client mode
         if(!$this->validate_redirect_config()) return $this->error_message;
 
-        return redirect()->to(env('secret_url').'/'.$slug.'?'.http_build_query($request->all()));
+        return redirect()->to(conf('secret_url').'/'.$slug.'?'.http_build_query($request->all()));
     }
 
     /*
@@ -345,9 +281,9 @@ class ACHController extends Controller
         if(request()->input('code') !== $this->security_code) return;
 
         return [
-            'frontend_repo' => $this->is_ok('validate_frontend_config'),
-            'redirect' => $this->is_ok('validate_redirect_config'),
-            'caching' => $this->is_ok('should_we_cache'),
+            'frontend_repo' => is_ok('validate_frontend_config'),
+            'redirect' => is_ok('validate_redirect_config'),
+            'caching' => is_ok('should_we_cache'),
             'version' => $this->version
         ];
     }

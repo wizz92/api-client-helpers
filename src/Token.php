@@ -5,6 +5,7 @@ use \Cache;
 
 class Token
 {
+    // TODO rewrite to use with multisite client
     // This is a singleton object which contains initial data and token
     protected $data = '';
 
@@ -13,22 +14,6 @@ class Token
     public $cookies;
 
     public $request;
-
-    // private static $_instance = null;
-
-    // private function __construct() {}
-
-    // protected function __clone() {}
-    
-    // static public function getInstance() 
-    // {
-    //     if(is_null(self::$_instance))
-    //     {
-    //         self::$_instance = new self();
-    //     }
-
-    //     return self::$_instance;
-    // }
 
     protected function getFromBootstrap($query)
     {   
