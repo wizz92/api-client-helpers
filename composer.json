@@ -13,13 +13,23 @@
     "autoload": {
         "psr-4": {
             "Wizz\\ApiClientHelpers\\": "src/"
-        }
+        },
+        "files": [
+            "src/Helpers/array.php",
+            "src/Helpers/cookies.php",
+            "src/Helpers/request.php"
+        ]
     },
     "require": {
-        "php" : ">=5.4.0",
-        "illuminate/cache": "5.0.*|5.1.*|5.2.*|5.3.*",
-        "illuminate/config": "5.0.*|5.1.*|5.2.*|5.3.*",
-        "illuminate/http": "5.1.*|5.2.*|5.3.*"
+        "php" : ">=7.0.0",
+        "illuminate/cache": "5.4.*|5.5.*",
+        "illuminate/config": "5.4.*|5.5.*",
+        "illuminate/http": "5.4.*|5.5.*"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "~1.4",
+        "phpunit/phpunit": "6.*",
+        "orchestra/testbench": "~3.0"
     },
     "extra": {
         "branch-alias": {

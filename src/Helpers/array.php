@@ -17,15 +17,6 @@ function array_sign($array, $prepend = '', $sign = '+')
     return $results;
 }
 
-function contains_string($str, array $arr)
-{
-    foreach($arr as $a) 
-    {
-        if (stripos('q'.$str, $a) !== false) return true;
-    }
-    return false;
-}
-
 function clear_string_from_shit($string, $shit = '.pdf.pdf', $replacement = '.pdf')
 {
     if (stripos($string, $shit)) 

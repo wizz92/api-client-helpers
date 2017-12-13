@@ -264,6 +264,7 @@ class ACHController extends Controller
     {
         $method = array_get($_SERVER, 'REQUEST_METHOD');
         $res = apiRequestProxy(request());
+        // TODO leave only one data
         $data = explode("\r\n\r\n", $res);
         $data2 = http_parse_headers($res);
 
@@ -274,7 +275,7 @@ class ACHController extends Controller
                 ->to(array_get($headers, 'location'))
                 ->header('referer', 'https://api.speedy.company');
         }
-        $cookies = setCookiesFromCurlResponse($res);
+        setCookiesFromCurlResponse($res);
         $headers = (count($data2) == 3) ? $data2[1] : $data2[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
 
