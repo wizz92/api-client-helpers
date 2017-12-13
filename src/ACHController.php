@@ -111,7 +111,7 @@ class ACHController extends Controller
     {
         $input = request()->all();
         $input['domain'] = request()->root();
-        $conf = from_config();
+        $conf = conf();
 
         if ($conf['tracking_hits'])
         {

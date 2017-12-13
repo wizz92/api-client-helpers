@@ -15,11 +15,17 @@ class TestConfig extends Orchestra\Testbench\TestCase
     
     public function testThatReturnsDefaultValueIfDomainNotExists(){
         $_SERVER['SERVER_NAME'] = 'domain_that_not_exists';
-        $this->assertEquals(from_config('client_secret'), 'abc');
+        $this->assertEquals(conf('client_secret'), 'abc');
     }
     public function testThatReturnsCorrectValueIfDomainExists(){
         $_SERVER['SERVER_NAME'] = 'domain.net';
-        $this->assertEquals(from_config('client_secret'), 'domain.net.client_secret');
+        $this->assertEquals(conf('client_secret'), 'domain.net.client_secret');
+    }
+
+    public function testReturnsFullConfigIfInputIsEmpty(){
+        $_SERVER['SERVER_NAME'] = 'domain.net';
+        dd(conf());
+        $this->assertEquals(conf(), 'domain.net.client_secret');
     }
     
 }
