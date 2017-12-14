@@ -30,7 +30,6 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     {
         // include __DIR__.'/routes.php';
         include __DIR__.'/ACHController.php';
-        include __DIR__.'/Helpers/array.php';
         include __DIR__.'/Helpers/cookies.php';
         include __DIR__.'/Helpers/request.php';
         include __DIR__.'/Helpers/cache.php';
