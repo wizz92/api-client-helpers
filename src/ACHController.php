@@ -203,14 +203,13 @@ class ACHController extends Controller
         $res = apiRequestProxy(request());
         // TODO leave only one data
         $data = explode("\r\n\r\n", $res);
+        // TODO rewrite using CURLOPT_HEADERFUNCTION
         $data2 = http_parse_headers($res);
 
         if(preg_match('/^HTTP\/\d\.\d\s+(301|302)/',$data[0]))
         {
             $headers = array_get(http_parse_headers($data[0]), 0);
-            return redirect()
-                ->to(array_get($headers, 'location'))
-                ->header('referer', 'https://api.speedy.company');
+            return redirect()->to(array_get($headers, 'location'));
         }
         setCookiesFromCurlResponse($res);
         $headers = (count($data2) == 3) ? $data2[1] : $data2[0];

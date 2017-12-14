@@ -57,28 +57,15 @@ function getCookieStringFromArray(array $cookies)
  	return $cookies_string;
 }
 
-function getCookieFromCurlResponce($response)
-{
-     list($headers, $response) = explode("\r\n\r\n",$response,2);
-     preg_match_all('/Set-Cookie: (.*)\b/', $headers, $cookies);
-     $cookies = $cookies[1];
-}
-
-
 function setCookiesFromCurlResponse($headers)
 {
 	preg_match_all('/Set-Cookie: (.*)\b/', $headers, $cookies);
-	$cooks = [];
-	$cookies = $cookies[1];
-	foreach($cookies as $rawCookie) {
+	foreach($cookies[1] as $rawCookie) {
 		$cookie = parse_cookies($rawCookie);
-		$cooks[] = $cookie;
 		$minutes = new \Carbon\Carbon($cookie['expires']);
 		$minutes = $minutes->diffInMinutes(\Carbon\Carbon::now());
-		$cookie = cookie($cookie['name'], $cookie['value'], $minutes, $cookie['path']);
-		Cookie::queue($cookie);
+        setcookie($cookie['name'], $cookie['value'], $minutes, $cookie['path']);
 	}
-	return $cooks;
 }
 
 function http_parse_headers($string) 

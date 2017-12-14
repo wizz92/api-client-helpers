@@ -1,5 +1,5 @@
 <?php 
-
+use Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware;
 Route::get('/sitemap.xml', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 
 Route::get('/robots_generator', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
@@ -37,8 +37,10 @@ Route::get('payments/pending', function(){
 	return redirect()->to('https://api.speedy.company/clients/payments/pending?'.$params);
 })->where('slug', '.+');
 // TODO change to use in multisite mode.
+dd('qwe');
 if(env('use_frontend_repo') === true)
 {
+	
 	/*
 
 	This check is here to ensure that we are not fucking up projects,
@@ -46,7 +48,9 @@ if(env('use_frontend_repo') === true)
 	where frontend_repo is not explicitly enabled.
 
 	*/
-	Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontend_repo')->where('slug', '.+');	
+	Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontend_repo')
+		->middleware(BlockUrlsMiddleware::class)
+		->where('slug', '.+');	
 
 }
 

@@ -16,6 +16,7 @@ class BlockUrlsMiddleware
      */
     public function handle($request, Closure $next)
     {
+        
         $from_url = $request->server('HTTP_REFERER');
         $utm_host = $request->input('utm_host', '');
         $utm_referrer = $request->input('utm_referrer', '');
@@ -33,14 +34,15 @@ class BlockUrlsMiddleware
             return $next($request);
         }
         
-        foreach (config('api_configs.list_of_urls_to_block', []) as $url => $destination) {
-
+        // dd(conf('list_of_urls_to_block'));
+        foreach (conf('list_of_urls_to_block') as $url => $destination) {
+            
             $host = ($utm_host && strpos($utm_host, $url) !== false) ? $utm_host : false;
-
+            
             $host = (!$host && $utm_referrer && strpos($utm_referrer, $url) !== false) ? $utm_referrer : $host;
 
             $host = (!$host && $from_url && strpos($from_url, $url) !== false) ? $from_url : $host;
-            
+            // dd($host);
             if ($host) 
             {
                 $s = 'Blocking visitor for utm from ' . $host . '.';

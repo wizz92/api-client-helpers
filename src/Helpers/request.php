@@ -1,23 +1,26 @@
 <?php
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \Illuminate\Http\Request;
-
+// TODO move to static class to test
 function apiRequestProxy(Request $request)
 {
+    // maybe we should use https://github.com/php-curl-class/php-curl-class/blob/master/src/Curl/Curl.php
     $path = $request->path();
     $path = strpos($path, '/') === 0 ? $path : '/'.$path;
-    $requestString = str_replace(config('api_configs.url'), '', $path);
-    $method = $request->method();
+    $requestString = str_replace(conf('url'), '', $path);
+    $method = $_SERVER['REQUEST_METHOD'];
+    // $method = $request->method();
     $data = $request->all();
     $cookie_string = getCookieStringFromArray($request->cookie());
-    $data['ip'] = array_get($_SERVER, 'HTTP_CF_CONNECTING_IP', $request->ip());//$request->ip();
-    $data['app_id'] = config('api_configs.client_id');
+    $data['ip'] = array_get($_SERVER, 'HTTP_CF_CONNECTING_IP', $request->ip());
+    $data['app_id'] = conf('client_id');
     $addition = (session('addition')) ? session('addition') : [];
     $data = array_merge($data, $addition);
 
-    $query = config('api_configs.secret_url').$requestString;
+    $query = conf('secret_url').$requestString;
     $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
-    session_write_close();
+    // TODO is it nessesary here?
+    // session_write_close();
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $query);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -44,6 +47,7 @@ function apiRequestProxy(Request $request)
     return $res;
 }
 
+// TODO seems to be useless
 function getFilenameFromHeader($contentDisposition)
 {
     if (!$contentDisposition) {
@@ -54,7 +58,7 @@ function getFilenameFromHeader($contentDisposition)
     $filename = clear_string_from_shit($filename[1]);
     return $filename;
 }
-
+// TODO seems to be useless
 function getPathFromHeaderOrRoute($contentDisposition, $slug)
 {
     if ($contentDisposition) {
@@ -65,8 +69,7 @@ function getPathFromHeaderOrRoute($contentDisposition, $slug)
     }
     $chunks = explode('/', $slug);
     $filename = array_get($chunks, count($chunks) - 1);
-    if ($filename)
-    {
+    if ($filename){
         $filename = clear_string_from_shit($filename);
         $path = public_path().'/documents/'.$filename;
         return response()->download($path);
@@ -78,8 +81,7 @@ function prepare_files_for_curl(array $data, $file_field = 'files')
 {
     $files = array_pull($data, $file_field);
     $files = array_sign($files);
-    foreach ($files as $key => $file)
-    {
+    foreach ($files as $key => $file){
         if (is_object($file) && $file instanceof UploadedFile)
         {
             $tmp_name = $file->getRealPath();

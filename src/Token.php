@@ -47,7 +47,7 @@ class Token
             $data = explode("\r\n\r\n", $res);
             $headers = (count($data) == 3) ? $data[1] : $data[0];
             $res = (count($data) == 3) ? $data[2] : $data[1];
-            $cookies = setCookiesFromCurlResponse($headers);
+            setCookiesFromCurlResponse($headers);
 
             $output = json_decode($res);
 
@@ -106,6 +106,6 @@ class Token
             'client_id' => config('api_configs.client_id'),
             'client_secret' => config('api_configs.client_secret'),
         ];
-        return config('api_configs.secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
+        return conf('secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
     }
 }

@@ -1,13 +1,13 @@
 <?php 
 
 
-function array_sign($array, $prepend = '', $sign = '+')
+function array_sign($array, $prepend = '', $sign = '+', $ignore_array = false)
 {
     $results = [];
-
+    
     foreach ($array as $key => $value) 
     {
-        if (is_array($value)) {
+        if (is_array($value) && $ignore_array) {
             $results = array_merge($results, array_sign($value, $prepend.$key.$sign));
         } else {
             $results[$prepend.$key] = $value;
