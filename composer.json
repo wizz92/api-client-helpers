@@ -15,7 +15,6 @@
             "Wizz\\ApiClientHelpers\\": "src/"
         },
         "files": [
-            "src/Helpers/cookies.php",
             "src/Helpers/request.php",
             "src/Helpers/domain.php",
             "src/configs/api_configs.php",
