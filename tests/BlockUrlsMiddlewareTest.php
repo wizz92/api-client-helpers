@@ -28,7 +28,6 @@ class BlockUrlsMiddlewareTest extends Orchestra\Testbench\TestCase
         $this->assertEquals($response->getStatusCode(), 302);
     }
 
-
     public function test_returns_next_if_everything_is_ok(){
         config(['api_configs.defaults.list_of_urls_to_block' => ['asda.com' => 'asda.com']]);
         $request = Request::create('/qweqwe/qweqwe', 'GET', [], [], [], ['HTTP_REFERER' => 'asdaa.com']);

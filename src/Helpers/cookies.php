@@ -48,7 +48,7 @@ function parse_cookies($header, $named = true) {
 	return $cookie;
 }
 
-function getCookieStringFromArray(array $cookies)
+function getCookieStringFromArray(array $cookies): string
 {
  	$cookies_string = '';
 	foreach ($cookies as $cookieName => $cookieValue) {
