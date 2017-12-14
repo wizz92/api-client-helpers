@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Cache;
+use Wizz\ApiClientHelpers\Helpers\CurlRequest;
 
 class ACHController extends Controller
 {
@@ -200,7 +201,7 @@ class ACHController extends Controller
     public function proxy($slug = '/')
     {
         $method = array_get($_SERVER, 'REQUEST_METHOD');
-        $res = apiRequestProxy(request());
+        $res = CurlRequest::apiRequestProxy(request());
         // TODO leave only one data
         $data = explode("\r\n\r\n", $res);
         // TODO rewrite using CURLOPT_HEADERFUNCTION
@@ -231,12 +232,12 @@ class ACHController extends Controller
                 return $xml->asXML();
                 break;
             case 'text/plain; charset=UTF-8':
-                $filename = getFilenameFromHeader(array_get($headers, 'content-disposition'));
+                $filename = CurlRequest::getFilenameFromHeader(array_get($headers, 'content-disposition'));
                 if ($filename == 'robots.txt') file_put_contents(public_path().'/robots.txt',$res);
                 break;
             default:
                 $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
-                $path = getPathFromHeaderOrRoute($shit, $slug);
+                $path = CurlRequest::getPathFromHeaderOrRoute($shit, $slug);
                 //TODO: do not copy file to the client site
                 //add response with headers
                 //exmple on API FileController

@@ -1,5 +1,5 @@
 <?php
-
+use Wizz\ApiClientHelpers\Helpers\ConfigHelper;
         /*
 
     Function to see if we should be caching response from frontend repo.
@@ -17,6 +17,10 @@
         if($ck && !Cache::has($ck)) return false;
 
         return true;
+    }
+
+    function conf(string $key = '', bool $allow_default = true){
+        return ConfigHelper::get(string $key = '', bool $allow_default = true);
     }
 
 
