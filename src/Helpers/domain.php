@@ -1,4 +1,6 @@
 <?php
+
+use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
 // if working in multidomain mode
 // try to find config with this key
 // if exists - return it.
@@ -11,7 +13,7 @@ function conf(string $key = '', bool $allow_default = true)
     $suf = $key ? '+'.$key : ''; 
     // dd($suf);
     
-    $config_file = $key ? array_sign(config('api_configs'), $prepend = '', $sign = '+', $ignore_array = true)  : config('api_configs');
+    $config_file = $key ? ArrayHelper::array_sign(config('api_configs'), $prepend = '', $sign = '+', $ignore_array = true)  : config('api_configs');
     // dd($config_file);
     return $allow_default ? array_get($config_file, $domain_key.$suf, array_get($config_file, 'defaults'.$suf)) : array_get($config_file, $domain_key.$suf, false);
 }

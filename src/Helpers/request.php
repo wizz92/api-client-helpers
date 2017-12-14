@@ -1,6 +1,7 @@
 <?php
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \Illuminate\Http\Request;
+use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
 // TODO move to static class to test
 function apiRequestProxy(Request $request)
 {
@@ -39,7 +40,7 @@ function apiRequestProxy(Request $request)
             $data['files'] = prepare_files_for_curl($data);
         }
 
-        $data = ($method == "POST") ? array_sign($data) : http_build_query($data);
+        $data = ($method == "POST") ? ArrayHelper::array_sign($data) : http_build_query($data);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     }
     $res = curl_exec($ch);
@@ -80,7 +81,7 @@ function getPathFromHeaderOrRoute($contentDisposition, $slug)
 function prepare_files_for_curl(array $data, $file_field = 'files')
 {
     $files = array_pull($data, $file_field);
-    $files = array_sign($files);
+    $files = ArrayHelper::array_sign($files);
     foreach ($files as $key => $file){
         if (is_object($file) && $file instanceof UploadedFile)
         {
