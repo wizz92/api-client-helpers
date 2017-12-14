@@ -20,7 +20,7 @@ use Wizz\ApiClientHelpers\Helpers\ConfigHelper;
     }
 
     function conf(string $key = '', bool $allow_default = true){
-        return ConfigHelper::get(string $key = '', bool $allow_default = true);
+        return ConfigHelper::get($key,  $allow_default);
     }
 
 
