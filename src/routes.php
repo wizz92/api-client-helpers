@@ -37,7 +37,6 @@ Route::get('payments/pending', function(){
 	return redirect()->to('https://api.speedy.company/clients/payments/pending?'.$params);
 })->where('slug', '.+');
 // TODO change to use in multisite mode.
-dd('qwe');
 if(env('use_frontend_repo') === true)
 {
 	
