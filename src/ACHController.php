@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Cache;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
+use Wizz\ApiClientHelpers\Helpers\Validator;
 
 class ACHController extends Controller
 {
@@ -68,7 +69,7 @@ class ACHController extends Controller
             if(array_key_exists('page', $input)) unset($input['page']);
 
         session(['addition' => $input]);
-        if(!$this->validate_frontend_config()) return $this->error_message;
+        if(!Validator::validate_frontend_config()) return $this->error_message;
 
         $ck = CK($slug);
         if ($this->should_we_cache($ck)) {
@@ -266,7 +267,7 @@ class ACHController extends Controller
     public function redirect($slug, Request $request)
     {
 // TODO needs fix to work in multi client mode
-        if(!$this->validate_redirect_config()) return $this->error_message;
+        if(!Validator::validate_redirect_config()) return $this->error_message;
 
         return redirect()->to(conf('secret_url').'/'.$slug.'?'.http_build_query($request->all()));
     }
@@ -281,9 +282,9 @@ class ACHController extends Controller
         if(request()->input('code') !== $this->security_code) return;
 
         return [
-            'frontend_repo' => is_ok('validate_frontend_config'),
-            'redirect' => is_ok('validate_redirect_config'),
-            'caching' => is_ok('should_we_cache'),
+            'frontend_repo' => Validator::is_ok('validate_frontend_config'),
+            'redirect' => Validator::is_ok('validate_redirect_config'),
+            'caching' => Validator::is_ok('should_we_cache'),
             'version' => $this->version
         ];
     }
