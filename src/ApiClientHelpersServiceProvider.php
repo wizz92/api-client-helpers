@@ -30,9 +30,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     {
         // include __DIR__.'/routes.php';
         include __DIR__.'/ACHController.php';
-        include __DIR__.'/Helpers/request.php';
         include __DIR__.'/Helpers/cache.php';
-        include __DIR__.'/Helpers/domain.php';
         include __DIR__.'/Helpers/validation.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
         $this->mergeConfigFrom(__DIR__.'/configs/api_configs.php', 'api_configs');
