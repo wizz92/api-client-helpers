@@ -10,9 +10,7 @@ use Wizz\ApiClientHelpers\Helpers\ConfigHelper;
     function should_we_cache($ck = false)
     {
         if(conf('use_cache_frontend') === false) return false;
-
         if(request()->input('cache') === 'false') return false;
-
         if(!app()->environment('production')) return false;
         if($ck && !Cache::has($ck)) return false;
 
