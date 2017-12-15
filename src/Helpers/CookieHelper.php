@@ -69,7 +69,7 @@ class CookieHelper
         }
     }
     
-    function http_parse_headers($string) 
+    public static function http_parse_headers($string) 
     {
         $headers = array();
         $content = '';

@@ -4,6 +4,7 @@ namespace Wizz\ApiClientHelpers\Helpers;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \Illuminate\Http\Request;
 use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
+use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 
 class CurlRequest 
 {
@@ -16,7 +17,7 @@ class CurlRequest
         $method = $_SERVER['REQUEST_METHOD'];
         // $method = $request->method();
         $data = $request->all();
-        $cookie_string = getCookieStringFromArray($request->cookie());
+        $cookie_string = CookieHelper::getCookieStringFromArray($request->cookie());
         $data['ip'] = array_get($_SERVER, 'HTTP_CF_CONNECTING_IP', $request->ip());
         $data['app_id'] = conf('client_id');
         $addition = (session('addition')) ? session('addition') : [];

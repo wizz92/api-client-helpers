@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Cache;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
+use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
 
 class ACHController extends Controller
@@ -206,14 +207,14 @@ class ACHController extends Controller
         // TODO leave only one data
         $data = explode("\r\n\r\n", $res);
         // TODO rewrite using CURLOPT_HEADERFUNCTION
-        $data2 = http_parse_headers($res);
+        $data2 = CookieHelper::http_parse_headers($res);
 
         if(preg_match('/^HTTP\/\d\.\d\s+(301|302)/',$data[0]))
         {
             $headers = array_get(http_parse_headers($data[0]), 0);
             return redirect()->to(array_get($headers, 'location'));
         }
-        setCookiesFromCurlResponse($res);
+        CookieHelper::setCookiesFromCurlResponse($res);
         $headers = (count($data2) == 3) ? $data2[1] : $data2[0];
         $res = (count($data) == 3) ? $data[2] : $data[1];
 
