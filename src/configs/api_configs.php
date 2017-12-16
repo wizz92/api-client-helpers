@@ -23,6 +23,10 @@ return [
         'client_id' 		=> 'test',
         'client_secret' 	=> env('client_secret', 'domain.net.client_secret'),
     ],
+    'papercoach.net' => [
+        'client_id' 		=> 'test',
+        'client_secret' 	=> env('client_secret', 'domain.net.client_secret'),
+    ],
     'languages' => [
         'en'
     ],

@@ -49,9 +49,6 @@ class ACHController extends Controller
     */
     public function frontend_repo(Request $req)
     {
-        // cut tracking hits from here
-        // $input = array_merge($input, $conf);
-        // TODO add ability to manually change current domain
         $slug = $req->path();
         if(!Validator::validate_frontend_config()) return $this->error_message;
         $ck = CK($slug);
@@ -121,6 +118,7 @@ class ACHController extends Controller
     */
     public function proxy(Request $request)
     {
+        
         $r = new CurlRequest($request);
         $r->execute();
         CookieHelper::setCookiesFromCurlResponse($r->headers['cookies']);
@@ -134,10 +132,11 @@ class ACHController extends Controller
             'errors' => [$this->error_message],
             'alerts' => []
         ]);
-
+        return (new \SimpleXMLElement($r->body))->asXML();
         if (strpos('q'.$r->content_type, 'text/html') || strpos('q'.$r->content_type, 'text/plain')) return $r->body;
         if ($r->content_type == 'application/json') return response()->json(json_decode($r->body));
-        if ($r->content_type == 'application/xml') return (new \SimpleXMLElement($r->body))->asXML();
+        if (strpos('q'.$r->content_type, 'xml')) return (new \SimpleXMLElement($r->body))->asXML();
+
         return response($r->body)
             ->header('Content-Type', $r->content_type)
             ->header('Content-Disposition', array_get($r->headers, 'content-disposition'));
