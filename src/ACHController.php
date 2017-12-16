@@ -64,11 +64,19 @@ class ACHController extends Controller
             $query = [];
             // $domain = $req->url();
             // cut shit from here
-           
+
             $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
             $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions()));
 
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
+
+            if(strpos($http_code, '302') > -1 || strpos($http_code, '301') > -1)
+            {
+                $location = array_get($http_response_header, 3, '/');
+                $location = str_replace("Location: ", "", $location);
+                return redirect()->to($location);
+            }
+            
             // what is this?
             if(strpos($http_code, '238') > -1)
             {
@@ -118,15 +126,15 @@ class ACHController extends Controller
     */
     public function proxy(Request $request)
     {
-        
+
         $r = new CurlRequest($request);
         $r->execute();
         CookieHelper::setCookiesFromCurlResponse($r->headers['cookies']);
 
         if ($r->redirect_status) return redirect()->to(array_get($r->headers, 'location'));
-    
+
         if(strpos('q'.$r->content_type, 'text/html') && strpos('q'.$r->body, 'Whoops,'))
-        
+
         return response()->json([
             'status' => 400,
             'errors' => [$this->error_message],
