@@ -15,18 +15,7 @@ class ArrayHelper
                 $results[$prepend.$key] = $value;
             }
         }
-    
         return $results;
-    }
-
-    public static function clear_string_from_shit($string, $shit = '.pdf.pdf', $replacement = '.pdf')
-    {
-        if (stripos($string, $shit)) 
-        {
-            $string = str_replace($shit, $replacement, $string);
-            $string = clear_string_from_shit($string, $shit, $replacement);
-        }
-        return $string;
     }
 
 }

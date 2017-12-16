@@ -1,5 +1,5 @@
 <?php
-use Wizz\ApiClientHelpers\Helpers\ConfigHelper;
+use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
         /*
 
     Function to see if we should be caching response from frontend repo.
@@ -18,11 +18,11 @@ use Wizz\ApiClientHelpers\Helpers\ConfigHelper;
     }
 
     function conf(string $key = '', bool $allow_default = true){
-        return ConfigHelper::get($key,  $allow_default);
+        $domain_key = request()->get('domain') && request()->get('domain_change_code') == 'limpopo' ? request()->get('domain') : array_get($_SERVER,'SERVER_NAME' ,'');
+        $suf = $key ? '+'.$key : ''; 
+        $config_file = $key ? ArrayHelper::array_sign(config('api_configs'), $prepend = '', $sign = '+', $ignore_array = true)  : config('api_configs');
+        return $allow_default ? array_get($config_file, $domain_key.$suf, array_get($config_file, 'defaults'.$suf)) : array_get($config_file, $domain_key.$suf, false);
     }
-
-
-
 
     function CK($slug) //CK = Cache Key
     {

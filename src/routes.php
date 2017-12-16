@@ -1,5 +1,6 @@
 <?php 
 use Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware;
+use Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware;
 Route::get('/sitemap.xml', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 
 Route::get('/robots_generator', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
@@ -47,7 +48,9 @@ if(env('use_frontend_repo') === true)
 	where frontend_repo is not explicitly enabled.
 
 	*/
+	// dd('qwe');
 	Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontend_repo')
+		->middleware(UpdateGlobalsMiddleware::class)	
 		->middleware(BlockUrlsMiddleware::class)
 		->where('slug', '.+');	
 
