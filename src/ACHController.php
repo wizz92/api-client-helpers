@@ -294,8 +294,7 @@ class ACHController extends Controller
                 return $xml->asXML();
                 break;
             case 'text/plain; charset=UTF-8':
-                $filename = getFilenameFromHeader(array_get($headers, 'content-disposition'));
-                if ($filename == 'robots.txt') file_put_contents(public_path().'/robots.txt',$res);
+                return '<pre style="word-wrap: break-word; white-space: pre-wrap;">'.$res.'</pre>';
                 break;
             default:
                 $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
