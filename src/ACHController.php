@@ -142,7 +142,7 @@ class ACHController extends Controller
             $front = $conf['frontend_repo_url'];
 
             if(config('api_configs.multidomain_mode_dev') || config('api_configs.multidomain_mode')) {
-                $slug = !strlen($slug) ? $slug : '/';
+                $slug = strlen($slug) ? $slug : '/';
             }
 
             $url = ($slug == '/') ? $front : $front.$slug;
