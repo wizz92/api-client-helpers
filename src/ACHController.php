@@ -140,7 +140,7 @@ class ACHController extends Controller
             'errors' => [$this->error_message],
             'alerts' => []
         ]);
-        return (new \SimpleXMLElement($r->body))->asXML();
+        //return (new \SimpleXMLElement($r->body))->asXML();
         if (strpos('q'.$r->content_type, 'text/html') || strpos('q'.$r->content_type, 'text/plain')) return $r->body;
         if ($r->content_type == 'application/json') return response()->json(json_decode($r->body));
         if (strpos('q'.$r->content_type, 'xml')) return (new \SimpleXMLElement($r->body))->asXML();
