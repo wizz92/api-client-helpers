@@ -13,7 +13,7 @@ function apiRequestProxy(Request $request)
     $data['ip'] = array_get($_SERVER, 'HTTP_CF_CONNECTING_IP', $request->ip());//$request->ip();
     $data['app_id'] = config('api_configs.client_id');
     $addition = (session('addition')) ? session('addition') : [];
-    $data = array_merge($data, $addition);
+    $data = array_merge($addition, $data);
 
     $query = config('api_configs.secret_url').$requestString;
     $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
