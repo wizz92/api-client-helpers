@@ -364,7 +364,7 @@ class ACHController extends Controller
         }
 
         //getting language from url
-        $main_language = env('MAIN_LANGUAGE') ? env('MAIN_LANGUAGE') : 'en';
+        $main_language = config('api_configs.main_language');
         $requested_language = $request->segment(0);
         $requested_language = in_array($requested_language, config('api_configs.languages')) ? $requested_language : $main_language;
 
