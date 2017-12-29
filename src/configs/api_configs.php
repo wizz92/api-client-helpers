@@ -19,7 +19,8 @@ return [
 
     'languages' => [],
     'is_multilingual' => false,
-    
+    'main_language' => env('MAIN_LANGUAGE', 'en'),
+
     'tracking_hits' => true,
 
     'security_code' 	=> env('security_code', 'qwe123'),
