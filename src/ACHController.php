@@ -142,7 +142,6 @@ class ACHController extends Controller
             }
 
             $url = ($slug == '/') ? $front : $front.$slug;
-            $query = [];
             $domain = $req->url();
 
             $url = $url . '?' . http_build_query(array_merge($req->all(), $query));
