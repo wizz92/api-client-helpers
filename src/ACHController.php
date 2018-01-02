@@ -349,7 +349,7 @@ class ACHController extends Controller
             $hit_id = $response->data->id;
         }
 
-        return \Cookie::queue('hit_id', $res->id, time()+60*60*24*30, '/');
+        return \Cookie::queue('hit_id', $hit_id, time()+60*60*24*30, '/');
     }
 
     public function checkMultilingual($request)
