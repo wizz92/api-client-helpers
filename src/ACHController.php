@@ -132,7 +132,7 @@ class ACHController extends Controller
         }
         $query = $multilingual['query'];
 
-        $this->trackingHits();
+        $this->trackingHits($input);
 
         try {
             $front = $conf['frontend_repo_url'];
@@ -324,7 +324,7 @@ class ACHController extends Controller
     }
 
     //store hit and write hit_id in cookie
-    public function trackingHits()
+    public function trackingHits($input)
     {
         if (!config('api_configs.tracking_hits'))
         {
