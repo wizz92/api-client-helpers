@@ -340,13 +340,14 @@ class ACHController extends Controller
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
         curl_close($ch);
 
         $hit_id = 0;
         if ($response)
         {
-            $hit_id = $response->data->id;
+            $hit_id = json_decode($response)->data->id;
         }
 
         return \Cookie::queue('hit_id', $hit_id, time()+60*60*24*30, '/');
