@@ -369,13 +369,14 @@ class ACHController extends Controller
         $requested_language = in_array($requested_language, config('api_configs.languages')) ? $requested_language : $main_language;
 
         //if user tries to change language via switcher rewrite user_language cookie
-        if ($request->input('change_lang'))
+        $change_language = $request->input('change_lang');
+        if ($change_language && in_array($change_language, config('api_configs.languages')))
         {
-            setcookie('user_language', $request->input('change_lang'), time() + 60 * 30, '/');
-            $_COOKIE['user_language'] = $request->input('change_lang');
-            if ($requested_language !== $request->input('change_lang'))
+            setcookie('user_language', $change_language, time() + 60 * 30, '/');
+            $_COOKIE['user_language'] = $change_language;
+            if ($requested_language !== $change_language)
             {
-                $redirect_path = $request->input('change_lang') == $main_language ? '/' : '/' . $request->input('change_lang') . '/ ';
+                $redirect_path = $change_language == $main_language ? '/' : '/' . $change_language . '/ ';
                 return [
                     'redirect' => true,
                     'redirect_path' => $redirect_path
