@@ -236,7 +236,7 @@ class ACHController extends Controller
                 $xml = new \SimpleXMLElement($res);
                 return $xml->asXML();
                 break;
-            case 'text/plain; charset=UTF-8':
+            case 'text/html;charset=UTF-8;robots;':
                 return '<pre style="word-wrap: break-word; white-space: pre-wrap;">'.$res.'</pre>';
                 break;
             default:
