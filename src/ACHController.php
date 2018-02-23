@@ -237,7 +237,7 @@ class ACHController extends Controller
                 return $xml->asXML();
                 break;
             case 'text/html;charset=UTF-8;robots;':
-                return '<pre style="word-wrap: break-word; white-space: pre-wrap;">'.$res.'</pre>';
+                return $res;
                 break;
             default:
                 $shit = array_get($headers, 'cache-disposition', array_get($headers, 'content-disposition'));
