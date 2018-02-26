@@ -399,6 +399,13 @@ class ACHController extends Controller
             $_COOKIE['user_language'] = $user_language;
         }
 
+        //if user_language isn't in allowed languages than set user_language = main_language
+        if (!in_array($_COOKIE['user_language'], config('api_configs.languages')))
+        {
+            setcookie('user_language', $main_language, time() + 60 * 30, '/');
+            $_COOKIE['user_language'] = $main_language;
+        }
+
         //if user_language differs from requested language then redirecting on user_language page
         if ($request->path() == '/' && $request->get('l') !== $main_language && $requested_language !== $_COOKIE['user_language'])
         {
