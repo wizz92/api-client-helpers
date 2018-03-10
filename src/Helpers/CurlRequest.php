@@ -71,8 +71,9 @@ class CurlRequest
 
     private function setHeaders($curl, string $header_line){
         if(! strpos($header_line, ':')) return strlen($header_line);
-        
-        list($name, $value) = explode(':', trim(strtolower($header_line)), 2);
+
+        list($name, $value) = explode(':', trim($header_line), 2);
+        $name = strtolower($name);
         if  ($name == 'set-cookie') {
             $this->headers['cookies'][] = CookieHelper::parse_cookies(trim($value));
         } else {

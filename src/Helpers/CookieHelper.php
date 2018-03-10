@@ -58,8 +58,7 @@ class CookieHelper
     {
         foreach($cookies as $cookie) {
             $minutes = new \Carbon\Carbon($cookie['expires']);
-            $minutes = $minutes->diffInMinutes(\Carbon\Carbon::now());
-            setcookie($cookie['name'], $cookie['value'], $minutes, $cookie['path']);
+            setcookie($cookie['name'], $cookie['value'], $minutes->timestamp, $cookie['path']);
         }
     }
 }
