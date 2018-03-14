@@ -13,6 +13,15 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+        include __DIR__.'/ACHController.php';
+        include __DIR__.'/Helpers/cache.php';
+        $this->mergeConfigFrom(__DIR__.'/configs/api_configs.php', 'api_configs');
+        $this->app->make('Wizz\ApiClientHelpers\Token');
+        $this->app->make('Wizz\ApiClientHelpers\ACHController');
+        $this->app->make('Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware');
+        $this->app->make('Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware');
+
         $this->publishes([
             __DIR__.'/configs/api_configs.php' => config_path('api_configs.php'),
         ]);
@@ -29,13 +38,14 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     public function register()
     {
         // include __DIR__.'/routes.php';
-        include __DIR__.'/ACHController.php';
-        include __DIR__.'/Helpers/cache.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
-        $this->mergeConfigFrom(__DIR__.'/configs/api_configs.php', 'api_configs');
-        $this->app->make('Wizz\ApiClientHelpers\Token');
-        $this->app->make('Wizz\ApiClientHelpers\ACHController');
-        $this->app->make('Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware');
-        $this->app->make('Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware');
+
+        // include __DIR__.'/ACHController.php';
+        // include __DIR__.'/Helpers/cache.php';
+        // $this->mergeConfigFrom(__DIR__.'/configs/api_configs.php', 'api_configs');
+        // $this->app->make('Wizz\ApiClientHelpers\Token');
+        // $this->app->make('Wizz\ApiClientHelpers\ACHController');
+        // $this->app->make('Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware');
+        // $this->app->make('Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware');
     }
 }
