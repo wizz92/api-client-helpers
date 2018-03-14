@@ -18,10 +18,34 @@ use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
     }
 
     function conf(string $key = '', bool $allow_default = true){
-        $domain_key = request()->get('domain') && request()->get('domain_change_code') == 'limpopo' ? request()->get('domain') : array_get($_SERVER,'SERVER_NAME' ,'');
-        $suf = $key ? '+'.$key : ''; 
+        $domain_key = getDomain();
+        $suf = $key ? '+'.$key : '';
         $config_file = $key ? ArrayHelper::array_sign(config('api_configs'), $prepend = '', $sign = '+', $ignore_array = true)  : config('api_configs');
         return $allow_default ? array_get($config_file, $domain_key.$suf, array_get($config_file, 'defaults'.$suf)) : array_get($config_file, $domain_key.$suf, false);
+    }
+
+    /**
+     * @return string
+     */
+    function getDomain() {
+      $switchDomain = request()->get('domain') && request()->get('domain_change_code') == 'limpopo' ? request()->get('domain') : false;
+      if ($switchDomain) {
+        return setDomain($switchDomain);
+      }
+      $domainFromSession = session()->get('current_domain');
+      if ($domainFromSession) {
+        return $domainFromSession;
+      }
+      return setDomain(array_get($_SERVER,'SERVER_NAME' ,''));
+    }
+
+    /**
+     * @param string $domain
+     * @return string
+     */
+    function setDomain($domain){
+      session()->put('current_domain', $domain);
+      return $domain;
     }
 
     function CK($slug) //CK = Cache Key
