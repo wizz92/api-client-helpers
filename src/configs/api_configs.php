@@ -12,7 +12,7 @@ return [
         'not_found_redirect_mode' => env('not_found_redirect_mode', 'http'), // other option is "view"
         'client_id' 		=> env('client_id', 1),
         'client_secret' 	=> env('client_secret', 'abc'),
-        'url'   			=> env('url', 'http://localhost:8001'),
+        'url'   			=> env('url', 'api'),
         'secret_url'   		=> env('secret_url', 'http://localhost:8001'),
         'use_frontend_repo' => env('use_frontend_repo', false),
         'frontend_repo_url' => env('frontend_repo_url', 'https://localhost:8080/pc/'),
