@@ -64,7 +64,7 @@ class ACHController extends Controller
             $query = [];
             // $domain = $req->url();
             // cut shit from here
-
+            $slug = substr($slug,1);
             $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
             $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions()));
 
@@ -76,7 +76,7 @@ class ACHController extends Controller
                 $location = str_replace("Location: ", "", $location);
                 return redirect()->to($location);
             }
-            
+
             // what is this?
             if(strpos($http_code, '238') > -1)
             {
