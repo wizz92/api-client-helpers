@@ -30,6 +30,7 @@ use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
     function getDomain() {
       $switchDomain = request()->get('domain') && request()->get('domain_change_code') == 'limpopo' ? request()->get('domain') : false;
       if ($switchDomain) {
+        forgetCookie();
         return setDomain($switchDomain);
       }
       $domainFromSession = session()->get('current_domain');
@@ -37,6 +38,16 @@ use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
         return $domainFromSession;
       }
       return setDomain(array_get($_SERVER,'SERVER_NAME' ,''));
+    }
+
+    /**
+     * remove all cookies
+     * @return void
+     */
+    function forgetCookie() {
+      foreach ($_COOKIE as $name => $value) {
+        setcookie($name, null, -1);
+      }
     }
 
     /**
