@@ -46,7 +46,7 @@ class CurlRequest
 
         $query = conf('secret_url').$requestString;
         $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
-        $cookie_string = CookieHelper::getCookieStringFromArray($this->request->cookie());
+        $cookie_string = CookieHelper::getCookieStringFromArray($_COOKIE);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $query);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
