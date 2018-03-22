@@ -59,7 +59,7 @@ class CurlRequest
         
         if (in_array($method, $this->post_methods)){
             if (array_get($data, 'files')) $data['files'] = $this->prepare_files_for_curl($data);
-            $data = ($method == "POST") ? ArrayHelper::array_sign($data) : http_build_query($data);
+            $data = ($method == "POST") ? ArrayHelper::array_sign($data, '', '+', true) : http_build_query($data);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         $this->raw_response = curl_exec($ch);
