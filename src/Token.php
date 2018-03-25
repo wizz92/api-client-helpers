@@ -1,5 +1,6 @@
-<?php 
+<?php
 namespace Wizz\ApiClientHelpers;
+
 use \Illuminate\Http\Request;
 use \Cache;
 
@@ -16,17 +17,14 @@ class Token
     public $request;
 
     protected function getFromBootstrap($query)
-    {   
+    {
         
 
         $cache_key = 'bootstrap_data_from_api';
-        // if (false) 
-        if (Cache::has($cache_key)) 
-        {
+        // if (false)
+        if (Cache::has($cache_key)) {
             $output = Cache::get($cache_key);
-
-        } else
-        {
+        } else {
             // $addition = array_get($_SERVER, 'QUERY_STRING', '');
             // $query .= ($addition) ? '&'.$addition : '';
             session(['addition' => request()->all()]);
@@ -34,14 +32,14 @@ class Token
             // $cookie_string = getCookieStringFromRequest(request());
             
             // session_write_close();
-            $ch = curl_init(); 
-            curl_setopt($ch, CURLOPT_URL, $query); 
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $query);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             // curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
-            $res = curl_exec($ch); 
+            $res = curl_exec($ch);
             curl_close($ch);
 
             $data = explode("\r\n\r\n", $res);
@@ -52,15 +50,12 @@ class Token
             $output = json_decode($res);
 
             Cache::put($cache_key, $output, 100);
-            
         }
-        if(!is_object($output))
-        {
+        if (!is_object($output)) {
             $this->errors = $res;
             return 'false';
         }
-        if(property_exists($output, 'errors') && count($output->errors) > 0)
-        {
+        if (property_exists($output, 'errors') && count($output->errors) > 0) {
             $this->errors = $output->errors;
             return false;
         }
@@ -72,8 +67,7 @@ class Token
     
     public function getBootstrapData()
     {
-        if (is_object($this->data)) 
-        {
+        if (is_object($this->data)) {
             return $this->data->bootstrap;
         }
         
@@ -82,8 +76,7 @@ class Token
 
     public function getToken()
     {
-        if (is_object($this->data)) 
-        {
+        if (is_object($this->data)) {
             $access_token = $this->data->access_token;
 
             session(['access_token' => $access_token]);

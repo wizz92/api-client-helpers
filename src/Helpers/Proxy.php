@@ -7,18 +7,20 @@ use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
 
-class Proxy 
+class Proxy
 {
     protected $client;
 
     protected $request;
 
-    public function __construct(CurlRequest $client, Request $request){
+    public function __construct(CurlRequest $client, Request $request)
+    {
         $this->client = $client;
         $this->request = $request;
     }
 
-    public function formRequestParams(){
+    public function formRequestParams()
+    {
         // maybe we should use https://github.com/php-curl-class/php-curl-class/blob/master/src/Curl/Curl.php
         $path = $this->request->path();
         // TODO do we need it here?
@@ -38,9 +40,4 @@ class Proxy
 
         return $this->client->config()->exec();
     }
-   
-
 }
-
-
-

@@ -6,11 +6,12 @@ use \Illuminate\Http\Request;
 use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 
-class CurlRequest 
+class CurlRequest
 {
     protected $request;
 
-    public function __construct(Request $request){
+    public function __construct(Request $request)
+    {
         $this->request = $request;
     }
     private $post_methods = ["PUT", "POST", "DELETE"];
@@ -54,35 +55,41 @@ class CurlRequest
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept-Language: '.$this->request->header('Accept-Language')]);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$this, 'setHeaders']);
         
-        if (in_array($method, $this->post_methods)){
-            if (array_get($data, 'files')) $data['files'] = $this->prepare_files_for_curl($data);
-            $data = ($method == "POST") ? ArrayHelper::array_sign($data, '', '+', true) : http_build_query($data);
+        if (in_array($method, $this->post_methods)) {
+            if (array_get($data, 'files')) {
+                $data['files'] = $this->prepareFiles($data);
+            }
+            $data = ($method == "POST") ? ArrayHelper::sign($data, '', '+', true) : http_build_query($data);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         $this->raw_response = curl_exec($ch);
         $this->curl_info = curl_getinfo($ch);
         curl_close($ch);
-        $this->setBody()->setInfo();    
+        $this->setBody()->setInfo();
     }
 
 
-    private function setHeaders($curl, string $header_line){
-        if(! strpos($header_line, ':')) return strlen($header_line);
+    private function setHeaders($curl, string $header_line)
+    {
+        if (! strpos($header_line, ':')) {
+            return strlen($header_line);
+        }
 
         list($name, $value) = explode(':', trim($header_line), 2);
         $name = strtolower($name);
-        if  ($name == 'set-cookie') {
-            $this->headers['cookies'][] = CookieHelper::parse_cookies(trim($value));
+        if ($name == 'set-cookie') {
+            $this->headers['cookies'][] = CookieHelper::parse(trim($value));
         } else {
             $this->headers[$name] = trim($value);
         }
         return strlen($header_line);
     }
 
-    private function setInfo(){
+    private function setInfo()
+    {
         $this->response_status = $this->curl_info['http_code'];
         $this->content_type = $this->curl_info['content_type'];
         $this->redirect_status = in_array($this->response_status, $this->redirect_statuses) ? $this->response_status : false;
@@ -90,24 +97,21 @@ class CurlRequest
     }
 
 
-    private function setBody(){
+    private function setBody()
+    {
         $body = explode("\r\n\r\n", $this->raw_response);
-        $this->body = (count($body) == 3) ? $body[2] : $body[1]; 
+        $this->body = (count($body) == 3) ? $body[2] : $body[1];
         return $this;
     }
     
-    public function prepare_files_for_curl(array $data, $file_field = 'files')
+    public function prepareFiles(array $data, $file_field = 'files')
     {
         $files = ArrayHelper::array_sign(array_pull($data, $file_field));
-        foreach ($files as $key => $file){
-            if (is_object($file) && $file instanceof UploadedFile){
+        foreach ($files as $key => $file) {
+            if (is_object($file) && $file instanceof UploadedFile) {
                 $files[$key] = new \CURLFile($file->getRealPath(), $file->getClientOriginalName(), $file->getMimeType());
             }
         }
         return $files;
     }
-
 }
-
-
-
