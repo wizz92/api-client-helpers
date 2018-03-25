@@ -35,5 +35,5 @@ jobs:
           key: v1-dependencies-{{ checksum "composer.json" }}
         
       # run tests!
-      - run: vendor/bin/phpcs --report=summary  --standard=PSR2 src/
+      - run: vendor/bin/phpcs  --standard=PSR2 src/
       - run: vendor/bin/phpunit
