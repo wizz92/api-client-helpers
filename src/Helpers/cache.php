@@ -30,7 +30,7 @@ function conf(string $key = '', bool $allow_default = true)
 {
     $domain_key = getDomain();
     $suf = $key ? '+'.$key : '';
-    $config_file = $key ? ArrayHelper::array_sign(config('api_configs'), $prepend = '', $sign = '+', $ignore_array = true)  : config('api_configs');
+    $config_file = $key ? ArrayHelper::sign(config('api_configs'), $prepend = '', $sign = '+', $ignore_array = true)  : config('api_configs');
     return $allow_default ? array_get($config_file, $domain_key.$suf, array_get($config_file, 'defaults'.$suf)) : array_get($config_file, $domain_key.$suf, false);
 }
 

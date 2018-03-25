@@ -29,7 +29,7 @@ class CookieHelper
                 );
     }
     
-    public static function parse_cookies($header, $named = true)
+    public static function parse($header, $named = true)
     {
         $parts = explode(";", $header);
         $cookie = [];

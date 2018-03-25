@@ -60,9 +60,9 @@ class CurlRequest
         
         if (in_array($method, $this->post_methods)) {
             if (array_get($data, 'files')) {
-                $data['files'] = $this->prepare_files_for_curl($data);
+                $data['files'] = $this->prepareFiles($data);
             }
-            $data = ($method == "POST") ? ArrayHelper::array_sign($data, '', '+', true) : http_build_query($data);
+            $data = ($method == "POST") ? ArrayHelper::sign($data, '', '+', true) : http_build_query($data);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         $this->raw_response = curl_exec($ch);
@@ -81,7 +81,7 @@ class CurlRequest
         list($name, $value) = explode(':', trim($header_line), 2);
         $name = strtolower($name);
         if ($name == 'set-cookie') {
-            $this->headers['cookies'][] = CookieHelper::parse_cookies(trim($value));
+            $this->headers['cookies'][] = CookieHelper::parse(trim($value));
         } else {
             $this->headers[$name] = trim($value);
         }
@@ -104,7 +104,7 @@ class CurlRequest
         return $this;
     }
     
-    public function prepare_files_for_curl(array $data, $file_field = 'files')
+    public function prepareFiles(array $data, $file_field = 'files')
     {
         $files = ArrayHelper::array_sign(array_pull($data, $file_field));
         foreach ($files as $key => $file) {

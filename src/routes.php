@@ -12,7 +12,7 @@ Route::any('api/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('
 
 Route::get('/t/check', '\Wizz\ApiClientHelpers\ACHController@check');
 
-Route::get('/t/clear_cache', '\Wizz\ApiClientHelpers\ACHController@clear_cache');
+Route::get('/t/clear_cache', '\Wizz\ApiClientHelpers\ACHController@clearCache');
 // TODO do we need this here?
 Route::get('clients/payments/success', function () {
     $params = http_build_query(request()->all());
@@ -48,7 +48,7 @@ if (env('use_frontend_repo') === true) {
 
     */
     // dd('qwe');
-    Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontend_repo')
+    Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontendRepo')
         ->middleware(UpdateGlobalsMiddleware::class)
         ->middleware(BlockUrlsMiddleware::class)
         ->where('slug', '.+');

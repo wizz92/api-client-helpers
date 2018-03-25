@@ -12,7 +12,7 @@ class Validator
     Little helper for our check function.
 
     */
-    public static function is_ok($func)
+    public static function isOk($func)
     {
         return ($func()) ? 'OK' : 'OFF';
     }
@@ -22,7 +22,7 @@ class Validator
     Validating that all our configs necessary for frontend repo are in place.
 
     */
-    public static function validate_frontend_config()
+    public static function validateFrontendConfig()
     {
         if (! conf('frontend_repo_url')) {
             return false;
@@ -42,7 +42,7 @@ class Validator
     Validating that all our configs necessary for redirect are in place.
 
     */
-    public static function validate_redirect_config()
+    public static function validateRedirectConfig()
     {
         if (! conf('secret_url', false)) {
             return false;

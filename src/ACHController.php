@@ -46,10 +46,10 @@ class ACHController extends Controller
     The actual function for handling frontend repo requests.
 
     */
-    public function frontend_repo(Request $req)
+    public function frontendRepo(Request $req)
     {
         $slug = $req->path();
-        if (!Validator::validate_frontend_config()) {
+        if (!Validator::validateFrontendConfig()) {
             return $this->error_message;
         }
         $ck = CK($slug);
@@ -104,7 +104,7 @@ class ACHController extends Controller
     Function to clear all cache (e.g. when new frontend repo code is pushed).
 
     */
-    public function clear_cache()
+    public function clearCache()
     {
         if (request()->input('code') !== $this->security_code) {
             return ['result' => 'no access'];
@@ -182,9 +182,9 @@ class ACHController extends Controller
         }
 
         return [
-            'frontend_repo' => Validator::is_ok('validate_frontend_config'),
-            'redirect' => Validator::is_ok('validate_redirect_config'),
-            'caching' => Validator::is_ok('should_we_cache'),
+            'frontend_repo' => Validator::isOk('validateFrontendConfig'),
+            'redirect' => Validator::isOk('validateRedirectConfig'),
+            'caching' => Validator::isOk('shouldWeCache'),
             'version' => $this->version
         ];
     }
