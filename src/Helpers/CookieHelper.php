@@ -1,15 +1,15 @@
-<?php 
+<?php
 namespace Wizz\ApiClientHelpers\Helpers;
 
-
-
-class CookieHelper 
+class CookieHelper
 {
-    public static function insertToken($page) {
+    public static function insertToken($page)
+    {
         return str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
     }
 
-    public static function arrContextOptions(){
+    public static function arrContextOptions()
+    {
         return array(
                     "ssl" => array(
                         "verify_peer" => false,
@@ -27,14 +27,14 @@ class CookieHelper
                         ],
                     )
                 );
-    
     }
     
-    public static function parse_cookies($header, $named = true) {
-        $parts = explode(";",$header);
+    public static function parse_cookies($header, $named = true)
+    {
+        $parts = explode(";", $header);
         $cookie = [];
         foreach ($parts as $i => $part) {
-            $cook = explode("=",$part);
+            $cook = explode("=", $part);
             if ($i == 0 && $named) {
                 $cookie['name'] = trim($cook[0]);
                 $cookie['value'] = $cook[1];
@@ -56,7 +56,7 @@ class CookieHelper
     
     public static function setCookiesFromCurlResponse(array $cookies)
     {
-        foreach($cookies as $cookie) {
+        foreach ($cookies as $cookie) {
             $minutes = new \Carbon\Carbon($cookie['expires']);
             setcookie($cookie['name'], $cookie['value'], $minutes->timestamp, $cookie['path']);
         }

@@ -15,7 +15,7 @@ class UpdateGlobalsMiddleware
      * @return mixed
      */
     public function handle($request, Closure $next)
-    {    
+    {
         session(['addition' => $request->all()]);
         
         return $next($request);

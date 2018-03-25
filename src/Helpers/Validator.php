@@ -24,9 +24,13 @@ class Validator
     */
     public static function validate_frontend_config()
     {
-        if(! conf('frontend_repo_url')) return false;
+        if (! conf('frontend_repo_url')) {
+            return false;
+        }
 
-        if(substr(conf('frontend_repo_url'), -1) != '/') return false;
+        if (substr(conf('frontend_repo_url'), -1) != '/') {
+            return false;
+        }
 
         return true;
     }
@@ -40,8 +44,10 @@ class Validator
     */
     public static function validate_redirect_config()
     {
-        if(! conf('secret_url', false)) return false;
+        if (! conf('secret_url', false)) {
+            return false;
+        }
 
         return true;
     }
-} 
+}
