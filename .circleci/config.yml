@@ -39,5 +39,5 @@ jobs:
       - run: vendor/bin/phpcs  --config-set show_warnings 0
       - run: vendor/bin/phpcs  --config-set colors 1
       - run: vendor/bin/phpcs  --config-set report_width 200
-      - run: vendor/bin/phpcs  --standard=PSR2 src/
+      - run: vendor/bin/phpcs  --standard=PSR2 --exclude=Generic.NamingConventions.CamelCapsFunctionName src/
       - run: vendor/bin/phpunit
