@@ -15,7 +15,8 @@
             "Wizz\\ApiClientHelpers\\": "src/"
         },
         "files": [
-            "src/configs/api_configs.php"
+            "src/configs/api_configs.php",
+            "src/Helpers/cache.php"
         ]
     },
     "require": {
