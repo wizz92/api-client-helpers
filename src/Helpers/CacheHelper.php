@@ -9,7 +9,7 @@ class CacheHelper
      * Function to see if we should be caching response from frontend repo.
      * If $slug is passed, it will also check whether this $slug is already in cache;
      */
-    public static function should_we_cache($ck = false)
+    public static function shouldWeCache($ck = false)
     {
         if (self::conf('use_cache_frontend') === false) {
             return false;

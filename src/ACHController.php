@@ -54,7 +54,7 @@ class ACHController extends Controller
             return $this->error_message;
         }
         $ck = CacheHelper::CK($slug);
-        if (CacheHelper::should_we_cache($ck)) {
+        if (CacheHelper::shouldWeCache($ck)) {
             return CookieHelper::insertToken(Cache::get($ck));
         }
 
@@ -89,7 +89,7 @@ class ACHController extends Controller
                 }
             }
 
-            if (CacheHelper::should_we_cache()) {
+            if (CacheHelper::shouldWeCache()) {
                 Cache::put($ck, $page, CacheHelper::conf('cache_frontend_for'));
             }
 
