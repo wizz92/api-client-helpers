@@ -2,6 +2,7 @@
 namespace Wizz\ApiClientHelpers\Helpers;
 
 use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
+use Cache;
 
 class CacheHelper
 {
