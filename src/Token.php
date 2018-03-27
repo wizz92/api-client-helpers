@@ -3,6 +3,7 @@ namespace Wizz\ApiClientHelpers;
 
 use \Illuminate\Http\Request;
 use \Cache;
+use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 
 class Token
 {
@@ -99,6 +100,6 @@ class Token
             'client_id' => config('api_configs.client_id'),
             'client_secret' => config('api_configs.client_secret'),
         ];
-        return conf('secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
+        return CacheHelper::conf('secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
     }
 }

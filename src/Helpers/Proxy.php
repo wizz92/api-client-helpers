@@ -5,6 +5,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \Illuminate\Http\Request;
 use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
+use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
 
 class Proxy
@@ -26,15 +27,15 @@ class Proxy
         // TODO do we need it here?
         
         $path = strpos($path, '/') === 0 ? $path : '/'.$path;
-        $requestString = str_replace(conf('url'), '', $path);
+        $requestString = str_replace(CacheHelper::conf('url'), '', $path);
         $method = $_SERVER['REQUEST_METHOD'];
         $data = $this->request->all();
         $data['ip'] = array_get($_SERVER, 'HTTP_CF_CONNECTING_IP', $this->request->ip());
-        $data['app_id'] = conf('client_id');
+        $data['app_id'] = CacheHelper::conf('client_id');
         $addition = session('addition') ? session('addition') : [];
         $data = array_merge($data, $addition);
 
-        $query = conf('secret_url').$requestString;
+        $query = CacheHelper::conf('secret_url').$requestString;
         $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
         $cookie_string = CookieHelper::getCookieStringFromArray($this->request->cookie());
 
