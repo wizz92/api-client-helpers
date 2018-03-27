@@ -15,7 +15,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     {
 
         include __DIR__.'/ACHController.php';
-        include __DIR__.'/Helpers/cache.php';
+        // include __DIR__.'/Helpers/cache.php';
         $this->mergeConfigFrom(__DIR__.'/configs/api_configs.php', 'api_configs');
         $this->app->make('Wizz\ApiClientHelpers\Token');
         $this->app->make('Wizz\ApiClientHelpers\ACHController');
