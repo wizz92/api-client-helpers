@@ -6,7 +6,6 @@ use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Closure;
 use Log;
 
-
 class BlockUrlsMiddleware
 {
     /**
