@@ -65,11 +65,11 @@ class ACHController extends Controller
             // cut shit from here
             if (substr($slug, 0, 1) === '/') {
                 $slug = substr($slug, 1);
-			}
-			// if we using landings.repo for projects
-			// we need to add pname identifier to request
-			$project_alias = CacheHelper::conf('project_alias');
-			if ($project_alias) $query['pname'] = $project_alias;
+            }
+            // if we using landings.repo for projects
+            // we need to add pname identifier to request
+            $project_alias = CacheHelper::conf('project_alias');
+            if ($project_alias) $query['pname'] = $project_alias;
 
             $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
             $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions()));
