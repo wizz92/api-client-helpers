@@ -4,6 +4,7 @@ namespace Wizz\ApiClientHelpers\Helpers;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \Illuminate\Http\Request;
 use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
+use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 
 class Validator
 {
@@ -24,11 +25,11 @@ class Validator
     */
     public static function validateFrontendConfig()
     {
-        if (! conf('frontend_repo_url')) {
+        if (! CacheHelper::conf('frontend_repo_url')) {
             return false;
         }
 
-        if (substr(conf('frontend_repo_url'), -1) != '/') {
+        if (substr(CacheHelper::conf('frontend_repo_url'), -1) != '/') {
             return false;
         }
 
@@ -44,7 +45,7 @@ class Validator
     */
     public static function validateRedirectConfig()
     {
-        if (! conf('secret_url', false)) {
+        if (! CacheHelper::conf('secret_url', false)) {
             return false;
         }
 

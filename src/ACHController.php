@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Cache;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
+use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
 
@@ -21,7 +22,7 @@ class ACHController extends Controller
     {
         $one = "Sorry, looks like something went wrong. ";
 
-        $two = (conf('support_email')) ? "Please contact us at <a href='mailto:".conf('support_email')."'>".conf('support_email')."</a>" : "Please contact us via email";
+        $two = (CacheHelper::conf('support_email')) ? "Please contact us at <a href='mailto:".CacheHelper::conf('support_email')."'>".CacheHelper::conf('support_email')."</a>" : "Please contact us via email";
 
         $three = ' for further assistance.';
 
@@ -52,13 +53,13 @@ class ACHController extends Controller
         if (!Validator::validateFrontendConfig()) {
             return $this->error_message;
         }
-        $ck = CK($slug);
-        if (should_we_cache($ck)) {
+        $ck = CacheHelper::CK($slug);
+        if (CacheHelper::should_we_cache($ck)) {
             return CookieHelper::insertToken(Cache::get($ck));
         }
 
         try {
-            $front = conf('frontend_repo_url');
+            $front = CacheHelper::conf('frontend_repo_url');
             $query = [];
             // $domain = $req->url();
             // cut shit from here
@@ -88,8 +89,8 @@ class ACHController extends Controller
                 }
             }
 
-            if (should_we_cache()) {
-                Cache::put($ck, $page, conf('cache_frontend_for'));
+            if (CacheHelper::should_we_cache()) {
+                Cache::put($ck, $page, CacheHelper::conf('cache_frontend_for'));
             }
 
             return CookieHelper::insertToken($page);
@@ -167,7 +168,7 @@ class ACHController extends Controller
             return $this->error_message;
         }
 
-        return redirect()->to(conf('secret_url').'/'.$slug.'?'.http_build_query($request->all()));
+        return redirect()->to(CacheHelper::conf('secret_url').'/'.$slug.'?'.http_build_query($request->all()));
     }
 
     /*
