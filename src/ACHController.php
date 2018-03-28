@@ -27,7 +27,7 @@ class ACHController extends Controller
         $three = ' for further assistance.';
 
         $this->error_message = $one.$two.$three;
-        $this->security_code = config('api_configs.security_code');
+        $this->security_code = CacheHelper::conf('security_code');
         $this->redirect_code = config('api_configs.not_found_redirect_code', 301);
         $this->redirect_mode = config('api_configs.not_found_redirect_mode');
 
