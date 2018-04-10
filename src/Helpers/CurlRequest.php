@@ -58,7 +58,7 @@ class CurlRequest
         curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$this, 'setHeaders']);
-        
+
         if (in_array($method, $this->post_methods)) {
             if (array_get($data, 'files')) {
                 $data['files'] = $this->prepareFiles($data);
@@ -104,10 +104,10 @@ class CurlRequest
         $this->body = (count($body) == 3) ? $body[2] : $body[1];
         return $this;
     }
-    
+
     public function prepareFiles(array $data, $file_field = 'files')
     {
-        $files = ArrayHelper::array_sign(array_pull($data, $file_field));
+        $files = ArrayHelper::sign(array_pull($data, $file_field));
         foreach ($files as $key => $file) {
             if (is_object($file) && $file instanceof UploadedFile) {
                 $files[$key] = new \CURLFile($file->getRealPath(), $file->getClientOriginalName(), $file->getMimeType());
