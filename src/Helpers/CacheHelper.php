@@ -50,7 +50,7 @@ class CacheHelper
         if ($domainFromSession) {
             return $domainFromSession;
         }
-        return self::setDomain(array_get($_SERVER, 'SERVER_NAME', ''));
+        return self::setDomain(array_get($_SERVER, 'HTTP_HOST', ''));
     }
 
     /**
