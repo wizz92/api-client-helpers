@@ -105,7 +105,7 @@ class CurlRequest
         return $this;
     }
 
-	// TODO: write test on this function
+    // TODO: write test on this function
     public function prepareFiles(array $data, $file_field = 'files')
     {
         $files = ArrayHelper::sign(array_pull($data, $file_field));
