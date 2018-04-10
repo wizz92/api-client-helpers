@@ -105,12 +105,13 @@ class CurlRequest
         return $this;
     }
 
+	// TODO: write test on this function
     public function prepareFiles(array $data, $file_field = 'files')
     {
         $files = ArrayHelper::sign(array_pull($data, $file_field));
         foreach ($files as $key => $file) {
             if (is_object($file) && $file instanceof UploadedFile) {
-                $files[$key] = new \CURLFile($file->getRealPath(), $file->getClientOriginalName(), $file->getMimeType());
+                $files[$key] = new \CURLFile($file->getRealPath(), $file->getMimeType(), $file->getClientOriginalName());
             }
         }
         return $files;
