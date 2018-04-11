@@ -30,7 +30,7 @@ class CacheHelper
 
     public static function conf(string $key = '', bool $allow_default = true)
     {
-        $domain_key = app()->environment() !== 'production' && env('use_landings_repo', false)
+        $domain_key = env('use_landings_repo', false)
             ? request()->get('pname')
             : self::getDomain();
         $suf = $key ? '+'.$key : '';

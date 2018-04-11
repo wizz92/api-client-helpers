@@ -67,6 +67,8 @@ class ACHController extends Controller
                 $slug = substr($slug, 1);
             }
 
+            $query['pname'] = CacheHelper::getDomain();
+
             $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
             $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions()));
 
