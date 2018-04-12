@@ -48,7 +48,7 @@ class Token
 
             $output = json_decode($res);
 
-            Cache::put($cache_key, $output, 100);
+            Cache::put($cache_key, $output, 60*24*30);
         }
         if (!is_object($output)) {
             $this->errors = $res;
