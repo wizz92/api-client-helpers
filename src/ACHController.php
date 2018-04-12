@@ -336,11 +336,13 @@ class ACHController extends Controller
         ];
         $url = config('api_configs.secret_url') . '/hits';
 
+        $header = ['Content-type: application/x-www-form-urlencoded'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         $response = curl_exec($ch);
         curl_close($ch);
 
