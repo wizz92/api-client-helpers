@@ -119,12 +119,6 @@ class ACHController extends Controller
         session(['addition' => $input]);
         if(!$this->validate_frontend_config()) return $this->error_message;
 
-        $ck = $this->CK($slug);
-        if ($this->should_we_cache($ck)) {
-            $page = Cache::get($ck);
-            return insertToken($page);
-        }
-
         $multilingual = $this->checkMultilingual($req);
         if ($multilingual['redirect'])
         {
@@ -133,6 +127,12 @@ class ACHController extends Controller
         $query = $multilingual['query'];
 
         $this->trackingHits($input);
+        
+        $ck = $this->CK($slug);
+        if ($this->should_we_cache($ck)) {
+            $page = Cache::get($ck);
+            return insertToken($page);
+        }
 
         try {
             $front = $conf['frontend_repo_url'];
@@ -336,13 +336,12 @@ class ACHController extends Controller
         ];
         $url = config('api_configs.secret_url') . '/hits';
 
-        $header = ['Content-type: application/x-www-form-urlencoded'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
         curl_close($ch);
 
