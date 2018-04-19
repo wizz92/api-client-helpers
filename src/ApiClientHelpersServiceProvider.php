@@ -39,7 +39,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->register('Intervention\Httpauth\Httpauth');
+        $this->app->register('Intervention\Httpauth\HttpauthServiceProviderLaravel5');
         // include __DIR__.'/routes.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
 
