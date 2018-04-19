@@ -93,7 +93,7 @@ class Token
 
     private function prepareQuery()
     {
-        $path = request()->path();
+        $path = request()->path() . '?' . http_build_query(request()->query());
         $form_params = [
             'grant_type' => CacheHelper::conf('grant_type'),
             'client_id' => CacheHelper::conf('client_id'),
