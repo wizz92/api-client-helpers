@@ -5,11 +5,12 @@ namespace Wizz\ApiClientHelpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Cache;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
+use Cache;
+use Httpauth;
 
 class ACHController extends Controller
 {
@@ -47,8 +48,18 @@ class ACHController extends Controller
     The actual function for handling frontend repo requests.
 
     */
+
+    private function ensureBasicAuth()
+    {
+        if (CacheHelper::conf('http_auth')) {
+            Httpauth::make(['username' => '1', 'password' => '1'])->secure();
+        }
+    }
+
     public function frontendRepo(Request $req)
     {
+        $this->ensureBasicAuth();
+
         $slug = $req->path();
         if (!Validator::validateFrontendConfig()) {
             return $this->error_message;

@@ -17,7 +17,7 @@ return [
         'use_frontend_repo' => env('use_frontend_repo', false),
         'frontend_repo_url' => env('frontend_repo_url', 'https://localhost:8080/pc/'),
         'use_cache_frontend' => env('use_cache_frontend', true),
-
+        'http_auth' => false,
     ],
     'domain.net' => [
         'client_id'         => 'test',
