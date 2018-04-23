@@ -4,7 +4,7 @@
 return [
     'defaults' => [
         'grant_type' => env('grant_type', 'client_credentials'),
-        'tracking_hits' => true,
+        'tracking_hits' => false,
         'security_code'     => env('security_code', 'qwe123'),
         'cache_frontend_for'=> env('cache_frontend_for', 60*24*31),
         'not_found_redirect_seconds' => env('not_found_redirect_seconds', 0),
