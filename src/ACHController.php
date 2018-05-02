@@ -232,6 +232,6 @@ class ACHController extends Controller
 
         $hit_id = json_decode($response)->data->id ?? 0;
         
-        return Cookie::queue('hit_id', $hit_id, time()+60*60*24*30, '/');
+        return setcookie('hit_id', $hit_id, 0, '/');
     }
 }
