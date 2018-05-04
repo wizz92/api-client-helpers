@@ -90,8 +90,13 @@ class ACHController extends Controller
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
             if (strpos($http_code, '302') > -1 || strpos($http_code, '301') > -1) {
-                $location = array_get($http_response_header, 3, '/');
+                $location = array_get($http_response_header, 7, '/');
+
                 $location = str_replace("Location: ", "", $location);
+                if (strpos($location, '?authType')) {
+                    $location = "/?" . explode("?", $location)[1];
+                }
+
                 return redirect()->to($location);
             }
 
@@ -231,7 +236,7 @@ class ACHController extends Controller
         curl_close($ch);
 
         $hit_id = json_decode($response)->data->id ?? 0;
-        
+
         return setcookie('hit_id', $hit_id, 0, '/');
     }
 }
