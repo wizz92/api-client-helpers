@@ -93,7 +93,7 @@ class ACHController extends Controller
                 $location = array_get($http_response_header, 7, '/');
 
                 $location = str_replace("Location: ", "", $location);
-                if(strpos($location, '?authType')) {
+                if (strpos($location, '?authType')) {
                     $location = "/?" . explode("?", $location)[1];
                 }
 
@@ -236,7 +236,7 @@ class ACHController extends Controller
         curl_close($ch);
 
         $hit_id = json_decode($response)->data->id ?? 0;
-        
+
         return setcookie('hit_id', $hit_id, 0, '/');
     }
 }
