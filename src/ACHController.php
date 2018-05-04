@@ -9,6 +9,7 @@ use Wizz\ApiClientHelpers\Helpers\CurlRequest;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
+use Cookie;
 use Cache;
 use Httpauth;
 
@@ -64,6 +65,9 @@ class ACHController extends Controller
         if (!Validator::validateFrontendConfig()) {
             return $this->error_message;
         }
+
+        $this->trackingHits();
+
         $ck = CacheHelper::CK($slug);
         if (CacheHelper::shouldWeCache($ck)) {
             return CookieHelper::insertToken(Cache::get($ck));
@@ -207,5 +211,32 @@ class ACHController extends Controller
             'caching' => Validator::isOk('shouldWeCache'),
             'version' => $this->version
         ];
+    }
+
+    //store hit and write hit_id in cookie
+    public function trackingHits()
+    {
+        if (!CacheHelper::conf('tracking_hits') || Cookie::get('hit_id')) {
+            return;
+        }
+        $input = request()->all();
+        $data = [
+            'rt' => array_get($input, 'rt', null),
+            'app_id' => CacheHelper::conf('client_id')
+        ];
+        $url = CacheHelper::conf('secret_url') . '/hits';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $hit_id = json_decode($response)->data->id ?? 0;
+        
+        return setcookie('hit_id', $hit_id, 0, '/');
     }
 }

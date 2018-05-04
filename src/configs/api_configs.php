@@ -4,6 +4,7 @@
 return [
     'defaults' => [
         'grant_type' => env('grant_type', 'client_credentials'),
+        'tracking_hits' => false,
         'security_code'     => env('security_code', 'qwe123'),
         'cache_frontend_for'=> env('cache_frontend_for', 60*24*31),
         'not_found_redirect_seconds' => env('not_found_redirect_seconds', 0),
@@ -16,7 +17,6 @@ return [
         'use_frontend_repo' => env('use_frontend_repo', false),
         'frontend_repo_url' => env('frontend_repo_url', 'https://localhost:8080/pc/'),
         'use_cache_frontend' => env('use_cache_frontend', true),
-        'tracking_hits' => false,
         'http_auth' => false,
         'alias_domain' => null,
     ],
