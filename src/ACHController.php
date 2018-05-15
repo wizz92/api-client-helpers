@@ -172,7 +172,10 @@ class ACHController extends Controller
         if ($r->content_type == 'application/json') {
             return response()->json(json_decode($r->body));
         }
-        if (strpos('q'.$r->content_type, 'xml')) {
+        // we need to check exactly '/xml' here because .xlsx .docx file has
+        // content type like this application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        // 'xml' substring is here, but it is not XML :)
+        if (strpos('q'.$r->content_type, '/xml')) {
             return (new \SimpleXMLElement($r->body))->asXML();
         }
 
