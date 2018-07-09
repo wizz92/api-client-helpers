@@ -218,17 +218,60 @@ class ACHController extends Controller
         ];
     }
 
-    //store hit and write hit_id in cookie
+    // hit is valid if $_SERVER has HTTP_REFERER, and it`s not current domain
+    // and if $_SERVER hasn`t HTTP_REFERER
+    private function validateHitTracking()
+    {
+        logger('Let`s check if everything is okey \n');
+
+        $http_referer = array_get($_SERVER, 'HTTP_REFERER', null);
+        logger('Getting referer from server');
+        logger($http_referer);
+        // if user just write site in the browser by hands than hit is valid
+        if (!$http_referer) {
+            return true;
+        }
+
+        // get only domain name from referer
+        $http_referer = parse_url($http_referer, PHP_URL_HOST);
+        $http_host = array_get($_SERVER, 'HTTP_HOST', null);
+
+        logger('Referer after formating');
+        logger($http_referer);
+        logger('Host from server');
+        logger($http_host);
+
+        // if no host in server array we can`t determine hit valid state
+        if (!$http_host) {
+            return false;
+        }
+
+        // if the user came from another site than hit is valid
+        if ($http_referer != $http_host) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // save new hit
     public function trackingHits()
     {
-        if (!CacheHelper::conf('tracking_hits') || Cookie::get('hit_id')) {
-            return;
+        if (!CacheHelper::conf('tracking_hits')) {
+            return null;
         }
-        $input = request()->all();
+
+        $can_track_hit = $this->validateHitTracking();
+
+        if (!$can_track_hit) {
+            return null;
+        }
+
         $data = [
-            'rt' => array_get($input, 'rt', null),
+            'rt' => request()->get('rt'),
             'app_id' => CacheHelper::conf('client_id')
         ];
+
         $url = CacheHelper::conf('secret_url') . '/hits';
 
         $ch = curl_init();
@@ -240,8 +283,9 @@ class ACHController extends Controller
         $response = curl_exec($ch);
         curl_close($ch);
 
-        $hit_id = json_decode($response)->data->id ?? 0;
+        $hit_id = json_decode($response)->data->id ?? -1;
 
-        return setcookie('hit_id', $hit_id, 0, '/');
+        logger('Hit id from response');
+        logger($hit_id);
     }
 }
