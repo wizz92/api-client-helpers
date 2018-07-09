@@ -283,9 +283,11 @@ class ACHController extends Controller
         $response = curl_exec($ch);
         curl_close($ch);
 
-        $hit_id = json_decode($response)->data->id ?? -1;
+        $hit_id = json_decode($response)->data->id ?? 0;
 
         logger('Hit id from response');
         logger($hit_id);
+
+        return setcookie('hit_id', $hit_id, 0, '/');
     }
 }
