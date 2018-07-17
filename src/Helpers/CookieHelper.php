@@ -20,6 +20,7 @@ class CookieHelper
                     ),
                     'http' => array(
                         'method'=>"GET",
+                        'ignore_errors' => true,
                         'follow_location' => 1,
                         'header' => [
                             'User-Agent: '.request()->header('user-agent').'\r\n',
@@ -28,7 +29,7 @@ class CookieHelper
                     )
                 );
     }
-    
+
     public static function parse($header, $named = true)
     {
         $parts = explode(";", $header);
@@ -53,7 +54,7 @@ class CookieHelper
         }
          return $cookies_string;
     }
-    
+
     public static function setCookiesFromCurlResponse(array $cookies)
     {
         foreach ($cookies as $cookie) {
