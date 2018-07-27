@@ -114,6 +114,10 @@ class ACHController extends Controller
                 }
             }
 
+            if (strpos($http_code, '404') > -1) {
+              return response(CookieHelper::insertToken($page), 404);
+            }
+
             if (CacheHelper::shouldWeCache()) {
                 Cache::put($ck, $page, CacheHelper::conf('cache_frontend_for'));
             }
