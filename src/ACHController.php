@@ -332,7 +332,8 @@ class ACHController extends Controller
         }
         $data = [
             'rt' => array_get($input, 'rt', null),
-            'app_id' => config('api_configs.client_id')
+	    'app_id' => $input['client_id']
+            //'app_id' => config('api_configs.client_id')
         ];
         $url = config('api_configs.secret_url') . '/hits';
 
