@@ -187,7 +187,7 @@ class ACHController extends Controller
               ->header('Content-Type', $r->content_type)
               ->header('Content-Disposition', array_get($r->headers, 'content-disposition'));
 
-        if (strpos($path, 'assets') !== false) {
+        if (strpos($request->path(), 'assets') !== false) {
           $response = $response->header('Cache-Control', "max-age=7776000");
         }
 
