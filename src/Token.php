@@ -19,9 +19,7 @@ class Token
 
     protected function getFromBootstrap($query)
     {
-        
-
-        $cache_key = 'bootstrap_data_from_api';
+        $cache_key = "bootstrap_data_from_api_for_query_$query";
         // if (false)
         if (Cache::has($cache_key)) {
             $output = Cache::get($cache_key);
@@ -31,7 +29,7 @@ class Token
             session(['addition' => request()->all()]);
 
             // $cookie_string = getCookieStringFromRequest(request());
-            
+
             // session_write_close();
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $query);
@@ -50,7 +48,7 @@ class Token
 
             $output = json_decode($res);
 
-            Cache::put($cache_key, $output, 100);
+            Cache::put($cache_key, $output, 60*24*30);
         }
         if (!is_object($output)) {
             $this->errors = $res;
@@ -65,13 +63,13 @@ class Token
 
         return true;
     }
-    
+
     public function getBootstrapData()
     {
         if (is_object($this->data)) {
             return $this->data->bootstrap;
         }
-        
+
         return [];
     }
 
@@ -81,7 +79,7 @@ class Token
             $access_token = $this->data->access_token;
 
             session(['access_token' => $access_token]);
-            
+
             return $access_token;
         }
 
@@ -95,10 +93,12 @@ class Token
 
     private function prepareQuery()
     {
+        $path = request()->path() . '?' . http_build_query(request()->query());
         $form_params = [
-            'grant_type' => config('api_configs.grant_type'),
-            'client_id' => config('api_configs.client_id'),
-            'client_secret' => config('api_configs.client_secret'),
+            'grant_type' => CacheHelper::conf('grant_type'),
+            'client_id' => CacheHelper::conf('client_id'),
+            'client_secret' => CacheHelper::conf('client_secret'),
+            'url' => $path ? "/$path" : '/',
         ];
         return CacheHelper::conf('secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
     }

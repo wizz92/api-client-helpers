@@ -3,6 +3,7 @@
 namespace Wizz\ApiClientHelpers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\AliasLoader;
 
 class ApiClientHelpersServiceProvider extends ServiceProvider
 {
@@ -27,7 +28,8 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
         ]);
         $this->loadRoutesFrom(__DIR__.'/routes.php');
         $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
-        //
+
+        AliasLoader::getInstance()->alias('Httpauth', 'Intervention\Httpauth\Facades\Httpauth');
     }
 
     /**
@@ -37,6 +39,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->register('Intervention\Httpauth\HttpauthServiceProviderLaravel5');
         // include __DIR__.'/routes.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
 

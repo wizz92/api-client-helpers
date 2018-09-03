@@ -10,24 +10,24 @@ class TestConfig extends Orchestra\Testbench\TestCase
         $myArray = include __DIR__ .'/../src/configs/api_configs.php';
         $app['config']->set('api_configs', $myArray);
     }
-    
+
     public function testThatReturnsDefaultValueIfDomainNotExists(){
-        $_SERVER['SERVER_NAME'] = 'domain_that_not_exists';
+        $_SERVER['HTTP_HOST'] = 'domain_that_not_exists';
         $this->assertEquals(CacheHelper::conf('client_secret'), 'abc');
     }
     public function testThatReturnsCorrectValueIfDomainExists(){
-        $_SERVER['SERVER_NAME'] = 'domain.net';
+        $_SERVER['HTTP_HOST'] = 'domain.net';
         $this->assertEquals(CacheHelper::conf('client_secret'), 'domain.net.client_secret');
     }
 
     public function testReturnsFullConfigIfInputIsEmpty(){
-        $_SERVER['SERVER_NAME'] = 'domain.net';
+        $_SERVER['HTTP_HOST'] = 'domain.net';
         $this->assertTrue(is_array(CacheHelper::conf()));
     }
 
     public function testThatReturnsCorrectValueIfDomainNotExistsAndAllowDefaultIsSetToFalse(){
-        $_SERVER['SERVER_NAME'] = 'domain_that_not_exists';
+        $_SERVER['HTTP_HOST'] = 'domain_that_not_exists';
         $this->assertEquals(null, CacheHelper::conf('client_secret', false));
     }
-    
+
 }

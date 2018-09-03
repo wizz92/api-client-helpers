@@ -2,6 +2,7 @@
 namespace Wizz\ApiClientHelpers\Helpers;
 
 use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
+use Cache;
 
 class CacheHelper
 {
@@ -29,7 +30,9 @@ class CacheHelper
 
     public static function conf(string $key = '', bool $allow_default = true)
     {
-        $domain_key = self::getDomain();
+        $domain_key = env('use_landings_repo', false)
+            ? request()->get('pname')
+            : self::getDomain();
         $suf = $key ? '+'.$key : '';
         $config_file = $key ? ArrayHelper::sign(config('api_configs'), $prepend = '', $sign = '+', $ignore_array = true)  : config('api_configs');
         return $allow_default ? array_get($config_file, $domain_key.$suf, array_get($config_file, 'defaults'.$suf)) : array_get($config_file, $domain_key.$suf, false);
@@ -49,7 +52,7 @@ class CacheHelper
         if ($domainFromSession) {
             return $domainFromSession;
         }
-        return self::setDomain(array_get($_SERVER, 'SERVER_NAME', ''));
+        return self::setDomain(array_get($_SERVER, 'HTTP_HOST', ''));
     }
 
     /**

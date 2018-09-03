@@ -3,6 +3,9 @@ use Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware;
 use Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware;
 
 Route::get('/sitemap.xml', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
+// here we setup proxy for robots which leads to api
+// into api we get robots from mongo_config or from robots generator
+Route::get('/robots.txt', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 
 Route::get('/robots_generator', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 

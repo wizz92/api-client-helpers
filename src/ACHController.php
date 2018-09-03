@@ -5,11 +5,13 @@ namespace Wizz\ApiClientHelpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Cache;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
+use Cookie;
+use Cache;
+use Httpauth;
 
 class ACHController extends Controller
 {
@@ -27,7 +29,7 @@ class ACHController extends Controller
         $three = ' for further assistance.';
 
         $this->error_message = $one.$two.$three;
-        $this->security_code = config('api_configs.security_code');
+        $this->security_code = CacheHelper::conf('security_code');
         $this->redirect_code = config('api_configs.not_found_redirect_code', 301);
         $this->redirect_mode = config('api_configs.not_found_redirect_mode');
 
@@ -47,12 +49,25 @@ class ACHController extends Controller
     The actual function for handling frontend repo requests.
 
     */
+
+    private function ensureBasicAuth()
+    {
+        if (CacheHelper::conf('http_auth')) {
+            Httpauth::make(['username' => '1', 'password' => '1'])->secure();
+        }
+    }
+
     public function frontendRepo(Request $req)
     {
+        $this->ensureBasicAuth();
+
         $slug = $req->path();
         if (!Validator::validateFrontendConfig()) {
             return $this->error_message;
         }
+
+        $this->trackingHits();
+
         $ck = CacheHelper::CK($slug);
         if (CacheHelper::shouldWeCache($ck)) {
             return CookieHelper::insertToken(Cache::get($ck));
@@ -66,14 +81,24 @@ class ACHController extends Controller
             if (substr($slug, 0, 1) === '/') {
                 $slug = substr($slug, 1);
             }
+
+            if (CacheHelper::conf('pname_query')) {
+                $query['pname'] = CacheHelper::conf('alias_domain') ?? CacheHelper::getDomain();
+            }
+
             $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
             $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions()));
 
             $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
 
             if (strpos($http_code, '302') > -1 || strpos($http_code, '301') > -1) {
-                $location = array_get($http_response_header, 3, '/');
+                $location = array_get($http_response_header, 7, '/');
+
                 $location = str_replace("Location: ", "", $location);
+                if (strpos($location, '?authType')) {
+                    $location = "/?" . explode("?", $location)[1];
+                }
+
                 return redirect()->to($location);
             }
 
@@ -87,6 +112,10 @@ class ACHController extends Controller
                 { // changed this to else, so that we use http redirect by default even if nothing is specified
                     return redirect()->to('/', $this->redirect_code);
                 }
+            }
+
+            if (strpos($http_code, '404') > -1) {
+                return response(CookieHelper::insertToken($page), 404);
             }
 
             if (CacheHelper::shouldWeCache()) {
@@ -147,7 +176,10 @@ class ACHController extends Controller
         if ($r->content_type == 'application/json') {
             return response()->json(json_decode($r->body));
         }
-        if (strpos('q'.$r->content_type, 'xml')) {
+        // we need to check exactly '/xml' here because .xlsx .docx file has
+        // content type like this application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        // 'xml' substring is here, but it is not XML :)
+        if (strpos('q'.$r->content_type, '/xml')) {
             return (new \SimpleXMLElement($r->body))->asXML();
         }
 
@@ -188,5 +220,78 @@ class ACHController extends Controller
             'caching' => Validator::isOk('shouldWeCache'),
             'version' => $this->version
         ];
+    }
+
+    // hit is valid if $_SERVER has HTTP_REFERER, and it`s not current domain
+    // and if $_SERVER hasn`t HTTP_REFERER
+    private function validateHitTracking()
+    {
+        logger('Let`s check if everything is okey \n');
+
+        $http_referer = array_get($_SERVER, 'HTTP_REFERER', null);
+        logger('Getting referer from server');
+        logger($http_referer);
+        // if user just write site in the browser by hands than hit is valid
+        if (!$http_referer) {
+            return true;
+        }
+
+        // get only domain name from referer
+        $http_referer = parse_url($http_referer, PHP_URL_HOST);
+        $http_host = array_get($_SERVER, 'HTTP_HOST', null);
+
+        logger('Referer after formating');
+        logger($http_referer);
+        logger('Host from server');
+        logger($http_host);
+
+        // if no host in server array we can`t determine hit valid state
+        if (!$http_host) {
+            return false;
+        }
+
+        // if the user came from another site than hit is valid
+        if ($http_referer != $http_host) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // save new hit
+    public function trackingHits()
+    {
+        if (!CacheHelper::conf('tracking_hits')) {
+            return null;
+        }
+
+        $can_track_hit = $this->validateHitTracking();
+
+        if (!$can_track_hit) {
+            return null;
+        }
+
+        $data = [
+            'rt' => request()->get('rt'),
+            'app_id' => CacheHelper::conf('client_id')
+        ];
+
+        $url = CacheHelper::conf('secret_url') . '/hits';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $hit_id = json_decode($response)->data->id ?? 0;
+
+        logger('Hit id from response');
+        logger($hit_id);
+
+        return setcookie('hit_id', $hit_id, 0, '/');
     }
 }
