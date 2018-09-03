@@ -12,6 +12,7 @@ Route::get('/robots_generator', '\Wizz\ApiClientHelpers\ACHController@proxy')->w
 Route::get('/r/{slug?}', '\Wizz\ApiClientHelpers\ACHController@redirect')->where('slug', '.+');
 
 Route::any('api/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
+Route::get('assets/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
 
 Route::get('/t/check', '\Wizz\ApiClientHelpers\ACHController@check');
 

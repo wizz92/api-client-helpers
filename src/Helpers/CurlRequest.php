@@ -46,7 +46,9 @@ class CurlRequest
         $addition = session('addition') ? session('addition') : [];
         $data = array_merge($data, $addition);
 
-        $query = CacheHelper::conf('secret_url').$requestString;
+        $root_url = strpos($path, 'assets') !== false ? CacheHelper::conf('frontend_repo_url') : CacheHelper::conf('secret_url');
+
+        $query = $root_url.$requestString;
         $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
         $cookie_string = CookieHelper::getCookieStringFromArray($_COOKIE);
         $ch = curl_init();
