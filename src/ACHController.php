@@ -154,6 +154,8 @@ class ACHController extends Controller
     */
     public function proxy(Request $request)
     {
+        $assets_proxy_on = CacheHelper::conf('assets_proxy') ?? false;
+        $assets_url_match = strpos($request->path(), 'assets') !== false;
 
         $r = new CurlRequest($request);
         $r->execute();
@@ -187,7 +189,7 @@ class ACHController extends Controller
               ->header('Content-Type', $r->content_type)
               ->header('Content-Disposition', array_get($r->headers, 'content-disposition'));
 
-        if (strpos($request->path(), 'assets') !== false) {
+        if ($assets_proxy_on && $assets_url_match) {
           $response = $response->header('Cache-Control', "max-age=7776000");
         }
 

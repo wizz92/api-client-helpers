@@ -19,7 +19,8 @@ return [
         'use_cache_frontend' => env('use_cache_frontend', true),
         'http_auth' => false,
         'alias_domain' => null,
-        'pname_query' => true
+        'pname_query' => true,
+        'assets_proxy' => true
     ],
     'domain.net' => [
         'client_id'         => 'test',
