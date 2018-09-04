@@ -34,9 +34,12 @@ class CurlRequest
 
     public function execute()
     {
-        // maybe we should use https://github.com/php-curl-class/php-curl-class/blob/master/src/Curl/Curl.php
+
         $path = $this->request->path();
-        // TODO do we need it here?
+
+        $assets_proxy_on = CacheHelper::conf('assets_proxy') ?? false;
+        $assets_url_match = strpos($path, 'assets') !== false;
+
         $path = strpos($path, '/') === 0 ? $path : '/'.$path;
         $requestString = str_replace(CacheHelper::conf('url'), '', $path);
         $method = $_SERVER['REQUEST_METHOD'];
@@ -46,7 +49,9 @@ class CurlRequest
         $addition = session('addition') ? session('addition') : [];
         $data = array_merge($data, $addition);
 
-        $query = CacheHelper::conf('secret_url').$requestString;
+        $root_url = ($assets_proxy_on && $assets_url_match) ? CacheHelper::conf('frontend_repo_url') : CacheHelper::conf('secret_url');
+
+        $query = $root_url.$requestString;
         $query .= ($method == "GET") ? '?'.http_build_query($data) : '';
         $cookie_string = CookieHelper::getCookieStringFromArray($_COOKIE);
         $ch = curl_init();
