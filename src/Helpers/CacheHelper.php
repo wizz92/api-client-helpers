@@ -21,6 +21,10 @@ class CacheHelper
         if (!app()->environment('production')) {
             return false;
         }
+        // if url has query params we dont need to cache it
+        if ( count(request()->query()) > 0 ) {
+            return false;
+        }
         if ($ck && !Cache::has($ck)) {
             return false;
         }
