@@ -83,4 +83,29 @@ class CacheHelper
         $slug = $ua && strrpos($ua, 'msie') > -1 ? "_ie_".$slug : $slug;
         return md5($slug);
     }
+
+        /**
+    * returns data from cache or calls a function from second parameter and puts result in cache
+    *
+    * @param {key} cache key
+    * @param {data_function} function to call if key is not found in cache
+    * @param {lifetime} minutes to store in cache
+    * @param {rewrite} should we force rewrite even if data is available in cache?
+    *
+    * @return error if data_function is not a function or data from cache if key is found or result of data_function if key is not found in cache
+    */
+
+    public static function cacher($key, $data_function, $life_time = 1000)
+    {
+        if (!is_callable($data_function)) {
+            throw new Exception('cacher function expects second parameter to be a function '.gettype($data_function).' given.');
+        }
+        if (self::shouldWeCache($key)) {
+            return \Cache::get($key);
+        }
+
+        $data = call_user_func($data_function);
+        Cache::put($key, $data, $life_time);
+        return $data;
+    }
 }
