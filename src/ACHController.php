@@ -244,11 +244,8 @@ class ACHController extends Controller
     // and if $_SERVER hasn`t HTTP_REFERER
     private function validateHitTracking()
     {
-        logger('Let`s check if everything is okey \n');
-
         $http_referer = array_get($_SERVER, 'HTTP_REFERER', null);
-        logger('Getting referer from server');
-        logger($http_referer);
+
         // if user just write site in the browser by hands than hit is valid
         if (!$http_referer) {
             return true;
@@ -257,11 +254,6 @@ class ACHController extends Controller
         // get only domain name from referer
         $http_referer = parse_url($http_referer, PHP_URL_HOST);
         $http_host = array_get($_SERVER, 'HTTP_HOST', null);
-
-        logger('Referer after formating');
-        logger($http_referer);
-        logger('Host from server');
-        logger($http_host);
 
         // if no host in server array we can`t determine hit valid state
         if (!$http_host) {
@@ -306,9 +298,6 @@ class ACHController extends Controller
         curl_close($ch);
 
         $hit_id = json_decode($response)->data->id ?? 0;
-
-        logger('Hit id from response');
-        logger($hit_id);
 
         return setcookie('hit_id', $hit_id, 0, '/');
     }
