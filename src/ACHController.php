@@ -86,9 +86,15 @@ class ACHController extends Controller
             if (CacheHelper::conf('pname_query')) {
                 $query['pname'] = CacheHelper::conf('alias_domain') ?? CacheHelper::getDomain();
             }
+            $cookie_string = "";
+
+            foreach ($_COOKIE as $key => $value) {
+              $cookie = " $key=$value; ";
+              $cookie_string .= $cookie;
+            }
 
             $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
-            $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions()));
+            $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions($cookie_string)));
 
             $GLOBALS['res_headers'] = $http_response_header;
 
