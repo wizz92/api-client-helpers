@@ -25,9 +25,10 @@ class CacheHelper
         if ( count(request()->query()) > 0 ) {
             return false;
         }
-        if ($ck && !Cache::has($ck)) {
-            return false;
-        }
+        // removed due to changes in cacher logic
+        // if ($ck && !Cache::has($ck)) {
+        //     return false;
+        // }
 
         return true;
     }
@@ -104,10 +105,16 @@ class CacheHelper
         if (!is_callable($data_function)) {
             throw new Exception('cacher function expects second parameter to be a function '.gettype($data_function).' given.');
         }
-        if (self::shouldWeCache($key)) {
-            return \Cache::get($key);
+        // if we have logical reasons to not cache content -> just call function and return result
+        if (!self::shouldWeCache($key)) {
+          return call_user_func($data_function);
+        }
+        // if we can cache -> check if we have cache value by given key -> return from cache
+        if (Cache::has($key)) {
+            return Cache::get($key);
         }
 
+        // if we haven`t cache value by given key -> call user function and return result
         $data = call_user_func($data_function);
         Cache::put($key, $data, $life_time);
         return $data;
