@@ -8,7 +8,7 @@ class CookieHelper
         return str_replace('<head>', "<head><script>window.csrf='".csrf_token()."'</script>", $page);
     }
 
-    public static function arrContextOptions()
+    public static function arrContextOptions($cookie_string = '')
     {
         return array(
                     "ssl" => array(
@@ -25,6 +25,7 @@ class CookieHelper
                         'header' => [
                             'User-Agent: '.request()->header('user-agent').'\r\n',
                             'Referrer: '.asset('/').'\r\n',
+                            "Cookie: $cookie_string"
                         ],
                     )
                 );

@@ -62,6 +62,7 @@ class ACHController extends Controller
         $this->ensureBasicAuth();
 
         $slug = $req->path();
+
         if (!Validator::validateFrontendConfig()) {
             return $this->error_message;
         }
@@ -69,11 +70,11 @@ class ACHController extends Controller
         $this->trackingHits();
 
         $ck = CacheHelper::CK($slug);
-        if (CacheHelper::shouldWeCache($ck)) {
-            return CookieHelper::insertToken(Cache::get($ck));
-        }
 
-        try {
+        $GLOBALS['res_headers'] = [];
+
+        $resulted_page = CacheHelper::cacher($ck, function() use($slug, $req) {
+          try {
             $front = CacheHelper::conf('frontend_repo_url');
             $query = [];
             // $domain = $req->url();
@@ -85,48 +86,57 @@ class ACHController extends Controller
             if (CacheHelper::conf('pname_query')) {
                 $query['pname'] = CacheHelper::conf('alias_domain') ?? CacheHelper::getDomain();
             }
+            $cookie_string = "";
+
+            foreach ($_COOKIE as $key => $value) {
+              $cookie = " $key=$value; ";
+              $cookie_string .= $cookie;
+            }
 
             $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
-            $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions()));
+            $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions($cookie_string)));
 
-            $http_code = array_get($http_response_header, 0, 'HTTP/1.1 200 OK');
+            $GLOBALS['res_headers'] = $http_response_header;
 
-            if (strpos($http_code, '302') > -1 || strpos($http_code, '301') > -1) {
-                $location = array_get($http_response_header, 7, '/');
+            return $page;
+          } catch (Exception $e) {
+              // \Log::info($e);
+              return $this->error_message;
+          }
 
-                $location = str_replace("Location: ", "", $location);
-                if (strpos($location, '?authType')) {
-                    $location = "/?" . explode("?", $location)[1];
-                }
+        }, CacheHelper::conf('cache_frontend_for'));
 
-                return redirect()->to($location);
-            }
+        // parse cookies
+        $cookies = array_filter($GLOBALS['res_headers'], function($header) {
+          return strpos($header, 'Set-Cookie:') !== false;
+        });
 
-            // what is this?
-            if (strpos($http_code, '238') > -1) {
-                // code 238 is used for our internal communication between frontend repo and client site,
-                // so that we do not ignore errors (410 is an error);
-                if ($this->redirect_mode === "view") {
-                    return response(view('api-client-helpers::not_found'), $this->redirect_code);
-                } else //if($this->redirect_mode === "http")
-                { // changed this to else, so that we use http redirect by default even if nothing is specified
-                    return redirect()->to('/', $this->redirect_code);
-                }
-            }
-
-            if (strpos($http_code, '404') > -1) {
-                return response(CookieHelper::insertToken($page), 404);
-            }
-
-            if (CacheHelper::shouldWeCache()) {
-                Cache::put($ck, $page, CacheHelper::conf('cache_frontend_for'));
-            }
-
-            return CookieHelper::insertToken($page);
-        } catch (Exception $e) {
-            // \Log::info($e);
-            return $this->error_message;
+        foreach ($cookies as $key => $cookie) {
+          $cookies[$key] = CookieHelper::parse( substr( $cookie, 12, strlen($cookie) - 12 ) );
         }
+
+        CookieHelper::setCookiesFromCurlResponse($cookies);
+
+        $http_code = array_get($GLOBALS['res_headers'], 0, 'HTTP/1.1 200 OK');
+
+        // if we have redirect in request just do it
+        if (strpos($http_code, '302') > -1 || strpos($http_code, '301') > -1) {
+            $location = array_get($GLOBALS['res_headers'], 7, '/');
+
+            $location = str_replace("Location: ", "", $location);
+            if (strpos($location, '?authType')) {
+                $location = "/?" . explode("?", $location)[1];
+            }
+
+            return redirect()->to($location);
+        }
+
+        // if we have 404 in request retur page with 404 status
+        if (strpos($http_code, '404') > -1) {
+            return response(CookieHelper::insertToken($resulted_page), 404);
+        }
+
+        return CookieHelper::insertToken($resulted_page);
     }
 
     /*
@@ -176,7 +186,8 @@ class ACHController extends Controller
             return $r->body;
         }
         if ($r->content_type == 'application/json') {
-            return response()->json(json_decode($r->body));
+          $response = response()->json(json_decode($r->body));
+          return CacheHelper::attachCORSToResponse($response);
         }
         // we need to check exactly '/xml' here because .xlsx .docx file has
         // content type like this application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
@@ -234,11 +245,8 @@ class ACHController extends Controller
     // and if $_SERVER hasn`t HTTP_REFERER
     private function validateHitTracking()
     {
-        logger('Let`s check if everything is okey \n');
-
         $http_referer = array_get($_SERVER, 'HTTP_REFERER', null);
-        logger('Getting referer from server');
-        logger($http_referer);
+
         // if user just write site in the browser by hands than hit is valid
         if (!$http_referer) {
             return true;
@@ -247,11 +255,6 @@ class ACHController extends Controller
         // get only domain name from referer
         $http_referer = parse_url($http_referer, PHP_URL_HOST);
         $http_host = array_get($_SERVER, 'HTTP_HOST', null);
-
-        logger('Referer after formating');
-        logger($http_referer);
-        logger('Host from server');
-        logger($http_host);
 
         // if no host in server array we can`t determine hit valid state
         if (!$http_host) {
@@ -296,9 +299,6 @@ class ACHController extends Controller
         curl_close($ch);
 
         $hit_id = json_decode($response)->data->id ?? 0;
-
-        logger('Hit id from response');
-        logger($hit_id);
 
         return setcookie('hit_id', $hit_id, 0, '/');
     }
