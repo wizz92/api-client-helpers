@@ -119,4 +119,20 @@ class CacheHelper
         Cache::put($key, $data, $life_time);
         return $data;
     }
+
+    public static function attachCORSToResponse($response) {
+      $origin = request()->header('Origin') ?? '';
+      $allowed_origins = self::conf('allowed_origins') ?? [];
+
+      $allowed_origins = is_array($allowed_origins) ? $allowed_origins : [$allowed_origins];
+
+      if (in_array($origin, $allowed_origins)) {
+        $response->header('Access-Control-Allow-Origin', $origin)
+          ->header('Access-Control-Allow-Credentials', 'true')
+          ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE')
+          ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, X-Requested-With, remember-me');
+      }
+
+      return $response;
+    }
 }

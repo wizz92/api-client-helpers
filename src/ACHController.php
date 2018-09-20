@@ -186,7 +186,8 @@ class ACHController extends Controller
             return $r->body;
         }
         if ($r->content_type == 'application/json') {
-            return response()->json(json_decode($r->body));
+          $response = response()->json(json_decode($r->body));
+          return CacheHelper::attachCORSToResponse($response);
         }
         // we need to check exactly '/xml' here because .xlsx .docx file has
         // content type like this application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
