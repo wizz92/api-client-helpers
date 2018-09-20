@@ -20,7 +20,8 @@ return [
         'http_auth' => false,
         'alias_domain' => null,
         'pname_query' => true,
-        'assets_proxy' => true
+        'assets_proxy' => true,
+        'allowed_origins' => []
     ],
     'domain.net' => [
         'client_id'         => 'test',
