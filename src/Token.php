@@ -7,8 +7,6 @@ use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 
 class Token
 {
-    // TODO rewrite to use with multisite client
-    // This is a singleton object which contains initial data and token
     protected $data = '';
 
     public $errors;
@@ -17,51 +15,75 @@ class Token
 
     public $request;
 
-    protected function getFromBootstrap($query)
+    private $form_params;
+
+    private $bs_data_query;
+
+    protected function getFromBootstrap()
     {
-        $cache_key = "bootstrap_data_from_api_for_query_$query";
-        // if (false)
-        if (Cache::has($cache_key)) {
-            $output = Cache::get($cache_key);
-        } else {
-            // $addition = array_get($_SERVER, 'QUERY_STRING', '');
-            // $query .= ($addition) ? '&'.$addition : '';
-            session(['addition' => request()->all()]);
+      $query = $this->bs_data_query;
+      $form_params = $this->form_params;
 
-            // $cookie_string = getCookieStringFromRequest(request());
+      $id = $form_params['client_id'];
+      $url = explode('?', $form_params['url']);
 
-            // session_write_close();
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $query);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            // curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
-            $res = curl_exec($ch);
-            curl_close($ch);
+      $path = $url[0];
+      $query_string = [];
+      parse_str($url[1], $query_string);
+      
+      unset($query_string['pname']);
 
-            $data = explode("\r\n\r\n", $res);
-            $headers = (count($data) == 3) ? $data[1] : $data[0];
-            $res = (count($data) == 3) ? $data[2] : $data[1];
-            setCookiesFromCurlResponse($headers);
+      $has_queries = count($query_string);
 
-            $output = json_decode($res);
+      $unnessesery_routes = [
+        '/prices',
+        '/about',
+        '/how-it-works',
+        '/samples',
+        '/frequently-asked-questions',
+        '/contacts',
+        '/essay-writing-service',
+        '/grading-and-marking-service',
+        '/dissertation-writing-service',
+        '/resume-writing-service',
+      ];
 
-            Cache::put($cache_key, $output, 60*24*30);
-        }
+      $cache_key = in_array($path, $unnessesery_routes) ? 
+        "bootstrap_data_for_client_id_{$id}"
+       : "bootstrap_data_for_client_id_{$id}_path_{$path}";
+
+      $this->data = CacheHelper::cacher($cache_key, function() use($query) {
+        session(['addition' => request()->all()]);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $query);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        $data = explode("\r\n\r\n", $res);
+        $headers = (count($data) == 3) ? $data[1] : $data[0];
+        $res = (count($data) == 3) ? $data[2] : $data[1];
+        setCookiesFromCurlResponse($headers);
+
+        $output = json_decode($res);
+
         if (!is_object($output)) {
-            $this->errors = $res;
-            return 'false';
+          $this->errors = $res;
+          return false;
         }
         if (property_exists($output, 'errors') && count($output->errors) > 0) {
-            $this->errors = $output->errors;
-            return false;
+          $this->errors = $output->errors;
+          return false;
         }
 
-        $this->data = $output->data;
+        return $output->data;
+      }, 60*24*30, $has_queries, true);
 
-        return true;
+      return (boolean) $this->data;
     }
 
     public function getBootstrapData()
@@ -73,33 +95,27 @@ class Token
         return [];
     }
 
-    public function getToken()
-    {
-        if (is_object($this->data)) {
-            $access_token = $this->data->access_token;
-
-            session(['access_token' => $access_token]);
-
-            return $access_token;
-        }
-
-        return '';
-    }
-
     public function init()
     {
-        return $this->getFromBootstrap($this->prepareQuery());
+      $this->setFormParams();
+      $this->prepareQuery();
+      return $this->getFromBootstrap();
+    }
+
+    private function setFormParams() {
+      $path = request()->path() . '?' . http_build_query(request()->query());
+      $this->form_params = [
+          'grant_type' => CacheHelper::conf('grant_type'),
+          'client_id' => CacheHelper::conf('client_id'),
+          'client_secret' => CacheHelper::conf('client_secret'),
+          'url' => $path ? "/$path" : '/',
+      ];
+      return $this->form_params;
     }
 
     private function prepareQuery()
     {
-        $path = request()->path() . '?' . http_build_query(request()->query());
-        $form_params = [
-            'grant_type' => CacheHelper::conf('grant_type'),
-            'client_id' => CacheHelper::conf('client_id'),
-            'client_secret' => CacheHelper::conf('client_secret'),
-            'url' => $path ? "/$path" : '/',
-        ];
-        return CacheHelper::conf('secret_url').'/oauth/access_token'.'?'.http_build_query($form_params);
+      $this->bs_data_query = CacheHelper::conf('secret_url').'/oauth/access_token'.'?'.http_build_query($this->form_params);
+      return $this->bs_data_query;
     }
 }

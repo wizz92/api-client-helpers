@@ -100,15 +100,20 @@ class CacheHelper
     * @return error if data_function is not a function or data from cache if key is found or result of data_function if key is not found in cache
     */
 
-    public static function cacher($key, $data_function, $life_time = 1000)
+    public static function cacher($key, $data_function, $life_time = 1000, $skip = false, $disableSWC = false)
     {
         if (!is_callable($data_function)) {
             throw new Exception('cacher function expects second parameter to be a function '.gettype($data_function).' given.');
         }
         // if we have logical reasons to not cache content -> just call function and return result
-        if (!self::shouldWeCache($key)) {
+        if (!self::shouldWeCache($key) && !$disableSWC) {
           return call_user_func($data_function);
         }
+
+        if ($skip) {
+          return call_user_func($data_function);          
+        }
+
         // if we can cache -> check if we have cache value by given key -> return from cache
         if (Cache::has($key)) {
             return Cache::get($key);
