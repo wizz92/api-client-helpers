@@ -19,6 +19,23 @@ class Token
 
     private $bs_data_query;
 
+    private function removeUnnesseseryKeys($string_array) {
+      $banned_keys = [
+        'pname',
+        'rt',
+        'utm_search_engine',
+        'utm_host',
+        'utm_referrer',
+        'utm_keyword'
+      ];
+
+      foreach($banned_keys as $key) {
+        unset($string_array[$key]);
+      }
+
+      return $string_array;
+    }
+
     protected function getFromBootstrap()
     {
       $query = $this->bs_data_query;
@@ -30,10 +47,8 @@ class Token
       $path = $url[0];
       $query_string = [];
       parse_str($url[1], $query_string);
-      
-      unset($query_string['pname']);
 
-      $has_queries = count($query_string);
+      $has_queries = count( $this->removeUnnesseseryKeys($query_string) );
 
       $unnessesery_routes = [
         '/prices',
