@@ -54,11 +54,6 @@ class CurlRequest
 
         $data['app_id'] = CacheHelper::conf('client_id');
 
-        if ($path === '/api/client/check') {
-          logger($data['page_url'] ?? "");
-          logger($data['app_id']);
-        }
-
         $addition = session('addition') ? session('addition') : [];
         $data = array_merge($data, $addition);
 
