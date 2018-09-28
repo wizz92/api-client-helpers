@@ -45,7 +45,20 @@ class CurlRequest
         $method = $_SERVER['REQUEST_METHOD'];
         $data = $this->request->all();
         $data['ip'] = array_get($_SERVER, 'HTTP_CF_CONNECTING_IP', $this->request->ip());
+
+        $referer = request()->headers->get('referer');
+
+        if ($referer) {
+          $data['page_url'] = $referer;
+        }
+
         $data['app_id'] = CacheHelper::conf('client_id');
+
+        if ($path === '/api/client/check') {
+          logger($data['page_url'] ?? "");
+          logger($data['app_id']);
+        }
+
         $addition = session('addition') ? session('addition') : [];
         $data = array_merge($data, $addition);
 
