@@ -48,7 +48,15 @@ class Token
       $query_string = [];
       parse_str($url[1], $query_string);
 
+      $always_cache = [
+        '/place-new-order',
+        '/place-new-order-2',
+        '/place-new-order-3'
+      ];
+
       $has_queries = count( $this->removeUnnesseseryKeys($query_string) );
+      $in_always_cache_path = in_array($path, $always_cache);
+      $should_skip_cache = $has_queries && !$in_always_cache_path;
 
       $unnessesery_routes = [
         '/prices',
@@ -61,6 +69,9 @@ class Token
         '/grading-and-marking-service',
         '/dissertation-writing-service',
         '/resume-writing-service',
+        '/place-new-order',
+        '/place-new-order-2',
+        '/place-new-order-3'
       ];
 
       $cache_key = in_array($path, $unnessesery_routes) ? 
@@ -96,7 +107,7 @@ class Token
         }
 
         return $output->data;
-      }, 60*24*30, $has_queries, true);
+      }, 60*24*30, $should_skip_cache, true);
 
       return (boolean) $this->data;
     }
