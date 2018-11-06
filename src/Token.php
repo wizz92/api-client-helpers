@@ -22,15 +22,17 @@ class Token
     private function removeUnnesseseryKeys($string_array) {
       $banned_keys = [
         'pname',
-        'rt',
-        'utm_search_engine',
-        'utm_host',
-        'utm_referrer',
-        'utm_keyword'
+        'rt'
       ];
 
       foreach($banned_keys as $key) {
         unset($string_array[$key]);
+      }
+
+      foreach ($string_array as $param_key => $param_value) {
+        if (strpos($param_key, 'utm') !== false) {
+          unset($string_array[$param_key]);
+        }
       }
 
       return $string_array;
@@ -46,6 +48,7 @@ class Token
 
       $path = $url[0];
       $query_string = [];
+
       parse_str($url[1], $query_string);
 
       $always_cache = [
@@ -53,7 +56,7 @@ class Token
         '/place-new-order-2',
         '/place-new-order-3'
       ];
-
+      
       $has_queries = count( $this->removeUnnesseseryKeys($query_string) );
       $in_always_cache_path = in_array($path, $always_cache);
       $should_skip_cache = $has_queries && !$in_always_cache_path;
