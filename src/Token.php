@@ -19,25 +19,6 @@ class Token
 
     private $bs_data_query;
 
-    private function removeUnnesseseryKeys($string_array) {
-      $banned_keys = [
-        'pname',
-        'rt'
-      ];
-
-      foreach($banned_keys as $key) {
-        unset($string_array[$key]);
-      }
-
-      foreach ($string_array as $param_key => $param_value) {
-        if (strpos($param_key, 'utm') !== false) {
-          unset($string_array[$param_key]);
-        }
-      }
-
-      return $string_array;
-    }
-
     protected function getFromBootstrap()
     {
       $query = $this->bs_data_query;
@@ -51,15 +32,19 @@ class Token
 
       parse_str($url[1], $query_string);
 
-      $always_cache = [
-        '/place-new-order',
-        '/place-new-order-2',
-        '/place-new-order-3'
+      $content_affect_keys = [
+        'page'
       ];
       
-      $has_queries = count( $this->removeUnnesseseryKeys($query_string) );
-      $in_always_cache_path = in_array($path, $always_cache);
-      $should_skip_cache = $has_queries && !$in_always_cache_path;
+      $has_content_affect_queries = false;
+
+      foreach ($query_string as $query_key => $query_value) {
+        if ( in_array($query_key, $content_affect_keys) ) {
+          $has_content_affect_queries = true;
+        }
+      }
+
+      $should_skip_cache = $has_content_affect_queries;
 
       $unnessesery_routes = [
         '/prices',
@@ -74,7 +59,8 @@ class Token
         '/resume-writing-service',
         '/place-new-order',
         '/place-new-order-2',
-        '/place-new-order-3'
+        '/place-new-order-3',
+        '/new-order'
       ];
 
       $cache_key = in_array($path, $unnessesery_routes) ? 
