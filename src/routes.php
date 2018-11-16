@@ -2,6 +2,14 @@
 use Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware;
 use Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware;
 
+
+Route::domain('{subdomain}.homeworkfor.me')->group(function () {
+  Route::get('/', function ($subdomain) {
+      $content = (new \Wizz\ApiClientHelpers\ACHController)->frontendRepo(new \Illuminate\Http\Request, "/$subdomain");
+      return response($content);
+  });
+});
+
 Route::get('/sitemap.xml', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 // here we setup proxy for robots which leads to api
 // into api we get robots from mongo_config or from robots generator
