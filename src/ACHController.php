@@ -57,11 +57,11 @@ class ACHController extends Controller
         }
     }
 
-    public function frontendRepo(Request $req)
+    public function frontendRepo(Request $req, $slug_force = null)
     {
         $this->ensureBasicAuth();
 
-        $slug = $req->path();
+        $slug = $slug_force ? $slug_force : $req->path();
 
         if (!Validator::validateFrontendConfig()) {
             return $this->error_message;
