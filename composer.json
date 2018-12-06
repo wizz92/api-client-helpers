@@ -23,7 +23,8 @@
         "illuminate/cache": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*",
         "illuminate/config": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*",
         "illuminate/http": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*",
-        "intervention/httpauth": "^2.0"
+        "intervention/httpauth": "^2.0",
+        "spatie/url": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

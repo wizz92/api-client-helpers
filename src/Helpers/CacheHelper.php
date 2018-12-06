@@ -18,17 +18,12 @@ class CacheHelper
         if (request()->input('cache') === 'false') {
             return false;
         }
-        if (!app()->environment('production')) {
-            return false;
+        if (request()->query('page', false)) {
+          return false;
         }
-        // if url has query params we dont need to cache it
-        if ( count(request()->query()) > 0 ) {
-            return false;
+        if (request()->is('services/bootstrap')) {
+          return false;
         }
-        // removed due to changes in cacher logic
-        // if ($ck && !Cache::has($ck)) {
-        //     return false;
-        // }
 
         return true;
     }

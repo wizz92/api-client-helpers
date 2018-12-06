@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Wizz\ApiClientHelpers\Helpers\CurlRequest;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
+use Wizz\ApiClientHelpers\Helpers\ContentHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
 use Cookie;
@@ -61,82 +62,37 @@ class ACHController extends Controller
     {
         $this->ensureBasicAuth();
 
-        $slug = $slug_force ? $slug_force : $req->path();
-
         if (!Validator::validateFrontendConfig()) {
-            return $this->error_message;
+          return $this->error_message;
         }
 
         $this->trackingHits();
 
-        $ck = CacheHelper::CK($slug);
+        $slug = $slug_force ? $slug_force : $req->path();
+        $cache_key = md5($req->url());
+        $cache_expire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
+        $should_skip_cache = !CacheHelper::shouldWeCache();
 
-        $GLOBALS['res_headers'] = [];
-
-        $resulted_page = CacheHelper::cacher($ck, function() use($slug, $req) {
-          try {
-            $front = CacheHelper::conf('frontend_repo_url');
-            $query = [];
-            // $domain = $req->url();
-            // cut shit from here
-            if (substr($slug, 0, 1) === '/') {
-                $slug = substr($slug, 1);
-            }
-
-            if (CacheHelper::conf('pname_query')) {
-                $query['pname'] = CacheHelper::conf('alias_domain') ?? CacheHelper::getDomain();
-            }
-            $cookie_string = "";
-
-            foreach ($_COOKIE as $key => $value) {
-              $cookie = " $key=$value; ";
-              $cookie_string .= $cookie;
-            }
-
-            $url = $front.$slug. '?' . http_build_query(array_merge($req->all(), $query));
-            $page = file_get_contents($url, false, stream_context_create(CookieHelper::arrContextOptions($cookie_string)));
-
-            $GLOBALS['res_headers'] = $http_response_header;
-
-            return $page;
-          } catch (Exception $e) {
-              // \Log::info($e);
-              return $this->error_message;
-          }
-
-        }, CacheHelper::conf('cache_frontend_for'));
-
-        // parse cookies
-        $cookies = array_filter($GLOBALS['res_headers'], function($header) {
-          return strpos($header, 'Set-Cookie:') !== false;
-        });
-
-        foreach ($cookies as $key => $cookie) {
-          $cookies[$key] = CookieHelper::parse( substr( $cookie, 12, strlen($cookie) - 12 ) );
+        if ($should_skip_cache) {
+          // get page
+          $response = ContentHelper::getFrontendContent($slug);
+          //and return it
+          return ContentHelper::getValidResponse($response);
         }
 
-        CookieHelper::setCookiesFromCurlResponse($cookies);
+        $response = Cache::get($cache_key, null);
 
-        $http_code = array_get($GLOBALS['res_headers'], 0, 'HTTP/1.1 200 OK');
-
-        // if we have redirect in request just do it
-        if (strpos($http_code, '302') > -1 || strpos($http_code, '301') > -1) {
-            $location = array_get($GLOBALS['res_headers'], 7, '/');
-
-            $location = str_replace("Location: ", "", $location);
-            if (strpos($location, '?authType')) {
-                $location = "/?" . explode("?", $location)[1];
-            }
-
-            return redirect()->to($location);
+        if (!is_null($response)) { // meanse we have content in cache
+          return ContentHelper::getValidResponse($response);
         }
-
-        // if we have 404 in request retur page with 404 status
-        if (strpos($http_code, '404') > -1) {
-            return response(CookieHelper::insertToken($resulted_page), 404);
+        // get page 
+        $response = ContentHelper::getFrontendContent($slug);
+        // store in cache in case we do not have an error in response
+        if (!in_array($response['status'], [500, 502, 504])) {
+          Cache::add($cache_key, $response, $cache_expire);
         }
-
-        return CookieHelper::insertToken($resulted_page);
+        // and return it
+        return ContentHelper::getValidResponse($response);
     }
 
     /*
