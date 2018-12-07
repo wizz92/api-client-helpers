@@ -21,6 +21,9 @@ class CacheHelper
         if (request()->query('page', false)) {
           return false;
         }
+        if (request()->query('rate', false)) {
+          return false;
+        }
         if (request()->is('services/bootstrap')) {
           return false;
         }
