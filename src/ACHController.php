@@ -231,9 +231,7 @@ class ACHController extends Controller
         if (!CacheHelper::conf('tracking_hits')) {
             return null;
         }
-
         $can_track_hit = $this->validateHitTracking();
-
         if (!$can_track_hit) {
             return null;
         }
@@ -254,8 +252,9 @@ class ACHController extends Controller
         $response = curl_exec($ch);
         curl_close($ch);
 
-        $hit_id = json_decode($response)->data->id ?? 0;
+        return null;
+        // $hit_id = json_decode($response)->data->id ?? 0;
 
-        return setcookie('hit_id', $hit_id, 0, '/');
+        // return setcookie('hit_id', $hit_id, 0, '/');
     }
 }
