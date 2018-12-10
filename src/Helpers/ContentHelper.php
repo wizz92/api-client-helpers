@@ -71,7 +71,7 @@ class ContentHelper {
     return response($response['body'], $response['status'])
       ->withHeaders([
         'Content-Type' => array_get($response['headers'], 'Content-Type', 'text/html'),
-        'Cache-Control' => array_get($response['headers'], 'Cache-Control', 'text/html'),
+        'Cache-Control' => array_get($response['headers'], 'Cache-Control', 'no-cache private'),
       ]);
   }
 
