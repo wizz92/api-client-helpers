@@ -6,7 +6,7 @@ use Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware;
 Route::domain('{subdomain}.homeworkfor.me')->group(function () {
   Route::get('/', function ($subdomain) {
       $content = (new \Wizz\ApiClientHelpers\ACHController)->frontendRepo(new \Illuminate\Http\Request, "/$subdomain");
-      return response($content);
+      return $content;
   });
 
   Route::any('api/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
