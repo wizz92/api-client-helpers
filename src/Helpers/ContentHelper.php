@@ -25,6 +25,9 @@ class ContentHelper {
 
     $query_string = http_build_query($query);
     $url = "{$base_url}{$slug}?{$query_string}";
+
+    $host = request()->header('host');
+    $referrer = request()->secure() ? "https://{$host}" : "http://{$host}";
     $stream_options = [
       'http' => [
         'follow_location' => 0,
@@ -32,7 +35,7 @@ class ContentHelper {
         'ignore_errors' => true,
         'header' => [
           'User-Agent: ' . request()->header('user-agent'),
-          'Referrer: ' . request()->header('referrer') ?? asset('/'),
+          'Referrer: ' . $referrer,
         ]
       ],
       'ssl' => [
