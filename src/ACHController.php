@@ -10,6 +10,7 @@ use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\ContentHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
+use Spatie\Url\Url as UrlParser;
 use Cookie;
 use Cache;
 use Httpauth;
@@ -69,7 +70,17 @@ class ACHController extends Controller
         $this->trackingHits();
 
         $slug = $slug_force ? $slug_force : $req->path();
-        $cache_key = md5($req->url());
+        $current_url = $req->url();
+        $parsed_url = UrlParser::fromString($current_url);
+        $parsed_url_host = app()->environment('local') ? "{$parsed_url->getHost()}:{$parsed_url->getPort()}" : $parsed_url->getHost();
+        $parsed_url_scheme = $parsed_url->getScheme();
+        // if req url contains dashboard substring cache this page
+        // in one key 'http://domain.name/dashboard'
+        // because we have react on dash 
+        // it doesn`t matter which page by pass we cache
+        $cache_key = $req->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $current_url;
+        // get cache_key hash for use in Cache facade
+        $cache_key = md5($cache_key);
         $cache_expire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
         $should_skip_cache = !CacheHelper::shouldWeCache();
 
