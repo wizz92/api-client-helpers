@@ -268,4 +268,44 @@ class ACHController extends Controller
 
         // return setcookie('hit_id', $hit_id, 0, '/');
     }
+
+    public function outerAuthForm(Request $request, $order_id, $token)
+    {
+      $app_id = CacheHelper::conf('client_id');
+      $api_url = CacheHelper::conf('secret_url');
+      $api_url = ends_with($api_url, '/') ? $api_url : "$api_url/";
+      $url = "{$api_url}auth/order_form/{$order_id}/{$token}?app_id={$app_id}";
+      $stream_options = [
+        'http' => [
+          'follow_location' => 0,
+          'max_redirects' => 0,
+          'ignore_errors' => true,
+          'header' => [
+            'User-Agent: ' . request()->header('user-agent'),
+          ]
+        ],
+        'ssl' => [
+          'verify_peer' => false,
+          'verify_peer_name' => false
+        ]
+      ];
+      
+      $response_body = file_get_contents($url, false, stream_context_create($stream_options));
+      $response_headers = ContentHelper::parseHeaders($http_response_header);
+      // dd($response_headers);
+      $response_status_code = $response_headers['StatusCode'];
+
+      if ($response_status_code !== 200) {
+        return response()->redirectTo('/')->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
+      }
+
+      $response = json_decode($response_body);
+      $redirect_url = optional($response->data)->redirect;
+
+      if (!$redirect_url) {
+        return response()->redirectTo('/')->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
+      }
+
+      return response()->redirectTo($redirect_url)->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
+    }
 }
