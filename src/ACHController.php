@@ -296,16 +296,30 @@ class ACHController extends Controller
       $response_status_code = $response_headers['StatusCode'];
 
       if ($response_status_code !== 200) {
-        return response()->redirectTo('/')->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
+        return response()->redirectTo('/');
       }
 
       $response = json_decode($response_body);
       $redirect_url = optional($response->data)->redirect;
 
       if (!$redirect_url) {
-        return response()->redirectTo('/')->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
+        return response()->redirectTo('/');
       }
 
-      return response()->redirectTo($redirect_url)->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
+      return response("
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset='utf-8' />
+            <title>Please Wait!</title>
+          </head>
+          <body>
+            <p>Please wait...</p>
+            <script>
+              window.location.href = '{$redirect_url}'
+            </script>
+          </body>
+        </html>
+      ")->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
     }
 }
