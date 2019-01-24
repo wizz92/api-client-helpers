@@ -10,6 +10,7 @@ use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\ContentHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
+use Spatie\Url\Url as UrlParser;
 use Cookie;
 use Cache;
 use Httpauth;
@@ -68,8 +69,18 @@ class ACHController extends Controller
 
         $this->trackingHits();
 
-        $slug = $slug_force ? $slug_force : $req->path();
-        $cache_key = md5($req->url());
+        $slug = $slug_force ? $slug_force : request()->path();
+        $current_url = request()->url();
+        $parsed_url = UrlParser::fromString($current_url);
+        $parsed_url_host = app()->environment('local') ? "{$parsed_url->getHost()}:{$parsed_url->getPort()}" : $parsed_url->getHost();
+        $parsed_url_scheme = $parsed_url->getScheme();
+        // if req url contains dashboard substring cache this page
+        // in one key 'http://domain.name/dashboard'
+        // because we have react on dash 
+        // it doesn`t matter which page by pass we cache
+        $cache_key = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $current_url;
+        // get cache_key hash for use in Cache facade
+        $cache_key = md5($cache_key);
         $cache_expire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
         $should_skip_cache = !CacheHelper::shouldWeCache();
 
@@ -256,5 +267,59 @@ class ACHController extends Controller
         // $hit_id = json_decode($response)->data->id ?? 0;
 
         // return setcookie('hit_id', $hit_id, 0, '/');
+    }
+
+    public function outerAuthForm(Request $request, $order_id, $token)
+    {
+      $app_id = CacheHelper::conf('client_id');
+      $api_url = CacheHelper::conf('secret_url');
+      $api_url = ends_with($api_url, '/') ? $api_url : "$api_url/";
+      $url = "{$api_url}auth/order_form/{$order_id}/{$token}?app_id={$app_id}";
+      $stream_options = [
+        'http' => [
+          'follow_location' => 0,
+          'max_redirects' => 0,
+          'ignore_errors' => true,
+          'header' => [
+            'User-Agent: ' . request()->header('user-agent'),
+          ]
+        ],
+        'ssl' => [
+          'verify_peer' => false,
+          'verify_peer_name' => false
+        ]
+      ];
+      
+      $response_body = file_get_contents($url, false, stream_context_create($stream_options));
+      $response_headers = ContentHelper::parseHeaders($http_response_header);
+      // dd($response_headers);
+      $response_status_code = $response_headers['StatusCode'];
+
+      if ($response_status_code !== 200) {
+        return response()->redirectTo('/');
+      }
+
+      $response = json_decode($response_body);
+      $redirect_url = optional($response->data)->redirect;
+
+      if (!$redirect_url) {
+        return response()->redirectTo('/');
+      }
+
+      return response("
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset='utf-8' />
+            <title>Please Wait!</title>
+          </head>
+          <body>
+            <p>Please wait...</p>
+            <script>
+              window.location.href = '{$redirect_url}'
+            </script>
+          </body>
+        </html>
+      ")->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
     }
 }
