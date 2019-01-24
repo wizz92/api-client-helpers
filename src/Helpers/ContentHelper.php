@@ -36,6 +36,7 @@ class ContentHelper {
         'header' => [
           'User-Agent: ' . request()->header('user-agent'),
           'Referrer: ' . $referrer,
+          'Cookie: ' . request()->header('cookie')
         ]
       ],
       'ssl' => [
@@ -71,11 +72,18 @@ class ContentHelper {
 
       return redirect($redirect_location, $response['status']);
     }
+    $response_headers = [
+      'Content-Type' => array_get($response['headers'], 'Content-Type', 'text/html'),
+      'Cache-Control' => array_get($response['headers'], 'Cache-Control', 'no-cache private'),
+    ];
+
+    $cookie_string = array_get($response['headers'], 'Set-Cookie', '');
+    if ($cookie_string) {
+      $response_headers['Set-Cookie'] = $cookie_string;
+    }
+    
     return response($response['body'], $response['status'])
-      ->withHeaders([
-        'Content-Type' => array_get($response['headers'], 'Content-Type', 'text/html'),
-        'Cache-Control' => array_get($response['headers'], 'Cache-Control', 'no-cache private'),
-      ]);
+      ->withHeaders($response_headers);
   }
 
   public static function parseHeaders( $headers ) {
