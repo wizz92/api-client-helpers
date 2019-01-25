@@ -35,8 +35,7 @@ class ContentHelper {
         'ignore_errors' => true,
         'header' => [
           'User-Agent: ' . request()->header('user-agent'),
-          'Referrer: ' . $referrer,
-          'Cookie: ' . request()->header('cookie')
+          'Referrer: ' . $referrer
         ]
       ],
       'ssl' => [
@@ -76,11 +75,6 @@ class ContentHelper {
       'Content-Type' => array_get($response['headers'], 'Content-Type', 'text/html'),
       'Cache-Control' => array_get($response['headers'], 'Cache-Control', 'no-cache private'),
     ];
-
-    $cookie_string = array_get($response['headers'], 'Set-Cookie', '');
-    if ($cookie_string) {
-      $response_headers['Set-Cookie'] = $cookie_string;
-    }
     
     return response($response['body'], $response['status'])
       ->withHeaders($response_headers);
