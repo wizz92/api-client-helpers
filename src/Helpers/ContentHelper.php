@@ -69,6 +69,10 @@ class ContentHelper {
       $response_path = $response_location->getPath();
       $redirect_location = $response_query ? "{$response_path}?{$response_query}" : $response_path;
 
+      if ($response_location->getHost() !== request()->header('host')) {
+        $redirect_location = $response_location;
+      }
+
       return redirect($redirect_location, $response['status']);
     }
     $response_headers = [

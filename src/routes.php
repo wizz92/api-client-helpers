@@ -3,24 +3,24 @@ use Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware;
 use Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware;
 
 
-Route::domain('{subdomain}.homeworkfor.me')->group(function () {
-  Route::get('/', function ($subdomain) {
-      $content = (new \Wizz\ApiClientHelpers\ACHController)->frontendRepo(new \Illuminate\Http\Request, "/$subdomain");
-      return $content;
-  });
+// Route::domain('{subdomain}.homeworkfor.me')->group(function () {
+//   Route::get('/', function ($subdomain) {
+//       $content = (new \Wizz\ApiClientHelpers\ACHController)->frontendRepo(new \Illuminate\Http\Request, "/$subdomain");
+//       return $content;
+//   });
 
-  Route::any('api/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
-  Route::get('assets/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
-  Route::get('/t/check', '\Wizz\ApiClientHelpers\ACHController@check');
-  Route::get('/t/clear_cache', '\Wizz\ApiClientHelpers\ACHController@clearCache');
+//   Route::any('api/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
+//   Route::get('assets/{slug?}', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.*');
+//   Route::get('/t/check', '\Wizz\ApiClientHelpers\ACHController@check');
+//   Route::get('/t/clear_cache', '\Wizz\ApiClientHelpers\ACHController@clearCache');
 
-  Route::get('/blog/{any?}', function(){
-    return redirect()->to('https://statistics.homeworkfor.me');
-  });
-  Route::get('{any?}', function(){
-    return redirect()->to('https://statistics.homeworkfor.me');
-  });
-});
+//   Route::get('/blog/{any?}', function(){
+//     return redirect()->to('https://statistics.homeworkfor.me');
+//   });
+//   Route::get('{any?}', function(){
+//     return redirect()->to('https://statistics.homeworkfor.me');
+//   });
+// });
 
 Route::get('/sitemap.xml', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 // here we setup proxy for robots which leads to api
