@@ -69,6 +69,7 @@ class CurlRequest
         $headers =  [
                         'Accept-Language: '.$this->request->header('Accept-Language'),
                         'User-Agent: '.$this->request->header('user-agent'),
+                        'X-Forwarded-For: '.$this->request->ip(),
                     ];
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
