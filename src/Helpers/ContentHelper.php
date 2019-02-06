@@ -7,7 +7,7 @@ use Spatie\Url\Url as UrlParser;
 
 class ContentHelper {
 
-  public static function getFrontendContent($slug = '') {
+  public static function getFrontendContent($slug = '', string $experiment_results = "") {
     if (!$slug) {
       throw new \Exception("Missing argument 'slug'");
     }
@@ -28,15 +28,21 @@ class ContentHelper {
 
     $host = request()->header('host');
     $referrer = request()->secure() ? "https://{$host}" : "http://{$host}";
+    $headers = [
+      'User-Agent: ' . request()->header('user-agent'),
+      'Referrer: ' . $referrer
+    ];
+
+    if ($experiment_results) {
+      $headers[] = 'X-Experiments-Info: ' . $experiment_results;
+    }
+
     $stream_options = [
       'http' => [
         'follow_location' => 0,
         'max_redirects' => 0,
         'ignore_errors' => true,
-        'header' => [
-          'User-Agent: ' . request()->header('user-agent'),
-          'Referrer: ' . $referrer
-        ]
+        'header' => $headers
       ],
       'ssl' => [
         'verify_peer' => false,

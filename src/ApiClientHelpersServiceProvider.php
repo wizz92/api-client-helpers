@@ -22,6 +22,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
         $this->app->make('Wizz\ApiClientHelpers\ACHController');
         $this->app->make('Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware');
         $this->app->make('Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware');
+        $this->app->make('Wizz\ApiClientHelpers\Middleware\ABTestsMiddleware');
 
         $this->publishes([
             __DIR__.'/configs/api_configs.php' => config_path('api_configs.php'),

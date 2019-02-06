@@ -1,6 +1,8 @@
 <?php
 namespace Wizz\ApiClientHelpers\Helpers;
 
+use Cookie;
+
 class CookieHelper
 {
     public static function insertToken($page)
@@ -62,5 +64,9 @@ class CookieHelper
             $minutes = new \Carbon\Carbon($cookie['expires']);
             setcookie($cookie['name'], $cookie['value'], $minutes->timestamp, $cookie['path']);
         }
+    }
+
+    public static function setCustomCookie($name, $value, $minutes = 10 * 365 * 24 * 60) {
+      Cookie::queue($name, $value, $minutes, '/', null, false, false);
     }
 }

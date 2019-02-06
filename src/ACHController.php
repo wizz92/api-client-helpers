@@ -81,12 +81,20 @@ class ACHController extends Controller
         $cache_key = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $current_url;
         // get cache_key hash for use in Cache facade
         $cache_key = md5($cache_key);
+        
+        $experiment_results = request()->get('experimentsResults') ?? null;
+        $serialized_experiment_results = "";
+        if ($experiment_results) {
+          $serialized_experiment_results = serialize($experiment_results);
+          $cache_key .= $serialized_experiment_results;
+        }
+
         $cache_expire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
         $should_skip_cache = !CacheHelper::shouldWeCache();
 
         if ($should_skip_cache) {
           // get page
-          $response = ContentHelper::getFrontendContent($slug);
+          $response = ContentHelper::getFrontendContent($slug, $serialized_experiment_results);
           //and return it
           return ContentHelper::getValidResponse($response);
         }
@@ -97,7 +105,7 @@ class ACHController extends Controller
           return ContentHelper::getValidResponse($response);
         }
         // get page 
-        $response = ContentHelper::getFrontendContent($slug);
+        $response = ContentHelper::getFrontendContent($slug, $serialized_experiment_results);
         // store in cache in case we do not have an error in response
         if (!in_array($response['status'], [500, 502, 504])) {
           Cache::add($cache_key, $response, $cache_expire);
