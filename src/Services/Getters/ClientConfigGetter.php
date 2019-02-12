@@ -49,7 +49,7 @@ class ClientConfigGetter
 
     $new_data = $this->requestConfigs();
 
-    Cache::put($key, $new_data, 60 * 24 * 2);
+    Cache::put($key, $new_data, 60 * 24 * 30);
 
     return $new_data;
   }
