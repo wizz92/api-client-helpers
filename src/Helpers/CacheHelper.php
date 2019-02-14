@@ -3,6 +3,7 @@ namespace Wizz\ApiClientHelpers\Helpers;
 
 use Wizz\ApiClientHelpers\Helpers\ArrayHelper;
 use Cache;
+use Cookie;
 
 class CacheHelper
 {
@@ -46,16 +47,17 @@ class CacheHelper
      */
     public static function getDomain()
     {
-        $switchDomain = request()->get('domain') && request()->get('domain_change_code') == 'limpopo' ? request()->get('domain') : false;
+        $cookie_name = 'microservices_domain_name';
+        $switchDomain = request()->get('domain') && request()->get('code') === 'qwe123' ? request()->get('domain') : false;
         if ($switchDomain) {
-            self::forgetCookie();
-            return self::setDomain($switchDomain);
+            Cookie::queue($cookie_name, $switchDomain, 60, '/');
+            return $switchDomain;
         }
-        $domainFromSession = session()->get('current_domain');
-        if ($domainFromSession) {
-            return $domainFromSession;
+        $domainFromCookie = $request->cookie($cookie_name);
+        if ($domainFromCookie) {
+            return $domainFromCookie;
         }
-        return self::setDomain(array_get($_SERVER, 'HTTP_HOST', ''));
+        return array_get($_SERVER, 'HTTP_HOST', '');
     }
 
     /**
