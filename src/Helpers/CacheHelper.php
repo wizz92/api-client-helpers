@@ -47,6 +47,9 @@ class CacheHelper
      */
     public static function getDomain()
     {
+        if (app()->environment('production')) {
+            return array_get($_SERVER, 'HTTP_HOST', '');
+        }
         $cookie_name = 'microservices_domain_name';
         $switchDomain = request()->get('domain') && request()->get('code') === 'qwe123' ? request()->get('domain') : false;
         if ($switchDomain) {
