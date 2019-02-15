@@ -56,7 +56,7 @@ class CacheHelper
             Cookie::queue($cookie_name, $switchDomain, 60, '/');
             return $switchDomain;
         }
-        $domainFromCookie = $request->cookie($cookie_name);
+        $domainFromCookie = request()->cookie($cookie_name);
         if ($domainFromCookie) {
             return $domainFromCookie;
         }
