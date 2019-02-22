@@ -8,13 +8,5 @@
 Homestead.yaml
 .DS_Store
 .env
-.idea/blade.xml
-.idea/copyright/profiles_settings.xml
-.idea/deployment.xml
-.idea/dictionaries/Admin.xml
-.idea/laravel-plugin.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
-/.idea/codeStyleSettings.xml
+.idea/
 

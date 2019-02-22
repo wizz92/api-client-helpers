@@ -23,7 +23,11 @@ class PriceIncreaseExperiment
       if ($info) {
         return [
           'priceIncreaseValue' => $info['priceIncreaseValue'],
-          'experimentGroup' => $group_from_query
+          'experimentGroup' => $group_from_query,
+            'cookie' => [
+                'name' => $cookie_name,
+                'value' => $group_from_query,
+            ]
         ];
       }
     }
