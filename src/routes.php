@@ -59,5 +59,6 @@ if (env('use_frontend_repo') === true) {
         ->middleware(UpdateGlobalsMiddleware::class)
         ->middleware(BlockUrlsMiddleware::class)
         ->middleware(ABTestsMiddleware::class)
+        ->middleware(\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class)
         ->where('slug', '.+');
 }
