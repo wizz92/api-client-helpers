@@ -78,8 +78,14 @@ class CurlRequest
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$this, 'setHeaders']);
 
         if (in_array($method, $this->post_methods)) {
-            if (array_get($data, 'files')) {
-                $data['files'] = $this->prepareFiles($data);
+            if (array_get($data, 'files') && is_array($data['files'])) {
+                $files = ArrayHelper::sign(array_pull($data, $file_field));
+                foreach ($files as $key => $file) {
+                    $files[$key] = $this->prepareFile($file);
+                }
+                $data['files'] = $files;
+            } elseif (array_get($data, 'file')) {
+                $data['file'] = $this->prepareFile($data['file']);
             }
             $data = ($method == "POST") ? ArrayHelper::sign($data, '', '+', true) : http_build_query($data);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -124,14 +130,11 @@ class CurlRequest
     }
 
     // TODO: write test on this function
-    public function prepareFiles(array $data, $file_field = 'files')
+    public function prepareFile($file)
     {
-        $files = ArrayHelper::sign(array_pull($data, $file_field));
-        foreach ($files as $key => $file) {
-            if (is_object($file) && $file instanceof UploadedFile) {
-                $files[$key] = new \CURLFile($file->getRealPath(), $file->getMimeType(), $file->getClientOriginalName());
-            }
+        if (is_object($file) && $file instanceof UploadedFile) {
+            return new \CURLFile($file->getRealPath(), $file->getMimeType(), $file->getClientOriginalName());
         }
-        return $files;
+        return null;
     }
 }
