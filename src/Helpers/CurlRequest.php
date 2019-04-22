@@ -78,7 +78,8 @@ class CurlRequest
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$this, 'setHeaders']);
 
         if (in_array($method, $this->post_methods)) {
-            if (array_get($data, 'files') && is_array($data['files'])) {
+            $files = array_get($data, 'files');
+            if ($files && is_array($files)) {
                 $files = ArrayHelper::sign(array_pull($data, $file_field));
                 foreach ($files as $key => $file) {
                     $files[$key] = $this->prepareFile($file);
