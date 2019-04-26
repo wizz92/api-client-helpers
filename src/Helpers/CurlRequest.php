@@ -80,7 +80,7 @@ class CurlRequest
         if (in_array($method, $this->post_methods)) {
             $files = array_get($data, 'files');
             if ($files && is_array($files)) {
-                $files = ArrayHelper::sign(array_pull($data, $file_field));
+                $files = ArrayHelper::sign(array_pull($data, 'files'));
                 foreach ($files as $key => $file) {
                     $files[$key] = $this->prepareFile($file);
                 }
