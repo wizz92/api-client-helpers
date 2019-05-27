@@ -262,19 +262,31 @@ class ACHController extends Controller
 
         $url = CacheHelper::conf('secret_url') . '/hits';
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $response = curl_exec($ch);
-        curl_close($ch);
+        $this->curl_post_async($url, $data);
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_POST, 1);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        // $response = curl_exec($ch);
+        // curl_close($ch);
 
         return null;
         // $hit_id = json_decode($response)->data->id ?? 0;
 
         // return setcookie('hit_id', $hit_id, 0, '/');
+    }
+
+    public function curl_post_async($url, $params)
+    {
+        $post_string = json_encode($params);
+
+        $cmd = "curl -X POST -H 'Content-Type: application/json'";
+        $cmd.= " -d '" . $post_string . "' " . "'" . $url . "'";
+        $cmd .= " > /dev/null 2>&1 &";
+        exec($cmd, $output, $exit);
+        return $exit == 0;
     }
 
     public function outerAuthForm(Request $request, $order_id, $token)
