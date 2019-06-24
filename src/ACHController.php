@@ -126,6 +126,10 @@ class ACHController extends Controller
         }
         try {
             \Artisan::call('cache:clear');
+            \Artisan::call('view:clear');
+            \Artisan::call('config:clear');
+            exec('/usr/bin/php '.base_path().'/composer dump-autoload');
+            \Artisan::call('clear-compiled');
             return ['result' => 'success'];
         } catch (Exception $e) {
             // \Log::info($e);
