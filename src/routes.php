@@ -54,7 +54,6 @@ if (env('use_frontend_repo') === true) {
     where frontend_repo is not explicitly enabled.
 
     */
-    // dd('qwe');
     Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontendRepo')
         ->middleware(UpdateGlobalsMiddleware::class)
         ->middleware(BlockUrlsMiddleware::class)

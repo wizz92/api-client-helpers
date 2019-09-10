@@ -89,6 +89,6 @@ class ScriptsCollector implements ComposingInterface
     {
          $rootUrl = env('root_url', 'http://' . request()->getHttpHost());
 
-         return app()->environment('local') ? "{$rootUrl}/assets{$name}" : "{$rootUrl}assets{$path}";
+         return app()->environment('local') ? "{$rootUrl}/assets{$name}" : "{$rootUrl}/assets{$path}";
     }
 }

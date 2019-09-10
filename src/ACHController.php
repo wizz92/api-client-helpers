@@ -313,10 +313,9 @@ class ACHController extends Controller
           'verify_peer_name' => false
         ]
       ];
-      
+
       $response_body = file_get_contents($url, false, stream_context_create($stream_options));
       $response_headers = ContentHelper::parseHeaders($http_response_header);
-      // dd($response_headers);
       $response_status_code = $response_headers['StatusCode'];
 
       if ($response_status_code !== 200) {
