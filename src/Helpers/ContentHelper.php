@@ -50,6 +50,15 @@ class ContentHelper {
       ]
     ];
     $response_body = file_get_contents($url, false, stream_context_create($stream_options));
+
+    //add autocomposing
+    $projectsForTest = [
+      'writepapersforme.online'
+    ];
+
+    if (in_array($query['pname'], $projectsForTest)) {
+        $response_body = AutocomposeHelper::parseBody($response_body);
+    }
     $response_headers = self::parseHeaders($http_response_header);
     $response_status_code = $response_headers['StatusCode'];
 

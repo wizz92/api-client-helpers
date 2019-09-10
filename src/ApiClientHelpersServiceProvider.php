@@ -4,6 +4,8 @@ namespace Wizz\ApiClientHelpers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
+use Wizz\ApiClientHelpers\Services\AutoComposing\Builder;
+use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\BuilderInterface;
 
 class ApiClientHelpersServiceProvider extends ServiceProvider
 {
@@ -41,6 +43,8 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register('Intervention\Httpauth\HttpauthServiceProviderLaravel5');
+        $this->app->bind(BuilderInterface::class, Builder::class);
+
         // include __DIR__.'/routes.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
 
