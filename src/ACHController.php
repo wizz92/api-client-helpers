@@ -10,6 +10,7 @@ use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\ContentHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Wizz\ApiClientHelpers\Helpers\Validator;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Url\Url as UrlParser;
 use Cookie;
 use Cache;
@@ -130,6 +131,7 @@ class ACHController extends Controller
             \Artisan::call('config:clear');
             exec('/usr/bin/php '.base_path().'/composer dump-autoload');
             \Artisan::call('clear-compiled');
+            Storage::disk('public_assets')->deleteDirectory('/composed');
             return ['result' => 'success'];
         } catch (Exception $e) {
             // \Log::info($e);
