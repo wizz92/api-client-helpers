@@ -74,6 +74,7 @@ class ScriptsCollector implements ComposingInterface
             $hashedTargetFilePath = str_replace($this->path, "{$this->path}.{$finalContentHash}", $bodyFileName);
             if (!Storage::disk('public_assets')->exists($hashedTargetFilePath)) {
                 Storage::disk('public_assets')->move($bodyFileName, $hashedTargetFilePath);
+                Storage::disk('public_assets')->delete($bodyFileName);
             }
         }
          return $hashedTargetFilePath;
