@@ -42,15 +42,20 @@ class ScriptsCollector implements ComposingInterface
         }
 
          $bodyJSFileName = "{$composedDirectoryName}/body-{$this->path}.js";
+         $allScripts = [];
 
-         $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($bodyJSFileName) {
-            $script = $node->attr('src');
-            $targetFileContent = file_get_contents($script);
-            Storage::disk('public_assets')->append($bodyJSFileName, $targetFileContent);
+         $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($allScripts) {
+            $allScripts[] = $node->attr('src');
             foreach ($node as $n) {
                 $n->parentNode->removeChild($n);
             }
          });
+
+         $uniqueScripts = array_unique($allScripts);
+         foreach ($allScripts as $key => $script) {
+            $targetFileContent = file_get_contents($script);
+            Storage::disk('public_assets')->append($bodyJSFileName, $targetFileContent);
+         }
 
          $hashedTargetJSFilePath = $this->getHashedFilePath($bodyJSFileName);
 

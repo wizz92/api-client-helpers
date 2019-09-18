@@ -81,6 +81,8 @@ class DOMCollector implements ComposingInterface
 
         $this->crawler->add($element);
         $placement = $this->crawler->filter($tagToAttach)->first()->getNode(0);
-        $placement->appendChild($element);
+        if ($placement) {
+            $placement->appendChild($element);
+        }
     }
 }
