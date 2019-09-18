@@ -53,6 +53,7 @@ class ContentHelper {
 
     //add autocomposing
     $projectsForTest = [
+//      'speedypaper.com',
       'writepapersforme.online'
     ];
 
