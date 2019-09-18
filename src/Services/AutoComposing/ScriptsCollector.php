@@ -44,7 +44,7 @@ class ScriptsCollector implements ComposingInterface
          $bodyJSFileName = "{$composedDirectoryName}/body-{$this->path}.js";
          $allScripts = [];
 
-         $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($allScripts) {
+         $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use (&$allScripts) {
             $allScripts[] = $node->attr('src');
             foreach ($node as $n) {
                 $n->parentNode->removeChild($n);
