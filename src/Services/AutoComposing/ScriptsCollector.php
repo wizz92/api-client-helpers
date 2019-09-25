@@ -52,7 +52,7 @@ class ScriptsCollector implements ComposingInterface
          });
 
          $uniqueScripts = array_unique($allScripts);
-         foreach ($allScripts as $key => $script) {
+         foreach ($uniqueScripts as $key => $script) {
             $targetFileContent = file_get_contents($script);
             Storage::disk('public_assets')->append($bodyJSFileName, $targetFileContent);
          }

@@ -33,7 +33,8 @@ class Token
       parse_str($url[1], $query_string);
 
       $content_affect_keys = [
-        'page'
+        'page',
+          'new_bs',
       ];
       
       $has_content_affect_queries = false;
@@ -124,6 +125,7 @@ class Token
           'client_id' => CacheHelper::conf('client_id'),
           'client_secret' => CacheHelper::conf('client_secret'),
           'url' => $path ? "/$path" : '/',
+          'new_bs' => request()->get('new_bs')
       ];
       return $this->form_params;
     }

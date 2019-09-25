@@ -24,12 +24,12 @@ class AutocomposeHelper
         $path = request()->path() === '/' ? 'index' : request()->path();
 
         $styles = $builder->make('collectStyles', $pageContent, true)->get();
-        $scripts = $builder->make('collectScripts', $pageContent)->add('path', $path)->get();
+        // $scripts = $builder->make('collectScripts', $pageContent)->add('path', $path)->get();
 
         $processedPageContent = $builder
             ->make('collectDOM', $pageContent)
             ->add('styles', $styles)
-            ->add('scripts', $scripts)
+            // ->add('scripts', $scripts)
             ->get()['html'];
 
         return '<!DOCTYPE html> <html>' . $processedPageContent . '</html>';
