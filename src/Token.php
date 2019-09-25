@@ -34,7 +34,7 @@ class Token
 
       $content_affect_keys = [
         'page',
-          'new_bs',
+        'new_bs'
       ];
       
       $has_content_affect_queries = false;
@@ -66,7 +66,7 @@ class Token
 
       $cache_key = in_array($path, $unnessesery_routes) ? 
         "bootstrap_data_for_client_id_{$id}"
-       : "bootstrap_data_for_client_id_{$id}_path_{$path}";
+       : "bootstrap_data_for_client_id_{$id}_path_{$path}_new_bs".request()->get('new_bs');
 
       $this->data = CacheHelper::cacher($cache_key, function() use($query) {
         session(['addition' => request()->all()]);
