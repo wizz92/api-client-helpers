@@ -36,26 +36,30 @@ class ScriptsCollector implements ComposingInterface
     public function get(): array
     {
         $viewRoot = CacheHelper::getDomain();
-        $composedDirectoryName = "/composed/{$viewRoot}";
+        $composedDirectoryName = "composed/{$viewRoot}";
         if (!Storage::disk('public_assets')->exists($composedDirectoryName)) {
              Storage::disk('public_assets')->makeDirectory($composedDirectoryName);
         }
 
-         $bodyJSFileName = "{$composedDirectoryName}/body-{$this->path}.js";
-         $allScripts = [];
+        $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$this->path}.js";
 
-         $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use (&$allScripts) {
-            $allScripts[] = $node->attr('src');
-            foreach ($node as $n) {
-                $n->parentNode->removeChild($n);
-            }
-         });
+        $jsFile = fopen($bodyJSFileName, 'w');
+        if (flock($jsFile, LOCK_EX)) { 
+            ftruncate($jsFile, 0);
+            
+            $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
+                $script = $node->attr('src');
+                foreach ($node as $n) {
+                    $targetFileContent = file_get_contents($script);
+                    fwrite($jsFile, $targetFileContent."\n");
+                    $n->parentNode->removeChild($n);
+                }
+            });
 
-         $uniqueScripts = array_unique($allScripts);
-         foreach ($uniqueScripts as $key => $script) {
-            $targetFileContent = file_get_contents($script);
-            Storage::disk('public_assets')->append($bodyJSFileName, $targetFileContent);
-         }
+            fflush($jsFile);        
+            flock($jsFile, LOCK_UN);
+        } 
+        fclose($jsFile);
 
          $hashedTargetJSFilePath = $this->getHashedFilePath($bodyJSFileName);
 
@@ -73,13 +77,12 @@ class ScriptsCollector implements ComposingInterface
     {
         $hashedTargetFilePath = "";
 
-        if (!app()->environment('local') && Storage::disk('public_assets')->has($bodyFileName)) {
-            $finalContent = Storage::disk('public_assets')->get($bodyFileName);
+        if (!app()->environment('local') && file_exists($bodyFileName)) {
+            $finalContent = file_get_contents($bodyFileName);
             $finalContentHash = md5($finalContent);
             $hashedTargetFilePath = str_replace($this->path, "{$this->path}.{$finalContentHash}", $bodyFileName);
-            if (!Storage::disk('public_assets')->exists($hashedTargetFilePath)) {
-                Storage::disk('public_assets')->move($bodyFileName, $hashedTargetFilePath);
-                Storage::disk('public_assets')->delete($bodyFileName);
+            if (!file_exists($hashedTargetFilePath)) {
+                rename($bodyFileName, $hashedTargetFilePath);
             }
         }
          return $hashedTargetFilePath;
@@ -93,8 +96,8 @@ class ScriptsCollector implements ComposingInterface
       */
     private function getValue(string $name, string $path): string
     {
-         $rootUrl = env('root_url', 'https://' . request()->getHttpHost());
+         $rootUrl = env('root_url', 'http://' . request()->getHttpHost());
 
-         return app()->environment('local') ? "{$rootUrl}/assets{$name}" : "{$rootUrl}/assets{$path}";
+         return app()->environment('local') ? "{$rootUrl}/{$name}" : "{$rootUrl}/{$path}";
     }
 }
