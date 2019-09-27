@@ -96,7 +96,7 @@ class ScriptsCollector implements ComposingInterface
       */
     private function getValue(string $name, string $path): string
     {
-         $rootUrl = env('root_url', 'http://' . request()->getHttpHost());
+         $rootUrl = env('root_url', 'https://' . request()->getHttpHost());
 
          return app()->environment('local') ? "{$rootUrl}/{$name}" : "{$rootUrl}/{$path}";
     }
