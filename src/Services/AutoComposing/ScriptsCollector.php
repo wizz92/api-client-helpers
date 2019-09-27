@@ -41,10 +41,12 @@ class ScriptsCollector implements ComposingInterface
              Storage::disk('public_assets')->makeDirectory($composedDirectoryName);
         }
 
-        $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$this->path}.js";
+        $path = preg_match("/\//", $this->path) ? preg_replace("/\//", '-', $this->path) : $this->path;
+
+        $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$path}.js";
 
         $jsFile = fopen($bodyJSFileName, 'w');
-        if (flock($jsFile, LOCK_EX)) { 
+        if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
             ftruncate($jsFile, 0);
             
             $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
@@ -58,7 +60,10 @@ class ScriptsCollector implements ComposingInterface
 
             fflush($jsFile);        
             flock($jsFile, LOCK_UN);
-        } 
+        } else {
+            sleep(7);
+        }
+
         fclose($jsFile);
 
          $hashedTargetJSFilePath = $this->getHashedFilePath($bodyJSFileName);
