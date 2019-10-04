@@ -45,8 +45,8 @@ class ScriptsCollector implements ComposingInterface
 
         $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$path}.js";
 
-        $jsFile = fopen($bodyJSFileName, 'c+');
-        if (flock($jsFile, LOCK_EX)) { 
+        $jsFile = fopen($bodyJSFileName, 'a+');
+        if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
             ftruncate($jsFile, 0);
             
             $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
