@@ -52,12 +52,17 @@ class ContentHelper {
     $response_body = file_get_contents($url, false, stream_context_create($stream_options));
 
     //add autocomposing
-    $projectsForTest = [
-     'speedypaper.com',
-      'writepapersforme.online'
+    $projectsWithProblem = [
+      'papercoach.net',
+    ];
+    $exeptionPages = [
+      'OneSignalSDKWorker.js',
     ];
 
-    if (in_array($query['pname'], $projectsForTest)) {
+    if (
+      !in_array($query['pname'], $projectsWithProblem) &&
+      !in_array(request()->path(), $exeptionPages)
+    ) {
         $response_body = AutocomposeHelper::parseBody($response_body);
     }
     $response_headers = self::parseHeaders($http_response_header);
