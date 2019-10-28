@@ -86,7 +86,7 @@ class ScriptsCollector implements ComposingInterface
             $finalContent = file_get_contents($bodyFileName);
             $finalContentHash = md5($finalContent);
             $path = str_replace('/', '-', $this->path);
-            $hashedTargetFilePath = str_replace("{$path}.js", "{$path}.{$finalContentHash}", $bodyFileName);
+            $hashedTargetFilePath = str_replace("{$path}.js", "{$path}.{$finalContentHash}.js", $bodyFileName);
             if (!file_exists($hashedTargetFilePath)) {
                 rename($bodyFileName, $hashedTargetFilePath);
             }
