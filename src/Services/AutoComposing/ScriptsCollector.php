@@ -85,7 +85,8 @@ class ScriptsCollector implements ComposingInterface
         if (!app()->environment('local') && file_exists($bodyFileName)) {
             $finalContent = file_get_contents($bodyFileName);
             $finalContentHash = md5($finalContent);
-            $hashedTargetFilePath = str_replace($this->path, "{$this->path}.{$finalContentHash}", $bodyFileName);
+            $path = str_replace('/', '-', $this->path);
+            $hashedTargetFilePath = str_replace("{$path}.js", "{$path}.{$finalContentHash}", $bodyFileName);
             if (!file_exists($hashedTargetFilePath)) {
                 rename($bodyFileName, $hashedTargetFilePath);
             }
