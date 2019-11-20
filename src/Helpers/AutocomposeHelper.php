@@ -32,6 +32,6 @@ class AutocomposeHelper
             ->add('scripts', $scripts)
             ->get()['html'];
 
-        return '<!DOCTYPE html> <html>' . $processedPageContent . '</html>';
+        return '<!DOCTYPE html> <html lang="en">' . $processedPageContent . '</html>';
     }
 }
