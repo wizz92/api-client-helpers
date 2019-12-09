@@ -36,12 +36,22 @@ class ScriptsCollector implements ComposingInterface
     public function get(): array
     {
         $viewRoot = CacheHelper::getDomain();
+        $appId = CacheHelper::conf('client_id');
         $composedDirectoryName = "composed/{$viewRoot}";
+
+        $path = preg_match("/\//", $this->path) ? preg_replace("/\//", '-', $this->path) : $this->path;
+        
+        if ($appId == 69) {
+            $result = $this->getNewDirNameAndPath($appId);
+
+            $composedDirectoryName = $result['directoryName'];
+            $path = $result['path'];
+        }
+
+
         if (!Storage::disk('public_assets')->exists($composedDirectoryName)) {
              Storage::disk('public_assets')->makeDirectory($composedDirectoryName);
         }
-
-        $path = preg_match("/\//", $this->path) ? preg_replace("/\//", '-', $this->path) : $this->path;
 
         $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$path}.js";
 
@@ -105,5 +115,67 @@ class ScriptsCollector implements ComposingInterface
          $rootUrl = env('root_url', 'https://' . request()->getHttpHost());
 
          return app()->environment('local') ? "{$rootUrl}/{$name}" : "{$rootUrl}/{$path}";
+    }
+
+    
+    /**
+     * get new castom dir and file names for composing files 
+     *
+     * @param  mixed $appId
+     *
+     * @return void
+     */
+    private function getNewDirNameAndPath(int $appId)
+    {
+        $essence = explode('/', $this->path)[0] ?? false;
+        $dataWithUrls = CacheHelper::getSpasificListOfUrls(['app_id' => $appId]);
+
+        $landingsUrl = $dataWithUrls->landing->urls ?? [];
+        
+        if ($essence == 'blog') {
+            $composedDirectoryName .= "/blogs";
+        } elseif ($essence == 'essays') {
+            $composedDirectoryName .= "/essays";
+        } elseif (in_array("/{$this->path}", $landingsUrl)) {
+            $composedDirectoryName .= "/landings";
+            $essence = 'landing';
+        } else {
+            $composedDirectoryName .= "/general";
+        }
+
+        switch (true) {
+            case preg_match("^essays/^", $this->path):
+
+                $pathForEssayOrCategory = preg_replace('^essays/^', '', $this->path);
+                $essaysUrl = $dataWithUrls->essay->urls ?? [];
+
+                $path = in_array($pathForEssayOrCategory, $essaysUrl) ? 'essay' : 'essays-category';
+                break;
+
+            case preg_match("^blog/^", $this->path):
+                $path = 'blog';
+                break;
+
+            case preg_match("^blog^", $this->path):
+                $path = 'blogs';
+                break;
+
+            case preg_match("/\//", $this->path):
+                $path = preg_replace("/\//", '-', $this->path);
+                break;
+                
+            case $essence == 'landing';
+                $path = 'landing';
+                break;
+
+            default:
+                $path = $this->path;
+                break;
+        }
+
+        return [
+            'dirName' => $composedDirectoryName,
+            'path' => $path
+        ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Wizz\ApiClientHelpers;
 
+use Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts\SeparateManagerInterface;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -23,7 +24,7 @@ class ACHController extends Controller
     Setting up our error message for the client.
 
     */
-    public function __construct()
+    public function __construct(SeparateManagerInterface $separateManager)
     {
         $one = "Sorry, looks like something went wrong. ";
 
@@ -37,6 +38,7 @@ class ACHController extends Controller
         $this->redirect_mode = config('api_configs.not_found_redirect_mode');
 
         $this->version = "1.2";
+        $this->separateManager = $separateManager;
     }
 
     // public function splitUrlIntoSegments($url)
@@ -81,7 +83,11 @@ class ACHController extends Controller
         // it doesn`t matter which page by pass we cache
         $cache_key = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $current_url;
         // get cache_key hash for use in Cache facade
-        $cache_key = md5($cache_key);
+        // new cache key for cache separating
+        $appId = CacheHelper::conf('client_id');
+
+        $normalCacheKey = "general_{$cache_key}_{$appId}";
+        $cache_key = md5($normalCacheKey);
         
         $experiment_results = request()->get('experimentsResults') ?? null;
         $serialized_experiment_results = "";
@@ -132,15 +138,27 @@ class ACHController extends Controller
             return ['result' => 'no access'];
         }
         try {
-            \Artisan::call('cache:clear');
+          $type = request()->input('type');
+          $appId = request()->input('app_id');
+          if ($type || $appId) {
+            $type = '69';
+            $result = $this->separateManager->clear($appId, $type);
+
             \Artisan::call('view:clear');
             \Artisan::call('config:clear');
             exec('/usr/bin/php '.base_path().'/composer dump-autoload');
             \Artisan::call('clear-compiled');
-            Storage::disk('public_assets')->deleteDirectory('/composed');
-            return ['result' => 'success'];
+            return $result;
+          }
+          dd('old cache');
+          \Artisan::call('cache:clear');
+          \Artisan::call('view:clear');
+          \Artisan::call('config:clear');
+          exec('/usr/bin/php '.base_path().'/composer dump-autoload');
+          \Artisan::call('clear-compiled');
+          Storage::disk('public_assets')->deleteDirectory('/composed');
+          return ['result' => 'success'];
         } catch (Exception $e) {
-            // \Log::info($e);
             return ['result' => 'error'];
         }
     }

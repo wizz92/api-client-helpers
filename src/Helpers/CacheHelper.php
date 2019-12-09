@@ -141,4 +141,35 @@ class CacheHelper
 
       return $response;
     }
+
+    public static function getSpasificListOfUrls($params)
+    {
+        $appId = CacheHelper::conf('client_id');
+        $clientSecret = CacheHelper::conf('client_secret');
+        $paramsInString = http_build_query($params);
+
+        $cacheKey = "all_pages_url_by_params_{$paramsInString}";
+        $skipCache = false;
+
+        $urls = self::cacher($cacheKey, function() use ($appId, $clientSecret, $paramsInString, &$skipCache) {
+            $query = env('secret_url')."/get-pages-url?client_id=$appId&client_secret=$clientSecret&{$paramsInString}";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $query);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $res = curl_exec($ch);
+            curl_close($ch);
+    
+            $result = json_decode($res);
+            
+            if (!is_object($result) || (property_exists($result, 'errors') && count($result->errors) > 0)) {
+              $skipCache = true;
+              return false;
+            }
+
+            return $result->data ?? false;
+          }, 60*24*30, $skipCache);
+        return $urls;
+    }
 }
