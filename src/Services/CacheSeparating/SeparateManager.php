@@ -45,18 +45,18 @@ class SeparateManager implements SeparateManagerInterface
     {
         switch (true) {
             case !$appId && $type:
-                $cleaner = new CacheCleanerByType();
+                $cleaner = CacheCleanerByType::class;
                 break;
             
             case $appId && !$type:
-                $cleaner = new CacheCleanerByAppId();
+                $cleaner = CacheCleanerByAppId::class;
                 break;
             
             case $appId && $type:
-                $cleaner = new CacheCleanerByAppIdAndType();
+                $cleaner = CacheCleanerByAppIdAndType::class;
                 break;
         }
 
-        return $cleaner->run($dataWithUrls, $appId, $type);
+        return app()->make($cleaner)->run($dataWithUrls, $appId, $type);
     }
 }
