@@ -11,5 +11,6 @@ interface CacheCleanerInterface
      *
      * @return void|array
      */
+    
     public function run($dataWithUrls, int $appId = null, string $type = null);
 }
