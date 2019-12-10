@@ -41,12 +41,12 @@ class ScriptsCollector implements ComposingInterface
 
         $path = preg_match("/\//", $this->path) ? preg_replace("/\//", '-', $this->path) : $this->path;
         
-        if ($appId == 69) {
+        // if ($appId == 69) {
             $result = $this->getNewDirNameAndPath($appId);
 
             $composedDirectoryName = $result['directoryName'];
             $path = $result['path'];
-        }
+        // }
 
 
         if (!Storage::disk('public_assets')->exists($composedDirectoryName)) {

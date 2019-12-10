@@ -14,7 +14,7 @@ class CacheCleanerByAppId implements CacheCleanerInterface
 
     public function __construct(CacheCleanHelper $cacheCleaner)
     {
-        $cacheCleanHelper = $this->cacheCleanHelper;
+        $this->cacheCleanHelper = $cacheCleanHelper;
     }
 
     /**

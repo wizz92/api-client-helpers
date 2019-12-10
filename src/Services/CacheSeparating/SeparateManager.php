@@ -29,10 +29,10 @@ class SeparateManager implements SeparateManagerInterface
 
         $withoutNull = array_filter($paramsForUrl);
         $dataWithUrls = CacheHelper::getSpasificListOfUrls($withoutNull);
-
+        $paramsInString = implode(" ",$withoutNull);
 
         if (!isset($dataWithUrls->urls) || !$dataWithUrls) {
-            return  ['error' => "We don't have any pages with this params: $paramsInString"];
+            return  ['error' => "We don't have any pages with this params: {$paramsInString}"];
           }
         
         return $this->separate($dataWithUrls, $appId, $type);
