@@ -40,15 +40,6 @@ class ACHController extends Controller
         $this->version = "1.2";
         $this->separateManager = $separateManager;
     }
-
-    // public function splitUrlIntoSegments($url)
-    // {
-    //     $url_without_query_string = explode('?', $url)[0];
-    //     return array_values(array_filter(explode('/', $url_without_query_string), function ($var) {
-    //         return ($var) ? true : false;
-    //     }));
-    // }
-
     /*
 
     The actual function for handling frontend repo requests.
