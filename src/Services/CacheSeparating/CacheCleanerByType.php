@@ -20,13 +20,13 @@ class CacheCleanerByType implements CacheCleanerInterface
     /**
      * removing cache for certain type
      *
-     * @param  array $dataWithUrls
+     * @param  mixed $dataWithUrls
      * @param  int|null $appId
      * @param  string|null $type
      *
      * @return void|array
      */
-    public function run(array $dataWithUrls, int $appId = null, string $type = null)
+    public function run($dataWithUrls, int $appId = null, string $type = null)
     {
         foreach ($dataWithUrls as $key => $info) {
             $domain = array_get($info, 'domain', null);

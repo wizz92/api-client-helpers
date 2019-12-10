@@ -20,13 +20,13 @@ class CacheCleanerByAppIdAndType implements CacheCleanerInterface
     /**
      * removing cache for certain client id and type
      *
-     * @param  array $dataWithUrls
+     * @param  mixed $dataWithUrls
      * @param  int|null $appId
      * @param  string|null $type
      *
      * @return void|array
      */
-    public function run(array $dataWithUrls, int $appId = null, string $type = null)
+    public function run($dataWithUrls, int $appId = null, string $type = null)
     {
         $domain = $dataWithUrls->domain;
         $urls = $dataWithUrls->urls;
