@@ -42,7 +42,7 @@ class ScriptsCollector implements ComposingInterface
         $path = preg_match("/\//", $this->path) ? preg_replace("/\//", '-', $this->path) : $this->path;
         
         // if ($appId == 69) {
-            $result = $this->getNewDirNameAndPath($appId);
+            $result = $this->getNewDirNameAndPath($appId, $composedDirectoryName);
 
             $composedDirectoryName = $result['directoryName'];
             $path = $result['path'];
@@ -121,11 +121,12 @@ class ScriptsCollector implements ComposingInterface
     /**
      * get new castom dir and file names for composing files 
      *
-     * @param  mixed $appId
+     * @param  int $appId
+     * @param  string $composedDirectoryName
      *
      * @return void
      */
-    private function getNewDirNameAndPath(int $appId)
+    private function getNewDirNameAndPath(int $appId, string $composedDirectoryName)
     {
         $essence = explode('/', $this->path)[0] ?? false;
         $dataWithUrls = CacheHelper::getSpasificListOfUrls(['app_id' => $appId]);
@@ -174,7 +175,7 @@ class ScriptsCollector implements ComposingInterface
         }
 
         return [
-            'dirName' => $composedDirectoryName,
+            'directoryName' => $composedDirectoryName,
             'path' => $path
         ];
     }
