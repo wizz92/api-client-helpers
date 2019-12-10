@@ -68,17 +68,21 @@ class ACHController extends Controller
         $parsed_url = UrlParser::fromString($current_url);
         $parsed_url_host = app()->environment('local') ? "{$parsed_url->getHost()}:{$parsed_url->getPort()}" : $parsed_url->getHost();
         $parsed_url_scheme = $parsed_url->getScheme();
+
+        $appId = CacheHelper::conf('client_id');
+        $slugForNewKey = substr($slug, 0, 1) == '/' ? $slug : "/$slug"; 
+
+        //new cache key for cache separating
+        $newCacheKey = "general{$slugForNewKey}_{$appId}";
+        
         // if req url contains dashboard substring cache this page
         // in one key 'http://domain.name/dashboard'
         // because we have react on dash 
         // it doesn`t matter which page by pass we cache
-        $cache_key = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $current_url;
+        $cache_key = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $newCacheKey;
         // get cache_key hash for use in Cache facade
         // new cache key for cache separating
-        $appId = CacheHelper::conf('client_id');
-
-        $normalCacheKey = "general_{$cache_key}_{$appId}";
-        $cache_key = md5($normalCacheKey);
+        $cache_key = md5($cache_key);
         
         $experiment_results = request()->get('experimentsResults') ?? null;
         $serialized_experiment_results = "";
@@ -132,7 +136,6 @@ class ACHController extends Controller
           $type = request()->input('type');
           $appId = request()->input('app_id');
           if ($type || $appId) {
-            $type = '69';
             $result = $this->separateManager->clear($appId, $type);
 
             \Artisan::call('view:clear');
@@ -141,7 +144,7 @@ class ACHController extends Controller
             \Artisan::call('clear-compiled');
             return $result;
           }
-          dd('old cache');
+          \Log::info('old cache');
           \Artisan::call('cache:clear');
           \Artisan::call('view:clear');
           \Artisan::call('config:clear');

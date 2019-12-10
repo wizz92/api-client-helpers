@@ -22,8 +22,8 @@ class CacheCleanHelper
     public function clearCacheForCustomPages(int $appId, string $type)
     {
         $cacheKeys = [
-            'essay' => "essays_{$appId}",
-            'blog' => "blog_{$appId}"
+            'essay' => "/essays_{$appId}",
+            'blog' => "/blog_{$appId}"
         ];
 
         $this->clearCacheByKey($appId, $type, null, array_get($cacheKeys, $type)); 
@@ -42,21 +42,20 @@ class CacheCleanHelper
     public function clearCacheByKey(int $appId, string $type, string $url = null, string $customKey = null)
     {
         $pathForCache = [
-            'blog' => "blog/$url",
-            'general' => "general/$url",
+            'blog' => "/blog/$url",
+            'general' => "$url",
             'landing' => "$url",
-            'essay' => "essays/$url",
-            'flashcard' => "flashcards/$url",
+            'essay' => "/essays/$url",
+            'flashcard' => "/flashcards/$url",
         ];
 
         $path = $pathForCache[$type];
                 
         if (!$path && !$customKey) {
-            // return ['error' => "we don't have this type"];
             $this->errrors[$type] = "we don't have {$type} type";
         }
 
-        $cacheKey = md5($customKey) ?? md5("{$path}_{$appId}");
+        $cacheKey = $customKey ? md5($customKey) : md5("{$path}_{$appId}");
         if (Cache::has($cacheKey)) {
               Cache::forget($cacheKey);
         }

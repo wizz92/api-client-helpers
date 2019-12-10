@@ -52,7 +52,7 @@ class SeparateManager implements SeparateManagerInterface
                 $cleaner = new CacheCleanerByAppId();
                 break;
             
-            case !$appId && !$type:
+            case $appId && $type:
                 $cleaner = new CacheCleanerByAppIdAndType();
                 break;
         }
