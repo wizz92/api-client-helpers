@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 use Wizz\ApiClientHelpers\Services\AutoComposing\Builder;
 use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\BuilderInterface;
+use Wizz\ApiClientHelpers\Services\CacheSeparating\SeparateManager;
+use Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts\SeparateManagerInterface;
 
 class ApiClientHelpersServiceProvider extends ServiceProvider
 {
