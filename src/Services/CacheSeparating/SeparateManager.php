@@ -29,6 +29,7 @@ class SeparateManager implements SeparateManagerInterface
 
         $withoutNull = array_filter($paramsForUrl);
         $dataWithUrls = CacheHelper::getSpasificListOfUrls($withoutNull);
+        
         $paramsInString = implode(" ",$withoutNull);
 
         if (!isset($dataWithUrls->urls) || !$dataWithUrls) {
