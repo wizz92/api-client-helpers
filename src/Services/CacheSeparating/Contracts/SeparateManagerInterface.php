@@ -2,7 +2,7 @@
 
 namespace Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts;
 
-interface SeparasteManagerInterface
+interface SeparateManagerInterface
 {
     /**
      * @param string $method
