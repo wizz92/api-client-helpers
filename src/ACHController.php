@@ -40,11 +40,6 @@ class ACHController extends Controller
         $this->version = "1.2";
         $this->separateManager = $separateManager;
     }
-    /*
-
-    The actual function for handling frontend repo requests.
-
-    */
 
     private function ensureBasicAuth()
     {
