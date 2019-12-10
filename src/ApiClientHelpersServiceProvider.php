@@ -44,6 +44,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
     {
         $this->app->register('Intervention\Httpauth\HttpauthServiceProviderLaravel5');
         $this->app->bind(BuilderInterface::class, Builder::class);
+        $this->app->bind(SeparateManagerInterface::class, SeparateManager::class);
 
         // include __DIR__.'/routes.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
