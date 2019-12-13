@@ -29,9 +29,9 @@ class CacheCleanerByType implements CacheCleanerInterface
     public function run($dataWithUrls, int $appId = null, string $type = null)
     {
         foreach ($dataWithUrls as $key => $info) {
-            $domain = array_get($info, 'domain', null);
-            $appId = array_get($info, 'app_id', null);
-            $urls = array_get($info, 'urls', []);
+            $domain = $info->domain ?? null;
+            $appId = $info->app_id ?? null;
+            $urls = $info->urls ?? [];
 
             $this->cacheCleanHelper->clearComposingFiles("{$domain}/{$type}s");
 

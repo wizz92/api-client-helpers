@@ -31,8 +31,8 @@ class SeparateManager implements SeparateManagerInterface
         $dataWithUrls = CacheHelper::getSpasificListOfUrls($withoutNull);
         $paramsInString = implode(" ",$withoutNull);
 
-        if (!isset($dataWithUrls->urls) || !$dataWithUrls) {
-            return  ['error' => "We don't have any pages with this params: {$paramsInString}"];
+        if (!$dataWithUrls) {
+            return  ['error' => "We don't have any information with this params: {$paramsInString}"];
           }
         
         return $this->separate($dataWithUrls, $appId, $type);
