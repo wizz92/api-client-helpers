@@ -56,7 +56,6 @@ class SeparateManager implements SeparateManagerInterface
                 $cleaner = CacheCleanerByAppIdAndType::class;
                 break;
         }
-
         return app()->make($cleaner)->run($dataWithUrls, $appId, $type);
     }
 }
