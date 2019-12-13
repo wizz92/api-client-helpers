@@ -36,6 +36,7 @@ class CacheCleanerByAppIdAndType implements CacheCleanerInterface
         foreach ($urls as $key => $url) {
             $this->cacheCleanHelper->clearCacheByKey($appId, $type, $url);
         }
+        
         $this->cacheCleanHelper->clearCacheForCustomPages($appId, $type);
 
         return $this->cacheCleanHelper->errors ? $this->cacheCleanHelper->errors : ['result' => "Cache for {$type} type in {$domain} project was deleted"];
