@@ -141,7 +141,7 @@ class ScriptsCollector implements ComposingInterface
             $composedDirectoryName .= "/landings";
             $essence = 'landing';
         } else {
-            $composedDirectoryName .= "/general";
+            $composedDirectoryName .= "/generals";
         }
 
         switch (true) {
