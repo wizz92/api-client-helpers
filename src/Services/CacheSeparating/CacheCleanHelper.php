@@ -50,7 +50,6 @@ class CacheCleanHelper
         ];
 
         $path = $pathForCache[$type];
-                
         if (!$path && !$customKey) {
             $this->errrors[$type] = "we don't have {$type} type";
         }
