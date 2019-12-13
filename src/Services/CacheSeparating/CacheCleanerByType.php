@@ -33,7 +33,9 @@ class CacheCleanerByType implements CacheCleanerInterface
             $appId = $info->app_id ?? null;
             $urls = $info->urls ?? [];
 
-            $this->cacheCleanHelper->clearComposingFiles("{$domain}/{$type}s");
+            $composingDirectory = "{$domain}/{$type}"; 
+            $composingDirectory = $type != 'general' ? "{$composingDirectory}s" : $composingDirectory;
+            $this->cacheCleanHelper->clearComposingFiles($composingDirectory);
 
             foreach ($urls as $url) {
                 $this->cacheCleanHelper->clearCacheByKey($appId, $type, $url);
