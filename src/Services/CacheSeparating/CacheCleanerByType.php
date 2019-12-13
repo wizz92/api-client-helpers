@@ -40,7 +40,6 @@ class CacheCleanerByType implements CacheCleanerInterface
             foreach ($urls as $url) {
                 $this->cacheCleanHelper->clearCacheByKey($appId, $type, $url);
             }
-           
             $this->cacheCleanHelper->clearCacheForCustomPages($appId, $type);
         }
 
