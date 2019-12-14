@@ -54,7 +54,8 @@ class CacheCleanHelper
             'flashcard' => "/flashcards/$url",
         ];
 
-        $path = $pathForCache[$type];
+        $path = $pathForCache[$type] ?? null;
+
         if (!$path && !$customKey) {
             $this->errrors[$type] = "we don't have {$type} type";
         }
