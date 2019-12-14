@@ -19,7 +19,7 @@ class CacheCleanHelper
      *
      * @return void
      */
-    public function clearCacheForCustomPages(int $appId, string $type)
+    public function clearCacheForCustomPages($appId, $type)
     {
         $type = $type == 'essay' ? $type.'s' : $type;
 
@@ -44,7 +44,7 @@ class CacheCleanHelper
      *
      * @return void|array
      */
-    public function clearCacheByKey(int $appId, string $type, string $url = null, string $customKey = null)
+    public function clearCacheByKey($appId, $type, $url = null, $customKey = null)
     {
         $pathForCache = [
             'blog' => "/blog/$url",
