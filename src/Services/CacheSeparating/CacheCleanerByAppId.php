@@ -12,7 +12,7 @@ class CacheCleanerByAppId implements CacheCleanerInterface
 {
     protected $cacheCleanHelper;
 
-    public function __construct(CacheCleanHelper $cacheCleaner)
+    public function __construct(CacheCleanHelper $cacheCleanHelper)
     {
         $this->cacheCleanHelper = $cacheCleanHelper;
     }
@@ -36,11 +36,11 @@ class CacheCleanerByAppId implements CacheCleanerInterface
             $urls = $info->urls;
   
             $this->cacheCleanHelper->clearComposingFiles("{$domain}");
+            $this->cacheCleanHelper->clearCacheForCustomPages($appId, $type);
   
             foreach ($urls as $key => $url) {
                 $this->cacheCleanHelper->clearCacheByKey($appId, $type, $url);
             }
-            $this->cacheCleanHelper->clearCacheForCustomPages($type);
         }
 
         return $this->cacheCleanHelper->errors ? $this->cacheCleanHelper->errors : ['result' => "Cache for for {$domain} project was deleted"];

@@ -21,12 +21,17 @@ class CacheCleanHelper
      */
     public function clearCacheForCustomPages(int $appId, string $type)
     {
-        $cacheKeys = [
-            'essay' => "/essays_{$appId}",
-            'blog' => "/blog_{$appId}"
+        $type = $type == 'essay' ? $type.'s' : $type;
+
+        $customKeys = [
+            $type.'_'.$appId,
+            "all_pages_url_by_params_app_id=$appId"
         ];
 
-        $this->clearCacheByKey($appId, $type, null, array_get($cacheKeys, $type)); 
+        foreach ($customKeys as $key) {
+            $this->clearCacheByKey($appId, $type, null, $key); 
+        }
+        
     }
     
     /**

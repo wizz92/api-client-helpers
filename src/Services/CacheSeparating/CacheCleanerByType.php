@@ -34,12 +34,11 @@ class CacheCleanerByType implements CacheCleanerInterface
             $urls = $info->urls ?? [];
 
             $this->cacheCleanHelper->clearComposingFiles("{$domain}/{$type}s");
+            $this->cacheCleanHelper->clearCacheForCustomPages($appId, $type);
 
             foreach ($urls as $url) {
                 $this->cacheCleanHelper->clearCacheByKey($appId, $type, $url);
             }
-           
-            $this->cacheCleanHelper->clearCacheForCustomPages($appId, $type);
         }
 
         return $this->cacheCleanHelper->errors ? $this->cacheCleanHelper->errors : ['result' => "Cache for all {$type}s was deleted"];
