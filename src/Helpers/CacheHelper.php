@@ -152,6 +152,7 @@ class CacheHelper
         $skipCache = isset($params['type']) ? true : false;
 
         $urls = self::cacher($cacheKey, function() use ($appId, $clientSecret, $paramsInString, &$skipCache) {
+          
             $query = env('secret_url')."/get-pages-url?client_id=$appId&client_secret=$clientSecret&{$paramsInString}";
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $query);
