@@ -149,7 +149,7 @@ class CacheHelper
         $paramsInString = http_build_query($params);
 
         $cacheKey = "all_pages_url_by_params_{$paramsInString}";
-        $skipCache = false;
+        $skipCache = isset($params['type']) ? true : false;
 
         $urls = self::cacher($cacheKey, function() use ($appId, $clientSecret, $paramsInString, &$skipCache) {
             $query = env('secret_url')."/get-pages-url?client_id=$appId&client_secret=$clientSecret&{$paramsInString}";
