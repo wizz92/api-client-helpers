@@ -3,6 +3,7 @@
 namespace Wizz\ApiClientHelpers\Services\AutoComposing;
 
 use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\ComposingInterface;
+use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\CustomScriptManagerInterface;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,7 @@ class ScriptsCollector implements ComposingInterface
     public function __construct(Crawler $crawler)
     {
         $this->crawler = $crawler;
+        $this->customScriptManager = app()->make(CustomScriptManagerInterface::class);
     }
 
     /**
@@ -58,6 +60,7 @@ class ScriptsCollector implements ComposingInterface
         $jsFile = fopen($bodyJSFileName, 'a+');
         if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
             ftruncate($jsFile, 0);
+            $this->customScriptManager->add($jsFile);
             
             $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
                 $script = $node->attr('src');

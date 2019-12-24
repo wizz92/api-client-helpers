@@ -8,6 +8,8 @@ use Wizz\ApiClientHelpers\Services\AutoComposing\Builder;
 use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\BuilderInterface;
 use Wizz\ApiClientHelpers\Services\CacheSeparating\SeparateManager;
 use Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts\SeparateManagerInterface;
+use Wizz\ApiClientHelpers\Services\AutoComposing\CustomScriptManager;
+use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\CustomScriptManagerInterface;
 
 class ApiClientHelpersServiceProvider extends ServiceProvider
 {
@@ -47,6 +49,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
         $this->app->register('Intervention\Httpauth\HttpauthServiceProviderLaravel5');
         $this->app->bind(BuilderInterface::class, Builder::class);
         $this->app->bind(SeparateManagerInterface::class, SeparateManager::class);
+        $this->app->bind(CustomScriptManagerInterface::class, CustomScriptManager::class);
 
         // include __DIR__.'/routes.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
