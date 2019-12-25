@@ -140,7 +140,7 @@ class ACHController extends Controller
             return $result;
           }
           \Log::info('old cache');
-          dd('if you really wanna clear all cache - call landing repo developers');
+          // dd('if you really wanna clear all cache - call landing repo developers');
           \Artisan::call('cache:clear');
           \Artisan::call('view:clear');
           \Artisan::call('config:clear');
