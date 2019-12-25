@@ -61,7 +61,6 @@ class ScriptsCollector implements ComposingInterface
         $jsFile = fopen($bodyJSFileName, 'a+');
         if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
             ftruncate($jsFile, 0);
-            $this->customScriptManager->add($jsFile, $addScriptForRedirect);
             
             $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
                 $script = $node->attr('src');
@@ -72,6 +71,7 @@ class ScriptsCollector implements ComposingInterface
                 }
             });
 
+            $this->customScriptManager->add($jsFile, $addScriptForRedirect);
             fflush($jsFile);        
             flock($jsFile, LOCK_UN);
         } else {
