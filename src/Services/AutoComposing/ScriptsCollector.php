@@ -153,7 +153,7 @@ class ScriptsCollector implements ComposingInterface
                 $pathForEssayOrCategory = preg_replace('^essays/^', '', $this->path);
                 $essaysUrl = $dataWithUrls->essay->urls ?? [];
 
-                $path = in_array($pathForEssayOrCategory, $essaysUrl) ? 'essay' : 'essays-category';
+                $path = in_array($pathForEssayOrCategory, $essaysUrl) ? 'essay' : $pathForEssayOrCategory;
                 break;
 
             case preg_match("^blog/^", $this->path):
