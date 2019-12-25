@@ -4,5 +4,5 @@ namespace Wizz\ApiClientHelpers\Services\AutoComposing\Contracts;
 
 interface CustomScriptManagerInterface
 {
-    public function add($jsFile);
+    public function add($jsFile, bool $addCustomScript = false);
 }

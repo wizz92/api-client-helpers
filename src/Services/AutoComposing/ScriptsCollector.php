@@ -48,6 +48,7 @@ class ScriptsCollector implements ComposingInterface
 
             $composedDirectoryName = $result['directoryName'];
             $path = $result['path'];
+            $addScriptForRedirect = $result['addScriptForRedirect'];
         // }
 
 
@@ -60,7 +61,7 @@ class ScriptsCollector implements ComposingInterface
         $jsFile = fopen($bodyJSFileName, 'a+');
         if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
             ftruncate($jsFile, 0);
-            $this->customScriptManager->add($jsFile);
+            $this->customScriptManager->add($jsFile, $addScriptForRedirect);
             
             $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
                 $script = $node->attr('src');
@@ -134,6 +135,8 @@ class ScriptsCollector implements ComposingInterface
         $essence = explode('/', $this->path)[0] ?? false;
         $dataWithUrls = CacheHelper::getSpasificListOfUrls(['app_id' => $appId]);
 
+        $addScriptForRedirect = false;
+
         $landingsUrl = $dataWithUrls->landing->urls ?? [];
         
         if ($essence == 'blog') {
@@ -153,7 +156,10 @@ class ScriptsCollector implements ComposingInterface
                 $pathForEssayOrCategory = preg_replace('^essays/^', '', $this->path);
                 $essaysUrl = $dataWithUrls->essay->urls ?? [];
 
-                $path = in_array($pathForEssayOrCategory, $essaysUrl) ? 'essay' : $pathForEssayOrCategory;
+                $isItEssay = in_array($pathForEssayOrCategory, $essaysUrl);
+
+                $path = $isItEssay ? 'essay' : $pathForEssayOrCategory;
+                $addScriptForRedirect = !$isItEssay;
                 break;
 
             case preg_match("^blog/^", $this->path):
@@ -179,7 +185,8 @@ class ScriptsCollector implements ComposingInterface
 
         return [
             'directoryName' => $composedDirectoryName,
-            'path' => $path
+            'path' => $path,
+            'addScriptForRedirect' => $addScriptForRedirect
         ];
     }
 }

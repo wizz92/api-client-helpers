@@ -10,10 +10,13 @@ class CustomScriptManager implements CustomScriptManagerInterface
 {
     /**
      * @param $jsFile
+     * @param bool $addCustomScript
      */
-    public function add($jsFile)
+    public function add($jsFile, bool $addCustomScript = false)
     {
-        $this->firstPageRedir($jsFile);
+        if ($addCustomScript) {
+            $this->firstPageRedir($jsFile);
+        }
     }
 
     private function firstPageRedir($jsFile)
