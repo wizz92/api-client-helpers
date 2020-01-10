@@ -65,28 +65,29 @@ class ACHController extends Controller
         $parsed_url_scheme = $parsed_url->getScheme();
 
         $appId = CacheHelper::conf('client_id');
+        $domain = CacheHelper::conf('domain');
         $slugForNewKey = substr($slug, 0, 1) == '/' ? $slug : "/$slug"; 
 
         //new cache key for cache separating
-        $newCacheKey = "{$slugForNewKey}_{$appId}";
+        $newCacheKey = "{$slugForNewKey}_{$appId}_{$domain}";
         
         // if req url contains dashboard substring cache this page
         // in one key 'http://domain.name/dashboard'
         // because we have react on dash 
         // it doesn`t matter which page by pass we cache
-        $cache_key = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $newCacheKey;
+        $cacheKey = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $newCacheKey;
         // get cache_key hash for use in Cache facade
         // new cache key for cache separating
-        $cache_key = md5($cache_key);
+        $cacheKey = md5($cacheKey);
         
         $experiment_results = request()->get('experimentsResults') ?? null;
         $serialized_experiment_results = "";
         if ($experiment_results) {
           $serialized_experiment_results = serialize($experiment_results);
-          $cache_key .= $serialized_experiment_results;
+          $cacheKey .= $serialized_experiment_results;
         }
 
-        $cache_expire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
+        $cacheExpire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
         $should_skip_cache = !CacheHelper::shouldWeCache();
 
         if ($should_skip_cache) {
@@ -96,7 +97,7 @@ class ACHController extends Controller
           return ContentHelper::getValidResponse($response);
         }
 
-        $response = Cache::get($cache_key, null);
+        $response = Cache::get($cacheKey, null);
 
         if (!is_null($response)) { // meanse we have content in cache
           //kostil for pagespeed
@@ -111,7 +112,7 @@ class ACHController extends Controller
         $response = ContentHelper::getFrontendContent($slug, $serialized_experiment_results);
         // store in cache in case we do not have an error in response
         if (!in_array($response['status'], [500, 502, 504])) {
-          Cache::add($cache_key, $response, $cache_expire);
+          Cache::add($cacheKey, $response, $cacheExpire);
         }
         // and return it
         return ContentHelper::getValidResponse($response);
