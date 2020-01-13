@@ -153,7 +153,7 @@ class CacheHelper
           $paramsForTags['app_id'] = $params['app_id'];
           $paramsForTags['type'] = $params['type'].'s';
         }
-        $tags = array_values($paramsForTags);
+        $tags = array_values($paramsForTags ?? $params);
         
         $urls = Cache::tags($tags)->get($cacheKey);
         if (!$urls) {
