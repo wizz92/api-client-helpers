@@ -131,6 +131,7 @@ class ACHController extends Controller
         if (!in_array($response['status'], [500, 502, 504])) {
           Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->put($cacheKey, $response, $cacheExpire);
         }
+        
         // and return it
         return ContentHelper::getValidResponse($response);
     }
