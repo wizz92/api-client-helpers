@@ -3,6 +3,7 @@ namespace Wizz\ApiClientHelpers\Services\CacheSeparating;
 
 use Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts\CacheCleanerInterface;
 use Wizz\ApiClientHelpers\Services\CacheSeparating\CacheCleanHelper;
+use Cache;
 
 /**
  * Class CacheCleanerByType
@@ -20,27 +21,21 @@ class CacheCleanerByType implements CacheCleanerInterface
     /**
      * removing cache for certain type
      *
-     * @param  mixed $dataWithUrls
+     * @param  string|null $domain
      * @param  int|null $appId
      * @param  string|null $type
      *
      * @return void|array
      */
-    public function run($dataWithUrls, int $appId = null, string $type = null)
+    public function run(string $domain = null, int $appId = null, string $type = null)
     {
-        foreach ($dataWithUrls as $key => $info) {
-            $domain = $info->domain ?? null;
-            $appId = $info->app_id ?? null;
-            $urls = $info->urls ?? [];
+        $this->cacheCleanHelper->clearComposingFiles("{$type}s");
+        Cache::tags([$type.'s'])->flush();
 
-            $this->cacheCleanHelper->clearComposingFiles("{$domain}/{$type}s");
-            $this->cacheCleanHelper->clearCacheForCustomPages($appId, $type);
-
-            foreach ($urls as $url) {
-                $this->cacheCleanHelper->clearCacheByKey($appId, $type, $url);
-            }
+        if ($type == 'landing') {
+            Cache::forget('landing_urls');
         }
 
-        return $this->cacheCleanHelper->errors ? $this->cacheCleanHelper->errors : ['result' => "Cache for all {$type}s was deleted"];
+        return ['result' => "Cache for all {$type}s was deleted"];
     }
 }

@@ -5,12 +5,12 @@ namespace Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts;
 interface CacheCleanerInterface
 {
     /**
-     * @param  mixed $dataWithUrls
+     * @param  string|null $domain
      * @param  int|null $appId
      * @param  string|null $type
      *
      * @return void|array
      */
     
-    public function run($dataWithUrls, int $appId = null, string $type = null);
+    public function run(string $domain = null, int $appId = null, string $type = null);
 }

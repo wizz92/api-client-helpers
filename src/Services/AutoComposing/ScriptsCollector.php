@@ -38,18 +38,15 @@ class ScriptsCollector implements ComposingInterface
     public function get(): array
     {
         $viewRoot = CacheHelper::getDomain();
-        $appId = CacheHelper::conf('client_id');
         $composedDirectoryName = "composed/{$viewRoot}";
 
-        $path = preg_match("/\//", $this->path) ? preg_replace("/\//", '-', $this->path) : $this->path;
+        // $path = preg_match("/\//", $this->path) ? preg_replace("/\//", '-', $this->path) : $this->path;
         
-        // if ($appId == 69) {
-            $result = $this->getNewDirNameAndPath($appId, $composedDirectoryName);
+        $result = $this->getNewDirNameAndPath($composedDirectoryName);
 
-            $composedDirectoryName = $result['directoryName'];
-            $path = $result['path'];
-            $addScriptForRedirect = $result['addScriptForRedirect'];
-        // }
+        $composedDirectoryName = $result['directoryName'];
+        $path = $result['path'];
+        $addScriptForRedirect = $result['addScriptForRedirect'];
 
 
         if (!Storage::disk('public_assets')->exists($composedDirectoryName)) {
@@ -125,15 +122,14 @@ class ScriptsCollector implements ComposingInterface
     /**
      * get new castom dir and file names for composing files 
      *
-     * @param  int $appId
      * @param  string $composedDirectoryName
      *
      * @return void
      */
-    private function getNewDirNameAndPath(int $appId, string $composedDirectoryName)
+    private function getNewDirNameAndPath(string $composedDirectoryName)
     {
         $essence = explode('/', $this->path)[0] ?? false;
-        $dataWithUrls = CacheHelper::getSpasificListOfUrls(['app_id' => $appId]);
+        $dataWithUrls = CacheHelper::getSpasificListOfUrls();
 
         $addScriptForRedirect = false;
 

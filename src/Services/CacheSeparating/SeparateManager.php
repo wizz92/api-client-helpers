@@ -22,26 +22,18 @@ class SeparateManager implements SeparateManagerInterface
             return ['error' => 'You should choose type of pages or client id'];
         }
 
-        $paramsForUrl = [
-            'app_id' => $appId,
-            'type' => $type
-        ];
+        $configData = array_values(array_filter(config('api_configs'), function($index) use ($appId) {
+            return array_get($index, 'client_id') == $appId;
+        }))[0];
 
-        $withoutNull = array_filter($paramsForUrl);
-        $dataWithUrls = CacheHelper::getSpasificListOfUrls($withoutNull);
-        $paramsInString = implode(" ",$withoutNull);
-
-        if (!$dataWithUrls) {
-            return  ['error' => "We don't have any information with this params: {$paramsInString}"];
-          }
-        
-        return $this->separate($dataWithUrls, $appId, $type);
+        $domain = $configData['domain'] ?? null;
+        return $this->separate($domain, $appId, $type);
     }
 
     /**
      * @return array
      */
-    private function separate($dataWithUrls, $appId, $type)
+    private function separate($domain, $appId, $type)
     {
         switch (true) {
             case !$appId && $type:
@@ -57,6 +49,6 @@ class SeparateManager implements SeparateManagerInterface
                 break;
         }
         
-        return app()->make($cleaner)->run($dataWithUrls, $appId, $type);
+        return app()->make($cleaner)->run($domain, $appId, $type);
     }
 }

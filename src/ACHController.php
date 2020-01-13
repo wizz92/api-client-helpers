@@ -69,7 +69,7 @@ class ACHController extends Controller
         $slugForNewKey = substr($slug, 0, 1) == '/' ? $slug : "/$slug"; 
 
         //new cache key for cache separating
-        $newCacheKey = "{$slugForNewKey}_{$appId}_{$domain}";
+        $newCacheKey = "{$slugForNewKey}_{$appId}";
         
         // if req url contains dashboard substring cache this page
         // in one key 'http://domain.name/dashboard'
@@ -97,7 +97,24 @@ class ACHController extends Controller
           return ContentHelper::getValidResponse($response);
         }
 
-        $response = Cache::get($cacheKey, null);
+        $separatedSlug = explode('/', $slug);
+        switch ($separatedSlug[0] ?? '') {
+          case 'essays':
+            $pageType = 'essays';
+            break;
+
+          case 'blog':
+            $pageType = 'blogs';
+            break;
+          
+          default:
+            $landingData = CacheHelper::getSpasificListOfUrls(['type' => 'landing']);
+            $landingUrls = $landingData->urls ?? [];
+            $pageType = in_array($slug, $landingUrls) ? 'landings' : 'generals';
+            break;
+        }
+
+        $response = Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->get($cacheKey);
 
         if (!is_null($response)) { // meanse we have content in cache
           //kostil for pagespeed

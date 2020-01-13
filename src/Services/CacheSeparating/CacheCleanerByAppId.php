@@ -3,6 +3,7 @@ namespace Wizz\ApiClientHelpers\Services\CacheSeparating;
 
 use Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts\CacheCleanerInterface;
 use Wizz\ApiClientHelpers\Services\CacheSeparating\CacheCleanHelper;
+use Cache;
 
 /**
  * Class CacheCleanerByAppId
@@ -20,29 +21,17 @@ class CacheCleanerByAppId implements CacheCleanerInterface
     /**
      * removing cache for certain client id
      *
-     * @param  mixed $dataWithUrls
+     * @param  string|null $domain
      * @param  int|null $appId
      * @param  string|null $type
      *
      * @return void|array
      */
-    public function run($dataWithUrls, int $appId = null, string $type = null)
+    public function run(string $domain = null, int $appId = null, string $type = null)
     {
-        $domain = $dataWithUrls->domain;
-        unset($dataWithUrls->domain);
-
-        foreach ($dataWithUrls as $key => $info) {
-            $type = $info->type;
-            $urls = $info->urls;
+        $this->cacheCleanHelper->clearComposingFiles("{$domain}");
+        Cache::tags([$appId])->flush();
   
-            $this->cacheCleanHelper->clearComposingFiles("{$domain}");
-            $this->cacheCleanHelper->clearCacheForCustomPages($appId, $type);
-  
-            foreach ($urls as $key => $url) {
-                $this->cacheCleanHelper->clearCacheByKey($appId, $type, $url);
-            }
-        }
-
-        return $this->cacheCleanHelper->errors ? $this->cacheCleanHelper->errors : ['result' => "Cache for for {$domain} project was deleted"];
+        return ['result' => "Cache for for {$domain} project was deleted"];
     }
 }
