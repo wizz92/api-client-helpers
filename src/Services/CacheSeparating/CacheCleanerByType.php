@@ -27,14 +27,10 @@ class CacheCleanerByType implements CacheCleanerInterface
      *
      * @return void|array
      */
-    public function run(string $domain = null, int $appId = null, string $type = null)
+    public function run($domain, $appId, $type)
     {
         $this->cacheCleanHelper->clearComposingFiles("{$type}s");
         Cache::tags([$type.'s'])->flush();
-
-        if ($type == 'landing') {
-            Cache::forget('landing_urls');
-        }
 
         return ['result' => "Cache for all {$type}s was deleted"];
     }

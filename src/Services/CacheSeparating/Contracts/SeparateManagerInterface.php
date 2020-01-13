@@ -5,10 +5,9 @@ namespace Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts;
 interface SeparateManagerInterface
 {
     /**
-     * @param string $method
-     * @param string $pageContent
-     * @param bool $updateContent
+     * @param int|null $appId
+     * @param string|null $type
      * @return $this
      */
-    public function clear(int $appId = null, string $type = null);
+    public function clear($appId, $type);
 }

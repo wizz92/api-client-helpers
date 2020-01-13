@@ -145,31 +145,53 @@ class CacheHelper
     public static function getSpasificListOfUrls($params = [])
     {
         $appId = CacheHelper::conf('client_id');
+        $params = array_merge(['app_id' => $appId], $params);
+        $cacheKey = md5('pages_url_by_params_'.http_build_query($params));
+
+        //for right tags
+        if (isset($params['type'])) {
+          $paramsForTags['app_id'] = $params['app_id'];
+          $paramsForTags['type'] = $params['type'].'s';
+        }
+        $tags = array_values($paramsForTags);
+        
+        $urls = Cache::tags($tags)->get($cacheKey);
+        if (!$urls) {
+          $urls = self::getUrlsFromAPI($params, $tags);
+        }
+
+        return $urls;
+    }
+
+    private static function getUrlsFromAPI(array $params, array $tags)
+    {
+        $appId = CacheHelper::conf('client_id');
         $clientSecret = CacheHelper::conf('client_secret');
 
-        $params['app_id'] = $appId;
         $paramsInString = http_build_query($params);
-        $cacheKey = "pages_url_by_params_{$paramsInString}";
+        $cacheKey = md5("pages_url_by_params_{$paramsInString}");
 
-        $urls = self::cacher($cacheKey, function() use ($appId, $clientSecret, $paramsInString) {
-          
-            $query = env('secret_url')."/get-pages-url?client_id=$appId&client_secret=$clientSecret&{$paramsInString}";
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $query);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $res = curl_exec($ch);
-            curl_close($ch);
-    
-            $result = json_decode($res);
-            
-            if (!is_object($result) || (property_exists($result, 'errors') && count($result->errors) > 0)) {
-              return false;
-            }
+        $query = env('secret_url')."/get-pages-url?client_id=$appId&client_secret=$clientSecret&{$paramsInString}";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $query);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $res = curl_exec($ch);
+        curl_close($ch);
 
-            return $result->data ?? false;
-          }, 60*24*30);
+        $result = json_decode($res);
+        
+        if (!is_object($result) || (property_exists($result, 'errors') && count($result->errors) > 0)) {
+          return false;
+        }
+
+        $urls = $result->data ?? false;
+
+        if ($urls) {
+          Cache::tags($tags)->put($cacheKey, $urls, 60*24*30);
+        }
+      
         return $urls;
     }
 }

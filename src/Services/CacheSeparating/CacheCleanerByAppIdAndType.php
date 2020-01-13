@@ -27,7 +27,7 @@ class CacheCleanerByAppIdAndType implements CacheCleanerInterface
      *
      * @return void|array
      */
-    public function run(string $domain = null, int $appId = null, string $type = null)
+    public function run($domain, $appId, $type)
     {
         $this->cacheCleanHelper->clearComposingFiles("{$domain}/{$type}s");
 

@@ -27,7 +27,7 @@ class CacheCleanerByAppId implements CacheCleanerInterface
      *
      * @return void|array
      */
-    public function run(string $domain = null, int $appId = null, string $type = null)
+    public function run($domain, $appId, $type)
     {
         $this->cacheCleanHelper->clearComposingFiles("{$domain}");
         Cache::tags([$appId])->flush();

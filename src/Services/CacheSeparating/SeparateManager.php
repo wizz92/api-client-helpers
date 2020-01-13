@@ -16,7 +16,7 @@ class SeparateManager implements SeparateManagerInterface
      * @param int|null $appId
      * @param string|null $type
      */
-    public function clear(int $appId = null, string $type = null)
+    public function clear($appId, $type)
     {
         if (!$type && !$appId) {
             return ['error' => 'You should choose type of pages or client id'];
