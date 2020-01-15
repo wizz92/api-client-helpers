@@ -156,7 +156,7 @@ class ScriptsCollector implements ComposingInterface
                     return md5($url);
                 }, $essaysUrl);
                 $flipedArray = array_flip($hashedEssaysUrl);
-                $isItEssay = isset($flipArray[md5($pathForEssayOrCategory)]);
+                $isItEssay = isset($flipedArray[md5($pathForEssayOrCategory)]);
 
                 $path = $isItEssay ? 'essay' : 'essay-category';
                 $addScriptForRedirect = !$isItEssay;
