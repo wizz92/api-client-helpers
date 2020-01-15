@@ -12,6 +12,8 @@ use Wizz\ApiClientHelpers\Helpers\CacheHelper;
  */
 class SeparateManager implements SeparateManagerInterface
 {
+    private $currectTypeOfPapers = ['essay', 'blog', 'landing', 'general'];
+    
     /**
      * @param int|null $appId
      * @param string|null $type

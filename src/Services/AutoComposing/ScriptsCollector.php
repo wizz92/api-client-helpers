@@ -152,7 +152,11 @@ class ScriptsCollector implements ComposingInterface
                 $pathForEssayOrCategory = preg_replace('^essays/^', '', $this->path);
                 $essaysUrl = $dataWithUrls->essay->urls ?? [];
 
-                $isItEssay = in_array($pathForEssayOrCategory, $essaysUrl);
+                $hashedEssaysUrl = array_map(function($url) {
+                    return md5($url);
+                }, $essaysUrl);
+                $flipedArray = array_flip($hashedEssaysUrl);
+                $isItEssay = isset($flipArray[md5($pathForEssayOrCategory)]);
 
                 $path = $isItEssay ? 'essay' : 'essay-category';
                 $addScriptForRedirect = !$isItEssay;

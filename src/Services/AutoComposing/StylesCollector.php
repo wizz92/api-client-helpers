@@ -36,7 +36,14 @@ class StylesCollector implements ComposingInterface
     {
         $outerHeadStyles = $this->crawler->filter('head > link.outer-link')->each(function (Crawler $node, $i) {
             $link = $node->attr('href');
-            $targetFileContent = file_get_contents($link);
+            $opts = [
+                "ssl" => [
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ]
+            ];
+            $context = stream_context_create($opts);
+            $targetFileContent = file_get_contents($link, false, $context);
             foreach ($node as $n) {
                 $n->parentNode->removeChild($n);
             }
