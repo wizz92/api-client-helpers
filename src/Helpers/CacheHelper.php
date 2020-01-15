@@ -152,6 +152,7 @@ class CacheHelper
         if (isset($params['type'])) {
           $paramsForTags['app_id'] = $params['app_id'];
           $paramsForTags['type'] = $params['type'].'s';
+          $paramsForTags['string_tag'] = $params['app_id'].'_'.$params['type'].'s';
         }
         $tags = array_values($paramsForTags ?? $params);
         

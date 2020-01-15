@@ -154,7 +154,7 @@ class ScriptsCollector implements ComposingInterface
 
                 $isItEssay = in_array($pathForEssayOrCategory, $essaysUrl);
 
-                $path = $isItEssay ? 'essay' : $pathForEssayOrCategory;
+                $path = $isItEssay ? 'essay' : 'essay-category';
                 $addScriptForRedirect = !$isItEssay;
                 break;
 

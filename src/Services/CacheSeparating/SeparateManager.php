@@ -24,9 +24,21 @@ class SeparateManager implements SeparateManagerInterface
 
         $configData = array_values(array_filter(config('api_configs'), function($index) use ($appId) {
             return array_get($index, 'client_id') == $appId;
-        }))[0];
+        }));
 
-        $domain = $configData['domain'] ?? null;
+        if (!$configData || ($type && !in_array($type, $this->currectTypeOfPapers))) {
+            switch (true) {
+                case !$configData:
+                    return ['error' => 'We don\'t have a project with app_id ='.$appId];
+                    break;
+                
+                case $type && !in_array($type, $this->currectTypeOfPapers):
+                    return ['error' => 'We don\'t have type like '.$type];
+                    break;
+            }
+        }
+
+        $domain = array_get($configData, '0.domain');
         return $this->separate($domain, $appId, $type);
     }
 
