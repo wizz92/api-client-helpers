@@ -110,7 +110,7 @@ class ACHController extends Controller
           default:
             $landingData = CacheHelper::getSpasificListOfUrls(['type' => 'landing']);
             $landingUrls = $landingData->urls ?? [];
-            $pageType = in_array($slug, $landingUrls) ? 'landings' : 'generals';
+            $pageType = in_array($slugForNewKey, $landingUrls) ? 'landings' : 'generals';
             break;
         }
 
