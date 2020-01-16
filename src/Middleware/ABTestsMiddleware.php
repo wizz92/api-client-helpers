@@ -3,8 +3,7 @@
 namespace Wizz\ApiClientHelpers\Middleware;
 
 use Wizz\ApiClientHelpers\Services\Getters\ClientConfigGetter;
-use Wizz\ApiClientHelpers\Services\Experiments\DefaultAcademicLevel\DefaultAcademicLevelExperiment;
-use Wizz\ApiClientHelpers\Services\Experiments\PriceIncrease\PriceIncreaseExperiment;
+use Wizz\ApiClientHelpers\Services\Experiments\DefaultExperimentManagerInterface;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Helpers\CookieHelper;
 use Closure;
@@ -12,14 +11,11 @@ use Cookie;
 
 class ABTestsMiddleware
 {
-    public function __construct(
-        DefaultAcademicLevelExperiment $defaultAcademicLevelExperiment,
-        PriceIncreaseExperiment $priceIncreaseExperiment
-    ) {
-        $this->defaultAcademicLevelExperiment = $defaultAcademicLevelExperiment;
-        $this->priceIncreaseExperiment = $priceIncreaseExperiment;
-        $app_id = CacheHelper::conf('client_id');
-        $this->clientConfigGetter = new ClientConfigGetter($app_id);
+    public function __construct(DefaultExperimentManagerInterface $defaultExperimentMamager)
+    {
+        $this->defaultExperimentMamager = $defaultExperimentMamager;
+        $appId = CacheHelper::conf('client_id');
+        $this->clientConfigGetter = new ClientConfigGetter($appId);
     }
     /**
      * Handle an incoming request.
@@ -31,29 +27,29 @@ class ABTestsMiddleware
     public function handle($request, Closure $next)
     {
         $experiments = $this->clientConfigGetter->getExperimentsInfo();
-        $experiments_results = [];
-        $cookies_max_age = 10 * 365 * 24 * 60;
+        $experimentsResults = [];
+        $cookiesMaxAge = 10 * 365 * 24 * 60;
         $cookie = "";
 
-        foreach ($experiments as $experiment_name => $experiment_info) {
-            if (!array_get($experiment_info, 'enabled', false)) {
+        foreach ($experiments as $experimentName => $experimentInfo) {
+            if (!array_get($experimentInfo, 'enabled', false)) {
                 return $next($request);
             }
 
-            switch ($experiment_name) {
-                case 'defaultAcademicLevel':
-                    $experiment_result_info = $this->defaultAcademicLevelExperiment->run($request, $experiment_info);
-                    $experiments_results['defaultAcademicLevelExperiment'] = [
-                      'defaultAcademicLevel' => $experiment_result_info['academicLevelId'],
-                      'defaultAcademicLevelExperimentGroup' => $experiment_result_info['experimentGroup']
+            switch ($experimentName) {
+                case 'priceIncrease':
+                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'priceIncrease');
+                    $experimentsResults['priceIncreaseExperiment'] = [
+                      'priceIncreaseValue' => $experimentResultInfo['priceIncreaseValue'],
+                      'priceIncreaseExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
 
-                case 'priceIncrease':
-                    $experiment_result_info = $this->priceIncreaseExperiment->run($request, $experiment_info);
-                    $experiments_results['priceIncreaseExperiment'] = [
-                      'priceIncreaseValue' => $experiment_result_info['priceIncreaseValue'],
-                      'priceIncreaseExperimentGroup' => $experiment_result_info['experimentGroup']
+                case 'topWriterNotification':
+                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'topWriterNotification');
+                    $experimentsResults['topWriterNotificationExperiment'] = [
+                      'topWriterNotificationValue' => $experimentResultInfo['topWriterNotificationValue'],
+                      'topWriterNotificationExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
 
@@ -62,13 +58,13 @@ class ABTestsMiddleware
             }
         }
 
-        if (array_key_exists('cookie', $experiment_result_info)) {
-            list('name' => $name, 'value' => $value) = $experiment_result_info['cookie'];
-            $cookie = $cookie . "$name=$value; Max-Age=$cookies_max_age";
+        if (array_key_exists('cookie', $experimentResultInfo)) {
+            list('name' => $name, 'value' => $value) = $experimentResultInfo['cookie'];
+            $cookie = $cookie . "$name=$value; Max-Age=$cookiesMaxAge";
         }
 
         $request->attributes->add([
-          'experimentsResults' => $experiments_results
+          'experimentsResults' => $experimentsResults
         ]);
 
         return $cookie

@@ -10,6 +10,8 @@ use Wizz\ApiClientHelpers\Services\CacheSeparating\SeparateManager;
 use Wizz\ApiClientHelpers\Services\CacheSeparating\Contracts\SeparateManagerInterface;
 use Wizz\ApiClientHelpers\Services\AutoComposing\CustomScriptManager;
 use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\CustomScriptManagerInterface;
+use Wizz\ApiClientHelpers\Services\Experiments\DefaultExperimentManagerInterface;
+use Wizz\ApiClientHelpers\Services\Experiments\DefaultExperimentManager;
 
 class ApiClientHelpersServiceProvider extends ServiceProvider
 {
@@ -50,6 +52,7 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
         $this->app->bind(BuilderInterface::class, Builder::class);
         $this->app->bind(SeparateManagerInterface::class, SeparateManager::class);
         $this->app->bind(CustomScriptManagerInterface::class, CustomScriptManager::class);
+        $this->app->bind(DefaultExperimentManagerInterface::class, DefaultExperimentManager::class);
 
         // include __DIR__.'/routes.php';
         // $this->loadViewsFrom(__DIR__.'/views', 'api-client-helpers');
