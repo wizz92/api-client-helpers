@@ -69,7 +69,7 @@ class ACHController extends Controller
         $slugForNewKey = substr($slug, 0, 1) == '/' ? $slug : "/$slug"; 
 
         //new cache key for cache separating
-        $newCacheKey = "{$slugForNewKey}_{$appId}";
+        $newCacheKey = "{$slugForNewKey}_{$appId}_{$domain}";
         
         // if req url contains dashboard substring cache this page
         // in one key 'http://domain.name/dashboard'

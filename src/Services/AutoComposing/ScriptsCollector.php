@@ -54,8 +54,14 @@ class ScriptsCollector implements ComposingInterface
         }
 
         $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$path}.js";
-        if (!Storage::disk('public_assets')->exists("{$composedDirectoryName}/body-{$path}.js")) {
-            
+        if (Storage::disk('public_assets')->exists("{$composedDirectoryName}/body-{$path}.js")) {
+
+            $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) {
+                foreach ($node as $n) {
+                    $n->parentNode->removeChild($n);
+                }
+            });
+        } else {
             $jsFile = fopen($bodyJSFileName, 'a+');
             if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
                 ftruncate($jsFile, 0);
