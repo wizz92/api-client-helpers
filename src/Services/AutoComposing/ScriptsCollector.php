@@ -54,28 +54,30 @@ class ScriptsCollector implements ComposingInterface
         }
 
         $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$path}.js";
-
-        $jsFile = fopen($bodyJSFileName, 'a+');
-        if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
-            ftruncate($jsFile, 0);
+        if (!Storage::disk('public_assets')->exists("{$composedDirectoryName}/body-{$path}.js")) {
             
-            $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
-                $script = $node->attr('src');
-                foreach ($node as $n) {
-                    $targetFileContent = file_get_contents($script);
-                    fwrite($jsFile, $targetFileContent."\n");
-                    $n->parentNode->removeChild($n);
-                }
-            });
+            $jsFile = fopen($bodyJSFileName, 'a+');
+            if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
+                ftruncate($jsFile, 0);
+                
+                $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
+                    $script = $node->attr('src');
+                    foreach ($node as $n) {
+                        $targetFileContent = file_get_contents($script);
+                        fwrite($jsFile, $targetFileContent."\n");
+                        $n->parentNode->removeChild($n);
+                    }
+                });
 
-            $this->customScriptManager->add($jsFile, $addScriptForRedirect);
-            fflush($jsFile);        
-            flock($jsFile, LOCK_UN);
-        } else {
-            sleep(7);
+                $this->customScriptManager->add($jsFile, $addScriptForRedirect);
+                fflush($jsFile);        
+                flock($jsFile, LOCK_UN);
+            } else {
+                sleep(7);
+            }
+
+            fclose($jsFile);
         }
-
-        fclose($jsFile);
 
          $hashedTargetJSFilePath = $this->getHashedFilePath($bodyJSFileName);
 
