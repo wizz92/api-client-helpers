@@ -14,8 +14,8 @@ class DefaultExperimentManager implements DefaultExperimentManagerInterface
 
     public function run(Request $request, array $experimentInfo, string $type)
     {
-        $cookieName = $experimentInfo['cookie_name'];
-        $experimentGroups = $experimentInfo['groups'];
+        $cookieName = $experimentInfo['cookie_name'] ?? null;
+        $experimentGroups = $experimentInfo['groups'] ?? [];
         $abGroupFromCookie = $request->cookie($cookieName);
 
         $groupFromQuery = $request->query("{$type}Group");
@@ -36,10 +36,10 @@ class DefaultExperimentManager implements DefaultExperimentManagerInterface
         if (!$abGroupFromCookie) {
             $weightedValues = $this->getWeightedValues($experimentGroups);
             $randomGroupName = $this->getRandomWeightedGroup($weightedValues);
-            $groupInfo = $experimentGroups[$randomGroupName];
+            $groupInfo = array_get($experimentGroups, $randomGroupName, []);
 
             return [
-              "{$type}Value" => $groupInfo["{$type}Value"],
+              "{$type}Value" => array_get($groupInfo, "{$type}Value", ''),
               'experimentGroup' => $randomGroupName,
               'cookie' => [
                 'name' => $cookieName,
@@ -48,9 +48,9 @@ class DefaultExperimentManager implements DefaultExperimentManagerInterface
             ];
         }
 
-        $groupInfo = $experimentGroups[$abGroupFromCookie];
+        $groupInfo = array_get($experimentGroups, $abGroupFromCookie, []);
         return [
-          "{$type}Value" => $groupInfo["{$type}Value"],
+          "{$type}Value" => array_get($groupInfo, "{$type}Value", ''),
           'experimentGroup' => $abGroupFromCookie
         ];
     }
