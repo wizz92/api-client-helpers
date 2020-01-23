@@ -85,10 +85,11 @@ class ScriptsCollector implements ComposingInterface
             fclose($jsFile);
         }
 
-         $hashedTargetJSFilePath = $this->getHashedFilePath($bodyJSFileName);
-
+        //  $hashedTargetJSFilePath = $this->getHashedFilePath($bodyJSFileName);
+         $rootUrl = env('root_url', 'https://' . request()->getHttpHost());  
          return [
-           'body' => $this->getValue($bodyJSFileName, $hashedTargetJSFilePath),
+             'body' => "{$rootUrl}/{$bodyJSFileName}",
+             //    'body' => $this->getValue($bodyJSFileName, $hashedTargetJSFilePath), //last version with $hashedTargetFilePath as $path
          ];
     }
 
@@ -96,6 +97,8 @@ class ScriptsCollector implements ComposingInterface
       * get hashed file path
       * @param  string $bodyFileName
       * @return string
+      *
+      * @deprecated
       */
     private function getHashedFilePath(string $bodyFileName): string
     {
@@ -118,12 +121,14 @@ class ScriptsCollector implements ComposingInterface
       * @param  string $name
       * @param  string $path
       * @return string
+      *
+      * @deprecated
       */
     private function getValue(string $name, string $path): string
     {
          $rootUrl = env('root_url', 'https://' . request()->getHttpHost());
 
-         return app()->environment('local') ? "{$rootUrl}/{$name}" : "{$rootUrl}/{$path}";
+         return app()->environment('local') ? "{$rootUrl}/{$name}" : "{$rootUrl}/{$path}"; //last version with $hashedTargetFilePath as $path
     }
 
     
