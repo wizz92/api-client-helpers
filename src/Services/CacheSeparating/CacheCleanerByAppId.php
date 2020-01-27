@@ -32,6 +32,6 @@ class CacheCleanerByAppId implements CacheCleanerInterface
         $this->cacheCleanHelper->clearComposingFiles("{$domain}");
         Cache::tags([$appId])->flush();
   
-        return ['result' => "Cache for for {$domain} project was deleted"];
+        return ['result' => "Cache for {$domain} project was deleted"];
     }
 }

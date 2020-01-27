@@ -25,7 +25,7 @@ class SeparateManager implements SeparateManagerInterface
         }
 
         $configData = array_values(array_filter(config('api_configs'), function($index) use ($appId) {
-            return array_get($index, 'client_id') == $appId;
+            return array_get($index, 'client_id') == $appId && array_get($index, 'isAliasedDomain') == false;
         }));
 
         if (!$configData || ($type && !in_array($type, $this->currectTypeOfPapers))) {
