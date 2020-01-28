@@ -2,13 +2,18 @@
 
 namespace Wizz\ApiClientHelpers\Middleware;
 
-use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 use Closure;
 use Log;
 use Browser;
 
 class CheckBrowserMiddleware
 {
+    public $unsupportedBrowsers = [
+        'Internet Explorer',
+        'Opera mini'
+    ];
+
     /**
      * @param Request $request
      * @param Closure $next
@@ -21,8 +26,8 @@ class CheckBrowserMiddleware
         $browserVersion = Browser::browserVersion();
 
         $projectName = $request->get('pname') ?? "";
-        if (($browserFamily == 'Internet Explorer') || ($browserFamily == 'Opera Mobile')) {
-            $request->attributes->add(['cache' => false]);
+        if (in_array($browserFamily, $this->unsupportedBrowsers)) {
+            $request['cache'] = 'false';
         }
         return $next($request);
     }
