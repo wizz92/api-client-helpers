@@ -2,7 +2,7 @@
 
 namespace Wizz\ApiClientHelpers\Middleware;
 
-use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 use Closure;
 use Log;
 use Browser;
@@ -22,7 +22,7 @@ class CheckBrowserMiddleware
 
         $projectName = $request->get('pname') ?? "";
         if (($browserFamily == 'Internet Explorer') || ($browserFamily == 'Opera Mobile')) {
-            $request->attributes->add(['cache' => false]);
+            $request['cache'] = 'false';
         }
         return $next($request);
     }

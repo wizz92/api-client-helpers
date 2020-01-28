@@ -2,6 +2,7 @@
 use Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware;
 use Wizz\ApiClientHelpers\Middleware\UpdateGlobalsMiddleware;
 use Wizz\ApiClientHelpers\Middleware\ABTestsMiddleware;
+use Wizz\ApiClientHelpers\Middleware\CheckBrowserMiddleware;
 
 Route::get('/sitemap.xml', '\Wizz\ApiClientHelpers\ACHController@proxy')->where('slug', '.+');
 // here we setup proxy for robots which leads to api
