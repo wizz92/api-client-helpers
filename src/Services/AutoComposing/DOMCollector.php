@@ -69,7 +69,11 @@ class DOMCollector implements ComposingInterface
 
             case 'script':
                 $variable = $DOMDocument->createAttribute('src');
-                $variable->value = $tagInner;
+                $path = array_get(parse_url($tagInner), 'path', []);
+                $pageType = explode('/', $path)[4] ?? 'generals';
+                $version = Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->get(md5("{$appId}_{$domain}") ?? '1453ErRor');
+                
+                $variable->value = $tagInner."?v=$version";
                 $element->appendChild($variable);
                 $variable = $DOMDocument->createAttribute('class');
                 $variable->value = 'js-url';

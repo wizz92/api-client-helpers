@@ -125,6 +125,12 @@ class ACHController extends Controller
 
           return ContentHelper::getValidResponse($response);
         }
+        $cacheVersionKey = md5("{$appId}_{$domain}");
+        if (!Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->has($cacheVersionKey)) {
+          $version = $cacheVersionKey.time();
+          Cache::tags([$appId, $domain], $pageType, "{$appId}_{$pageType}")->put($cacheVersionKey, $version, $cacheExpire);
+        }
+      
         // get page 
         $response = ContentHelper::getFrontendContent($slug, $serialized_experiment_results);
         // store in cache in case we do not have an error in response
