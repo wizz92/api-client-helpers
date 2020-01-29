@@ -52,9 +52,10 @@ class ScriptsCollector implements ComposingInterface
         if (!Storage::disk('public_assets')->exists($composedDirectoryName)) {
              Storage::disk('public_assets')->makeDirectory($composedDirectoryName);
         }
-
-        $bodyJSFileName = "assets/{$composedDirectoryName}/body-{$path}.js";
-        if (Storage::disk('public_assets')->exists("{$composedDirectoryName}/body-{$path}.js")) {
+        $bodyJSInStorage = "{$composedDirectoryName}/body-{$path}.js";
+        $bodyJSFileName = "assets/$bodyJSInStorage";
+        
+        if (Storage::disk('public_assets')->exists($bodyJSInStorage) && Storage::disk('public_assets')->size($bodyJSInStorage) != 0) {
 
             $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) {
                 foreach ($node as $n) {
@@ -85,52 +86,11 @@ class ScriptsCollector implements ComposingInterface
             fclose($jsFile);
         }
 
-        //  $hashedTargetJSFilePath = $this->getHashedFilePath($bodyJSFileName);
          $rootUrl = env('root_url', 'https://' . request()->getHttpHost());  
          return [
              'body' => "{$rootUrl}/{$bodyJSFileName}",
-             //    'body' => $this->getValue($bodyJSFileName, $hashedTargetJSFilePath), //last version with $hashedTargetFilePath as $path
          ];
     }
-
-     /**
-      * get hashed file path
-      * @param  string $bodyFileName
-      * @return string
-      *
-      * @deprecated
-      */
-    private function getHashedFilePath(string $bodyFileName): string
-    {
-        $hashedTargetFilePath = "";
-
-        if (!app()->environment('local') && file_exists($bodyFileName)) {
-            $finalContent = file_get_contents($bodyFileName);
-            $finalContentHash = md5($finalContent);
-            $path = str_replace('/', '-', $this->path);
-            $hashedTargetFilePath = str_replace("{$path}.js", "{$path}.{$finalContentHash}.js", $bodyFileName);
-            if (!file_exists($hashedTargetFilePath)) {
-                rename($bodyFileName, $hashedTargetFilePath);
-            }
-        }
-         return $hashedTargetFilePath;
-    }
-
-     /**
-      * get value
-      * @param  string $name
-      * @param  string $path
-      * @return string
-      *
-      * @deprecated
-      */
-    private function getValue(string $name, string $path): string
-    {
-         $rootUrl = env('root_url', 'https://' . request()->getHttpHost());
-
-         return app()->environment('local') ? "{$rootUrl}/{$name}" : "{$rootUrl}/{$path}"; //last version with $hashedTargetFilePath as $path
-    }
-
     
     /**
      * get new castom dir and file names for composing files 
