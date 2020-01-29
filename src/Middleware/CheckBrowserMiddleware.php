@@ -11,7 +11,8 @@ class CheckBrowserMiddleware
 {
     public $unsupportedBrowsers = [
         'Internet Explorer',
-        'Opera mini'
+        'Opera Mini',
+        'Opera Mobile'
     ];
 
     /**
