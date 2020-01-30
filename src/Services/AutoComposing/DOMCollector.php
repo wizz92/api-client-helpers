@@ -3,6 +3,7 @@
 namespace Wizz\ApiClientHelpers\Services\AutoComposing;
 
 use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\ComposingInterface;
+use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Symfony\Component\DomCrawler\Crawler;
 use DOMDocument;
 
@@ -59,7 +60,9 @@ class DOMCollector implements ComposingInterface
      */
     private function addElementToDOM(DOMDocument $DOMDocument, string $tagToCreate, string $tagInner, string $tagToAttach)
     {
-
+        $appId = CacheHelper::conf('client_id');
+        $domain = CacheHelper::conf('domain');
+        
         $element = $DOMDocument->createElement($tagToCreate);
 
         switch ($tagToCreate) {
