@@ -6,6 +6,7 @@ use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\ComposingInterface;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Symfony\Component\DomCrawler\Crawler;
 use DOMDocument;
+use Cache;
 
 class DOMCollector implements ComposingInterface
 {
