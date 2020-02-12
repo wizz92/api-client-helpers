@@ -34,6 +34,6 @@ class CacheCleanerByAppIdAndType implements CacheCleanerInterface
         $tag = "{$appId}_{$type}s";
         Cache::tags([$tag])->flush();
 
-        return ['result' => "Cache for {$type} type in {$domain} project was deleted"];
+        return View::make('api-client-helpers::cache', ['result' => "Cache for {$domain} project was deleted"]);
     }
 }
