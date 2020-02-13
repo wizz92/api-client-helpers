@@ -1,6 +1,5 @@
 {{$result}}
 <script type="text/javascript">
-    <script>
     window.onload = () => {
         window.addEventListener('message', (e) => {
             if (e.data === 'response back') {
