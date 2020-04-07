@@ -57,7 +57,7 @@ class ContentHelper {
 
     if (!in_array(request()->path(), $exeptionPages)) 
     {
-        $response_body = AutocomposeHelper::parseBody($response_body);
+        //$response_body = AutocomposeHelper::parseBody($response_body);
     }
     $response_headers = self::parseHeaders($http_response_header);
     $response_status_code = $response_headers['StatusCode'];
