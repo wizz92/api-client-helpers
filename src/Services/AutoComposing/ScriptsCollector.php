@@ -69,6 +69,7 @@ class ScriptsCollector implements ComposingInterface
                 
                 $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
                     $script = $node->attr('src');
+                    $script = str_replace('https:', 'http:', $script);
                     foreach ($node as $n) {
                         $targetFileContent = file_get_contents($script);
                         fwrite($jsFile, $targetFileContent."\n");

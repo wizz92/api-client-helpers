@@ -63,6 +63,7 @@ class StylesCollector implements ComposingInterface
     {
         return $this->crawler->filter($filter)->each(function (Crawler $node, $i) {
             $link = $node->attr('href');
+            $link = str_replace('https:', 'http:', $link);
             $targetFileContent = file_get_contents($link);
             foreach ($node as $n) {
                 $n->parentNode->removeChild($n);
