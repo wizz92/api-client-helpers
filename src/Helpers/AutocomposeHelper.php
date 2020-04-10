@@ -22,7 +22,7 @@ class AutocomposeHelper
     {
         $builder = app()->make(BuilderInterface::class);
         $path = request()->path() === '/' ? 'index' : request()->path();
-        $key = strpos($path, 'essays') === true ? 'essays' : $path;
+        $key = explode('/', $path)[0] === 'essays' ? 'essays' : $path;
         $query = request()->query();
         return CacheHelper::cacher('parse_body_' . $query['pname'] . '_' . $key, function () use ($builder, $pageContent, $path) {
             $styles = $builder->make('collectStyles', $pageContent, true)->get();
