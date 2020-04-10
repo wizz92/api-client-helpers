@@ -27,7 +27,6 @@ class AutocomposeHelper
 
         $style =  CacheHelper::cacher('parse_body_style' . $queryName . '_' . $key, function () use ($builder, $pageContent, $path) {
             return $builder->make('collectStyles', $pageContent, true)->get();
-            $scripts = $builder->make('collectScripts', $pageContent)->add('path', $path)->get();
         }, self::CACHE_EXPIRE);
 
         $scripts =  CacheHelper::cacher('parse_body_scripts' . $queryName . '_' . $key, function () use ($builder, $pageContent, $path) {
