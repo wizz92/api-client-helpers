@@ -62,7 +62,7 @@ class ContentHelper {
     if (!in_array(request()->path(), $exeptionPages))
     {
         if (in_array($query['pname'], $projectsForTest)) {
-            $response_body = AutocomposeHelper::parseBody($response_body);
+            $response_body = AutocomposeHelper::parseBody($response_body, $query['pname']);
         }
     }
     $response_headers = self::parseHeaders($http_response_header);
