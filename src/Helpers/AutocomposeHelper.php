@@ -18,14 +18,13 @@ class AutocomposeHelper
    * @param \Closure $next
    * @return mixed
    */
-    public static function parseBody($pageContent)
+    public static function parseBody($pageContent, $queryName)
     {
         $builder = app()->make(BuilderInterface::class);
         $path = request()->path() === '/' ? 'index' : request()->path();
         $fullPathArray = explode('/', $path);
-        $key = ($fullPathArray[0] === 'essays' &&  isset($fullPathArray[1]) ? 'essays' : $path;
-        $query = request()->query();
-        return CacheHelper::cacher('parse_body_' . $query['pname'] . '_' . $key, function () use ($builder, $pageContent, $path) {
+        $key = ($fullPathArray[0] === 'essays' && isset($fullPathArray[1])) ? 'essays' : $path;
+        return CacheHelper::cacher('parse_body_' . $queryName . '_' . $key, function () use ($builder, $pageContent, $path) {
             $styles = $builder->make('collectStyles', $pageContent, true)->get();
             $scripts = $builder->make('collectScripts', $pageContent)->add('path', $path)->get();
 
