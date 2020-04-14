@@ -62,7 +62,7 @@ class CookieHelper
     {
         foreach ($cookies as $cookie) {
             $minutes = new \Carbon\Carbon($cookie['expires']);
-            setcookie($cookie['name'], $cookie['value'], $minutes->timestamp, $cookie['path']);
+            setcookie($cookie['name'], $cookie['value'], $minutes->timestamp, $cookie['path'] . ';samesite=none', "", true);
         }
     }
 
