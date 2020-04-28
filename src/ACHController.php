@@ -213,7 +213,8 @@ class ACHController extends Controller
         // content type like this application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
         // 'xml' substring is here, but it is not XML :)
         if (strpos('q'.$r->content_type, '/xml')) {
-            return (new \SimpleXMLElement($r->body))->asXML();
+            $xmlBody = (new \SimpleXMLElement($r->body))->asXML();
+            return response($xmlBody)->header('Content-Type', $r->content_type);
         }
 
         $response = response($r->body)
