@@ -52,6 +52,13 @@ class ABTestsMiddleware
                       'topWriterNotificationExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
+                case 'pageRedirectForMobileVersion':
+                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'pageRedirectForMobileVersion');
+                    $experimentsResults['pageRedirectForMobileVersionExperiment'] = [
+                        'pageRedirectForMobileVersionValue' => $experimentResultInfo['pageRedirectForMobileVersionValue'],
+                        'pageRedirectForMobileVersionExperimentGroup' => $experimentResultInfo['experimentGroup']
+                    ];
+                    break;
 
                 default:
                     return $next($request);
