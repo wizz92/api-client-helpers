@@ -52,6 +52,9 @@ class CacheHelper
             if (strstr($httpHost, '443')) {
                 $httpHost = substr($httpHost, 0, stripos($httpHost, ':443'));
             }
+            if (strstr($httpHost, 'www.')) {
+                $httpHost = (substr($httpHost, 4, strlen($httpHost)));
+            }
           return $httpHost;
         }
         $switchDomain = request()->get('domain');
