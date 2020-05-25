@@ -48,7 +48,11 @@ class CacheHelper
     public static function getDomain()
     {
         if (app()->environment('production')) {
-          return array_get($_SERVER, 'HTTP_HOST', '');
+            $httpHost = array_get($_SERVER, 'HTTP_HOST', '');
+            if (strstr($httpHost, '443')) {
+                $httpHost = substr($httpHost, 0, stripos($httpHost, ':443'));
+            }
+          return $httpHost;
         }
         $switchDomain = request()->get('domain');
         $pname = request()->get('pname');
