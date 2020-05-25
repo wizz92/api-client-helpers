@@ -303,7 +303,8 @@ class ACHController extends Controller
 
         $data = [
             'rt' => request()->get('rt'),
-            'app_id' => CacheHelper::conf('client_id')
+            'app_id' => CacheHelper::conf('client_id'),
+            'ip' => request()->ip()
         ];
 
         $url = CacheHelper::conf('secret_url') . '/hits';
