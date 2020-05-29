@@ -55,8 +55,9 @@ class ContentHelper {
       'OneSignalSDKWorker.js',
     ];
       $projectsForTest = [
+          'speedypaper.com',
 //          'rocketpaper.net',
-//          'papercoach.net'
+          'papercoach.net'
       ];
 
     if (!in_array(request()->path(), $exeptionPages))
