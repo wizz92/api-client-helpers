@@ -84,7 +84,7 @@ class ACHController extends Controller
         $serialized_experiment_results = "";
         if ($experiment_results) {
           $serialized_experiment_results = serialize($experiment_results);
-          $cacheKey .= $serialized_experiment_results;
+          $cacheKey .= md5($serialized_experiment_results);
         }
 
         $cacheExpire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
