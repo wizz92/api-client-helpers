@@ -52,6 +52,13 @@ class ABTestsMiddleware
                       'topWriterNotificationExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
+            case 'proWriterNotification':
+                $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'proWriterNotification');
+                $experimentsResults['proWriterNotificationExperiment'] = [
+                    'proWriterNotificationValue' => $experimentResultInfo['proWriterNotificationValue'],
+                    'proWriterNotificationExperimentGroup' => $experimentResultInfo['experimentGroup']
+                ];
+                break;
                 case 'pageRedirectVersion':
                     $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'pageRedirectVersion');
                     $experimentsResults['pageRedirectVersionExperiment'] = [
