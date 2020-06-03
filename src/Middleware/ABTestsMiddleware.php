@@ -66,6 +66,13 @@ class ABTestsMiddleware
                         'pageRedirectVersionExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
+                case 'pageRedirectDesktop':
+                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'pageRedirectDesktop');
+                    $experimentsResults['pageRedirectDesktopExperiment'] = [
+                        'pageRedirectDesktopValue' => $experimentResultInfo['pageRedirectDesktopValue'],
+                        'pageRedirectDesktopExperimentGroup' => $experimentResultInfo['experimentGroup']
+                    ];
+                    break;
 
                 default:
                     return $next($request);
