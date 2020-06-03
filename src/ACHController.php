@@ -19,6 +19,7 @@ use Httpauth;
 
 class ACHController extends Controller
 {
+    const SPEEDYPAPER = 4;
     /*
 
     Setting up our error message for the client.
@@ -57,14 +58,24 @@ class ACHController extends Controller
         }
 
         $this->trackingHits();
-
+        $appId = CacheHelper::conf('client_id');
         $slug = $slug_force ? $slug_force : request()->path();
         $current_url = request()->url();
+        $detect = new \Mobile_Detect();
+        if ($detect->isMobile() && $appId == self::SPEEDYPAPER && Cookie::get('PAGE_REDIRECT')) {
+            $pageRedirect = Cookie::get('PAGE_REDIRECT');
+            if ($pageRedirect == 'FI1' && $slug == '/') {
+                $slug = 'free-inquiry-new-design';
+                return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT'));;
+            }
+        }
+
+
         $parsed_url = UrlParser::fromString($current_url);
         $parsed_url_host = app()->environment('local') ? "{$parsed_url->getHost()}:{$parsed_url->getPort()}" : $parsed_url->getHost();
         $parsed_url_scheme = $parsed_url->getScheme();
 
-        $appId = CacheHelper::conf('client_id');
+
         $domain = CacheHelper::conf('domain');
         $slugForNewKey = substr($slug, 0, 1) == '/' ? $slug : "/$slug"; 
 
