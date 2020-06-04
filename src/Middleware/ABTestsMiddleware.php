@@ -52,13 +52,13 @@ class ABTestsMiddleware
                       'topWriterNotificationExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
-            case 'proWriterNotification':
-                $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'proWriterNotification');
-                $experimentsResults['proWriterNotificationExperiment'] = [
-                    'proWriterNotificationValue' => $experimentResultInfo['proWriterNotificationValue'],
-                    'proWriterNotificationExperimentGroup' => $experimentResultInfo['experimentGroup']
-                ];
-                break;
+                case 'proWriterNotification':
+                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'proWriterNotification');
+                    $experimentsResults['proWriterNotificationExperiment'] = [
+                        'proWriterNotificationValue' => $experimentResultInfo['proWriterNotificationValue'],
+                        'proWriterNotificationExperimentGroup' => $experimentResultInfo['experimentGroup']
+                    ];
+                    break;
                 case 'pageRedirectVersion':
                     $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'pageRedirectVersion');
                     $experimentsResults['pageRedirectVersionExperiment'] = [
@@ -77,12 +77,13 @@ class ABTestsMiddleware
                 default:
                     return $next($request);
             }
+            if (array_key_exists('cookie', $experimentResultInfo)) {
+                list('name' => $name, 'value' => $value) = $experimentResultInfo['cookie'];
+                $cookie = $cookie . "$name=$value; Max-Age=$cookiesMaxAge";
+            }
         }
 
-        if (array_key_exists('cookie', $experimentResultInfo)) {
-            list('name' => $name, 'value' => $value) = $experimentResultInfo['cookie'];
-            $cookie = $cookie . "$name=$value; Max-Age=$cookiesMaxAge";
-        }
+
 
         $request->attributes->add([
           'experimentsResults' => $experimentsResults
