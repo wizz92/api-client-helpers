@@ -61,14 +61,34 @@ class ACHController extends Controller
         $appId = CacheHelper::conf('client_id');
         $slug = $slug_force ? $slug_force : request()->path();
         $current_url = request()->url();
+        $filter = array_filter(request()->all(), function ($item) {
+            return $item === '';
+        });
+        if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
+            return redirect($slug);
+        }
         $detect = new \Mobile_Detect();
         if ($detect->isMobile() && $appId == self::SPEEDYPAPER && Cookie::get('PAGE_REDIRECT')) {
             $pageRedirect = Cookie::get('PAGE_REDIRECT');
             if ($pageRedirect == 'FI1' && $slug == '/') {
                 $slug = 'free-inquiry-new-design';
-                return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT'));;
+                return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT'));
             }
         }
+        if (!$detect->isMobile() && $appId == self::SPEEDYPAPER && Cookie::get('PAGE_REDIRECT_DESKTOP')) {
+            $pageRedirectDesktop = Cookie::get('PAGE_REDIRECT_DESKTOP');
+            switch ($pageRedirectDesktop) {
+                case 'SPH1':
+                    $slug = 1;
+                    return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT_DESKTOP'));
+                case 'SPH2':
+                    $slug = 2;
+                    return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT_DESKTOP'));
+                default:
+                    break;
+            }
+        }
+
 
 
         $parsed_url = UrlParser::fromString($current_url);
