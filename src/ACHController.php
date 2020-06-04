@@ -61,7 +61,10 @@ class ACHController extends Controller
         $appId = CacheHelper::conf('client_id');
         $slug = $slug_force ? $slug_force : request()->path();
         $current_url = request()->url();
-        if (!is_null(request()->input('page')) && request()->input('page') <=0 ) {
+        $filter = array_filter(request()->all(), function ($item) {
+            return $item === '';
+        });
+        if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
             return redirect($slug);
         }
         $detect = new \Mobile_Detect();
