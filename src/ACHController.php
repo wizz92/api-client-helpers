@@ -62,7 +62,7 @@ class ACHController extends Controller
         $slug = $slug_force ? $slug_force : request()->path();
         $current_url = request()->url();
         $filter = array_filter(request()->all(), function ($item) {
-            return $item === '';
+            return $item === '' || $item === null;
         });
         if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
             return redirect($slug);
