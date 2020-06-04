@@ -20,6 +20,10 @@ use Httpauth;
 class ACHController extends Controller
 {
     const SPEEDYPAPER = 4;
+
+    const EMPTY_PARAMETERS = [
+        'utm_search_engine' => ''
+    ];
     /*
 
     Setting up our error message for the client.
@@ -61,7 +65,9 @@ class ACHController extends Controller
         $appId = CacheHelper::conf('client_id');
         $slug = $slug_force ? $slug_force : request()->path();
         $current_url = request()->url();
-        $filter = array_filter(request()->all(), function ($item) {
+        $queryParams = request()->all();
+        $queryParams = array_diff_key($queryParams, self::EMPTY_PARAMETERS);
+        $filter = array_filter($queryParams, function ($item) {
             return $item === '' || $item === null;
         });
         if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
