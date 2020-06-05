@@ -81,10 +81,10 @@ class ABTestsMiddleware
             }
         }
 
-        $request->attributes->add([
+        $cookie->attributes->add([
           'experimentsResults' => $experimentsResults
         ]);
 
-        return $next($request);
+        return $next($cookie);
     }
 }
