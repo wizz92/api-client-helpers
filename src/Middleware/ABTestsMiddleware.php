@@ -101,8 +101,11 @@ class ABTestsMiddleware
                         return redirect($slug);
                     }
                 }
-                if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' || $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT') {
-                    continue;
+                if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && Cookie::get('PAGE_REDIRECT_DESKTOP')) {
+                    $experimentResultInfo['cookie']['value'] = 'SPH';
+                }
+                if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT' && Cookie::get('PAGE_REDIRECT')) {
+                    $experimentResultInfo['cookie']['value'] = 'FI2';
                 }
                 $requestCookie->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
             }
