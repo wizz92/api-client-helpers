@@ -2,6 +2,7 @@
 
 namespace Wizz\ApiClientHelpers\Middleware;
 
+use Wizz\ApiClientHelpers\ACHController;
 use Wizz\ApiClientHelpers\Services\Getters\ClientConfigGetter;
 use Wizz\ApiClientHelpers\Services\Experiments\DefaultExperimentManagerInterface;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
@@ -11,10 +12,12 @@ use Cookie;
 
 class ABTestsMiddleware
 {
+
     public function __construct(DefaultExperimentManagerInterface $defaultExperimentMamager)
     {
         $this->defaultExperimentMamager = $defaultExperimentMamager;
         $appId = CacheHelper::conf('client_id');
+        $this->appId = $appId;
         $this->clientConfigGetter = new ClientConfigGetter($appId);
     }
     /**
@@ -30,6 +33,7 @@ class ABTestsMiddleware
         $experimentsResults = [];
         $cookiesMaxAge = 10 * 365 * 24 * 60;
         $requestCookie = $next($request);
+        $detect = new \Mobile_Detect();
         foreach ($experiments as $experimentName => $experimentInfo) {
             if (!array_get($experimentInfo, 'enabled', false)) {
                 return $next($request);
@@ -77,6 +81,26 @@ class ABTestsMiddleware
                     return $next($request);
             }
             if (array_key_exists('cookie', $experimentResultInfo)) {
+                if (!$detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP') {
+                    $pageRedirectDesktop = $experimentResultInfo['cookie']['value'];
+                    switch ($pageRedirectDesktop) {
+                        case 'SPH1':
+                            $slug = 1;
+                            return redirect($slug);
+                        case 'SPH2':
+                            $slug = 2;
+                            return redirect($slug);
+                        default:
+                            break;
+                    }
+                }
+                if ($detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT') {
+                    $pageRedirect = $experimentResultInfo['cookie']['value'];
+                    if ($pageRedirect == 'FI1' && request()->path() == '/') {
+                        $slug = 'free-inquiry-new-design';
+                        return redirect($slug);
+                    }
+                }
                 $requestCookie->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
             }
         }
