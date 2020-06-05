@@ -81,7 +81,7 @@ class ABTestsMiddleware
                     return $next($request);
             }
             if (array_key_exists('cookie', $experimentResultInfo)) {
-                if (!$detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP') {
+                if (!$detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && request()->path() == '/') {
                     $pageRedirectDesktop = $experimentResultInfo['cookie']['value'];
                     switch ($pageRedirectDesktop) {
                         case 'SPH1':
