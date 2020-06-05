@@ -29,7 +29,7 @@ class ABTestsMiddleware
         $experiments = $this->clientConfigGetter->getExperimentsInfo();
         $experimentsResults = [];
         $cookiesMaxAge = 10 * 365 * 24 * 60;
-
+        $requestCookie = $next($request);
         foreach ($experiments as $experimentName => $experimentInfo) {
             if (!array_get($experimentInfo, 'enabled', false)) {
                 return $next($request);
@@ -77,7 +77,7 @@ class ABTestsMiddleware
                     return $next($request);
             }
             if (array_key_exists('cookie', $experimentResultInfo)) {
-                $request->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
+                $requestCookie->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
             }
         }
 
@@ -85,6 +85,6 @@ class ABTestsMiddleware
           'experimentsResults' => $experimentsResults
         ]);
 
-        return $next($request);
+        return $requestCookie;
     }
 }
