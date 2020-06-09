@@ -34,6 +34,8 @@ class ABTestsMiddleware
         $cookiesMaxAge = 10 * 365 * 24 * 60;
         $requestCookie = $next($request);
         $detect = new \Mobile_Detect();
+        $isSpeedyPaper = ACHController::SPEEDYPAPER_DOMAIN == $request->getHttpHost();
+
         foreach ($experiments as $experimentName => $experimentInfo) {
             if (!array_get($experimentInfo, 'enabled', false)) {
                 return $next($request);
@@ -81,7 +83,7 @@ class ABTestsMiddleware
                     return $next($request);
             }
             if (array_key_exists('cookie', $experimentResultInfo)) {
-                if (!$detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && request()->path() == '/') {
+                if (!$detect->isMobile() && $isSpeedyPaper && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && request()->path() == '/') {
                     $pageRedirectDesktop = $experimentResultInfo['cookie']['value'];
                     switch ($pageRedirectDesktop) {
                         case 'SPH1':
@@ -94,7 +96,7 @@ class ABTestsMiddleware
                             break;
                     }
                 }
-                if ($detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT') {
+                if ($detect->isMobile() && $isSpeedyPaper && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT') {
                     $pageRedirect = $experimentResultInfo['cookie']['value'];
                     if ($pageRedirect == 'FI1' && request()->path() == '/') {
                         $slug = 'free-inquiry-new-design';

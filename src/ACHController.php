@@ -20,6 +20,7 @@ use Httpauth;
 class ACHController extends Controller
 {
     const SPEEDYPAPER = 4;
+    const SPEEDYPAPER_DOMAIN = 'speedypaper.com';
 
     const EMPTY_PARAMETERS = [
         'utm_search_engine' => ''
