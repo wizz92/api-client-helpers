@@ -81,7 +81,7 @@ class ABTestsMiddleware
                     return $next($request);
             }
             if (array_key_exists('cookie', $experimentResultInfo)) {
-                if (!$detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP') {
+                if (!$detect->isMobile() && $this->appId == ACHController::SPEEDYPAPER && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && request()->path() == '/') {
                     $pageRedirectDesktop = $experimentResultInfo['cookie']['value'];
                     switch ($pageRedirectDesktop) {
                         case 'SPH1':
@@ -100,6 +100,12 @@ class ABTestsMiddleware
                         $slug = 'free-inquiry-new-design';
                         return redirect($slug);
                     }
+                }
+                if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && Cookie::get('PAGE_REDIRECT_DESKTOP')) {
+                    $experimentResultInfo['cookie']['value'] = 'SPH';
+                }
+                if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT' && Cookie::get('PAGE_REDIRECT')) {
+                    $experimentResultInfo['cookie']['value'] = 'FI2';
                 }
                 $requestCookie->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
             }

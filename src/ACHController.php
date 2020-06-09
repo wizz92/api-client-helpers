@@ -82,19 +82,6 @@ class ACHController extends Controller
             }
         }
 
-        if (!$detect->isMobile() && $appId == self::SPEEDYPAPER && Cookie::get('PAGE_REDIRECT_DESKTOP')) {
-            $pageRedirectDesktop = Cookie::get('PAGE_REDIRECT_DESKTOP');
-            switch ($pageRedirectDesktop) {
-                case 'SPH1':
-                    $slug = 1;
-                    return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT_DESKTOP'));
-                case 'SPH2':
-                    $slug = 2;
-                    return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT_DESKTOP'));
-                default:
-                    break;
-            }
-        }
 
 
 
