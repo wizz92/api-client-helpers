@@ -334,7 +334,7 @@ class ACHController extends Controller
         ];
 
         $url = CacheHelper::conf('secret_url') . '/hits';
-
+        $url = str_replace('https', 'http', $url);
         $this->curl_post_async($url, $data);
 
         return null;
