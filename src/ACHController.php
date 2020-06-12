@@ -74,14 +74,14 @@ class ACHController extends Controller
         if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
             return redirect($slug);
         }
-        $detect = new \Mobile_Detect();
-        if ($detect->isMobile() && $appId == self::SPEEDYPAPER && Cookie::get('PAGE_REDIRECT')) {
-            $pageRedirect = Cookie::get('PAGE_REDIRECT');
-            if ($pageRedirect == 'FI1' && $slug == '/') {
-                $slug = 'free-inquiry-new-design';
-                return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT'));
-            }
-        }
+//        $detect = new \Mobile_Detect();
+//        if ($detect->isMobile() && $appId == self::SPEEDYPAPER && Cookie::get('PAGE_REDIRECT')) {
+//            $pageRedirect = Cookie::get('PAGE_REDIRECT');
+//            if ($pageRedirect == 'FI1' && $slug == '/') {
+//                $slug = 'free-inquiry-new-design';
+//                return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT'));
+//            }
+//        }
 
 
 

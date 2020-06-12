@@ -83,15 +83,16 @@ class ABTestsMiddleware
                     return $next($request);
             }
             if (array_key_exists('cookie', $experimentResultInfo)) {
+
                 if (!$detect->isMobile() && $isSpeedyPaper && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && request()->path() == '/') {
                     $pageRedirectDesktop = $experimentResultInfo['cookie']['value'];
                     switch ($pageRedirectDesktop) {
                         case 'SPH1':
                             $slug = 1;
-                            return redirect($slug);
+                            return redirect($slug . $this->getQueryParams($request));
                         case 'SPH2':
                             $slug = 2;
-                            return redirect($slug);
+                            return redirect($slug . $this->getQueryParams($request));
                         default:
                             break;
                     }
@@ -100,7 +101,7 @@ class ABTestsMiddleware
                     $pageRedirect = $experimentResultInfo['cookie']['value'];
                     if ($pageRedirect == 'FI1' && request()->path() == '/') {
                         $slug = 'free-inquiry-new-design';
-                        return redirect($slug);
+                        return redirect($slug . $this->getQueryParams($request));
                     }
                 }
                 if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && Cookie::get('PAGE_REDIRECT_DESKTOP')) {
@@ -118,5 +119,11 @@ class ABTestsMiddleware
         ]);
 
         return $requestCookie;
+    }
+
+    protected function getQueryParams($request)
+    {
+        $getQueryParams = http_build_query($request->query());
+        return $getQueryParams ? '?'.$getQueryParams : null;
     }
 }
