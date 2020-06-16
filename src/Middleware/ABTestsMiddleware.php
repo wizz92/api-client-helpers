@@ -101,7 +101,8 @@ class ABTestsMiddleware
                     $pageRedirect = $experimentResultInfo['cookie']['value'];
                     if ($pageRedirect == 'FI1' && request()->path() == '/') {
                         $slug = 'free-inquiry-new-design';
-                        return redirect($slug . $this->getQueryParams($request));
+                        return redirect($slug . $this->getQueryParams($request))
+                                ->withCookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
                     }
                 }
                 if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && Cookie::get('PAGE_REDIRECT_DESKTOP')) {
