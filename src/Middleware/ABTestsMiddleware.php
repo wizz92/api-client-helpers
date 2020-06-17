@@ -89,10 +89,12 @@ class ABTestsMiddleware
                     switch ($pageRedirectDesktop) {
                         case 'SPH1':
                             $slug = 1;
-                            return redirect($slug . $this->getQueryParams($request));
+                            return redirect($slug . $this->getQueryParams($request))
+                                    ->withCookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
                         case 'SPH2':
                             $slug = 2;
-                            return redirect($slug . $this->getQueryParams($request));
+                            return redirect($slug . $this->getQueryParams($request))
+                                    ->withCookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
                         default:
                             break;
                     }
