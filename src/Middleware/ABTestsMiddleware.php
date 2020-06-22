@@ -32,7 +32,6 @@ class ABTestsMiddleware
         $experiments = $this->clientConfigGetter->getExperimentsInfo();
         $experimentsResults = [];
         $cookiesMaxAge = 10 * 365 * 24 * 60;
-        $requestCookie = $next($request);
         $detect = new \Mobile_Detect();
         $isSpeedyPaper = ACHController::SPEEDYPAPER_DOMAIN == $request->getHttpHost();
 
