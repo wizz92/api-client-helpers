@@ -22,8 +22,8 @@ class ACHController extends Controller
     const SPEEDYPAPER = 4;
     const SPEEDYPAPER_DOMAIN = 'speedypaper.com';
     const TEST_SERVERS = [
+        '31.131.18.6',
         '5.187.0.53',
-        '38.0.108.90'
     ];
 
     const EMPTY_PARAMETERS = [
