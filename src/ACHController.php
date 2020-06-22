@@ -62,7 +62,7 @@ class ACHController extends Controller
           return $this->error_message;
         }
 
-        $this->trackingHits();
+
         $appId = CacheHelper::conf('client_id');
         $slug = $slug_force ? $slug_force : request()->path();
         $current_url = request()->url();
@@ -74,18 +74,7 @@ class ACHController extends Controller
         if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
             return redirect($slug);
         }
-//        $detect = new \Mobile_Detect();
-//        if ($detect->isMobile() && $appId == self::SPEEDYPAPER && Cookie::get('PAGE_REDIRECT')) {
-//            $pageRedirect = Cookie::get('PAGE_REDIRECT');
-//            if ($pageRedirect == 'FI1' && $slug == '/') {
-//                $slug = 'free-inquiry-new-design';
-//                return redirect($slug)->withCookie(Cookie::forget('PAGE_REDIRECT'));
-//            }
-//        }
-
-
-
-
+        $this->trackingHits();
         $parsed_url = UrlParser::fromString($current_url);
         $parsed_url_host = app()->environment('local') ? "{$parsed_url->getHost()}:{$parsed_url->getPort()}" : $parsed_url->getHost();
         $parsed_url_scheme = $parsed_url->getScheme();

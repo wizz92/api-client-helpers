@@ -113,7 +113,7 @@ class ABTestsMiddleware
                 if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT' && Cookie::get('PAGE_REDIRECT')) {
                     $experimentResultInfo['cookie']['value'] = 'FI2';
                 }
-                $requestCookie->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
+                return $next($request)->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
             }
         }
 
@@ -121,7 +121,7 @@ class ABTestsMiddleware
           'experimentsResults' => $experimentsResults
         ]);
 
-        return $requestCookie;
+        return $next($request);
     }
 
     protected function getQueryParams($request)
