@@ -32,7 +32,6 @@ class ABTestsMiddleware
         $experiments = $this->clientConfigGetter->getExperimentsInfo();
         $experimentsResults = [];
         $cookiesMaxAge = 10 * 365 * 24 * 60;
-        $requestCookie = $next($request);
         $detect = new \Mobile_Detect();
         $isSpeedyPaper = ACHController::SPEEDYPAPER_DOMAIN == $request->getHttpHost();
 
@@ -113,7 +112,7 @@ class ABTestsMiddleware
                 if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT' && Cookie::get('PAGE_REDIRECT')) {
                     $experimentResultInfo['cookie']['value'] = 'FI2';
                 }
-                $requestCookie->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
+                return $next($request)->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
             }
         }
 
@@ -121,7 +120,7 @@ class ABTestsMiddleware
           'experimentsResults' => $experimentsResults
         ]);
 
-        return $requestCookie;
+        return $next($request);
     }
 
     protected function getQueryParams($request)
