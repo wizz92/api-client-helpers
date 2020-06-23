@@ -221,6 +221,10 @@ class ACHController extends Controller
             return redirect()->to(array_get($r->headers, 'location'));
         }
 
+        if (strpos('q' . $r->content_type, 'robots')) {
+            return response($r->body)->header('Content-Type', 'text/plain;charset=UTF-8;robots;');
+        }
+
         if (strpos('q'.$r->content_type, 'text/html') && strpos('q'.$r->body, 'Whoops,')) {
             return response()->json([
             'status' => 400,
@@ -228,9 +232,11 @@ class ACHController extends Controller
             'alerts' => []
             ]);
         }
+
         if (strpos('q'.$r->content_type, 'text/html') || strpos('q'.$r->content_type, 'text/plain')) {
             return $r->body;
         }
+
         if ($r->content_type == 'application/json') {
           $response = response()->json(json_decode($r->body));
           return CacheHelper::attachCORSToResponse($response);
