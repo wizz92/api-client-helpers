@@ -34,7 +34,7 @@ class ABTestsMiddleware
         $cookiesMaxAge = 10 * 365 * 24 * 60;
         $detect = new \Mobile_Detect();
         $isSpeedyPaper = ACHController::SPEEDYPAPER_DOMAIN == $request->getHttpHost();
-
+        $cookies = [];
         foreach ($experiments as $experimentName => $experimentInfo) {
             if (!array_get($experimentInfo, 'enabled', false)) {
                 return $next($request);
@@ -76,11 +76,13 @@ class ABTestsMiddleware
                         'pageRedirectDesktopValue' => $experimentResultInfo['pageRedirectDesktopValue'],
                         'pageRedirectDesktopExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
+
                     break;
 
                 default:
                     return $next($request);
             }
+
             if (array_key_exists('cookie', $experimentResultInfo)) {
 
                 if (!$detect->isMobile() && $isSpeedyPaper && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && request()->path() == '/') {
@@ -112,7 +114,7 @@ class ABTestsMiddleware
                 if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT' && Cookie::get('PAGE_REDIRECT')) {
                     $experimentResultInfo['cookie']['value'] = 'FI2';
                 }
-                return $next($request)->cookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
+                $cookies += [$experimentResultInfo['cookie']['name'] => $experimentResultInfo['cookie']['value']];
             }
         }
 
@@ -120,7 +122,11 @@ class ABTestsMiddleware
           'experimentsResults' => $experimentsResults
         ]);
 
-        return $next($request);
+        return $next($request)
+            ->cookie('PAGE_REDIRECT_DESKTOP', $cookies['PAGE_REDIRECT_DESKTOP'] ?? 'SPH')
+            ->cookie('PAGE_REDIRECT', $cookies['PAGE_REDIRECT'] ?? 'FI1')
+            ->cookie('TOP_WRITER_NOTIF', $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
+            ->cookie('PRO_WRITER_NOTIF', $cookies['PRO_WRITER_NOTIF'] ?? 'PH1');
     }
 
     protected function getQueryParams($request)
