@@ -21,6 +21,10 @@ class ACHController extends Controller
 {
     const SPEEDYPAPER = 4;
     const SPEEDYPAPER_DOMAIN = 'speedypaper.com';
+    const TEST_SERVERS = [
+        '31.131.18.6',
+        '5.187.0.53',
+    ];
 
     const EMPTY_PARAMETERS = [
         'utm_search_engine' => ''
@@ -309,6 +313,9 @@ class ACHController extends Controller
     public function trackingHits()
     {
         if (!CacheHelper::conf('tracking_hits')) {
+            return null;
+        }
+        if(in_array(request()->ip(), self::TEST_SERVERS)) {
             return null;
         }
         $can_track_hit = $this->validateHitTracking();
