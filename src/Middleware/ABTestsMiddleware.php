@@ -77,6 +77,13 @@ class ABTestsMiddleware
                         'tooltipExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
+                case 'desktop':
+                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'desktop');
+                    $experimentsResults['desktopExperiment'] = [
+                        'desktopValue' => $experimentResultInfo['desktopValue'],
+                        'desktopExperimentGroup' => $experimentResultInfo['experimentGroup']
+                    ];
+                    break;
                 case 'pageRedirectDesktop':
                     $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'pageRedirectDesktop');
                     $experimentsResults['pageRedirectDesktopExperiment'] = [
@@ -134,7 +141,8 @@ class ABTestsMiddleware
             ->cookie('PAGE_REDIRECT', $cookies['PAGE_REDIRECT'] ?? 'FI1')
             ->cookie('TOP_WRITER_NOTIF', $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
-            ->cookie('TOOLTIP', $cookies['TOOLTIP'] ?? 'TO1');
+            ->cookie('TOOLTIP', $cookies['TOOLTIP'] ?? 'TO1')
+            ->cookie('DESKTOP', $cookies['DESKTOP'] ?? 'EC1');
 
     }
 
