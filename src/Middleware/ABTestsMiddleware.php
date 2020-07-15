@@ -142,7 +142,7 @@ class ABTestsMiddleware
             ->cookie('TOP_WRITER_NOTIF', $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
             ->cookie('TOOLTIP', $cookies['TOOLTIP'] ?? 'TO1')
-            ->cookie('DESKTOP', $cookies['DESKTOP'] ?? 'EC1');
+            ->cookie('DESKTOP', isset($cookies['DESKTOP']) && !$detect->isMobile() ? $cookies['DESKTOP'] : 'EC1');
 
     }
 
