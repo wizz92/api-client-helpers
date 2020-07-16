@@ -135,14 +135,17 @@ class ABTestsMiddleware
         $request->attributes->add([
           'experimentsResults' => $experimentsResults
         ]);
-
+        $desktop = null;
+        if (!$detect->isMobile()) {
+            $desktop = isset($_COOKIE['DESKTOP']) ? $_COOKIE['DESKTOP'] : $cookies['DESKTOP'] ?? 'EC1';
+        }
         return $next($request)
             ->cookie('PAGE_REDIRECT_DESKTOP', $cookies['PAGE_REDIRECT_DESKTOP'] ?? 'SPH')
             ->cookie('PAGE_REDIRECT', $cookies['PAGE_REDIRECT'] ?? 'FI1')
-            ->cookie('TOP_WRITER_NOTIF', $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
-            ->cookie('PRO_WRITER_NOTIF', $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
+            ->cookie('TOP_WRITER_NOTIF', $_COOKIE['TOP_WRITER_NOTIF'] ?? $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
+            ->cookie('PRO_WRITER_NOTIF', $_COOKIE['PRO_WRITER_NOTIF'] ?? $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
             ->cookie('TOOLTIP', $cookies['TOOLTIP'] ?? 'TO1')
-            ->cookie('DESKTOP', $cookies['DESKTOP'] ?? 'EC1');
+            ->cookie('DESKTOP', $desktop ?? 'EC1');
 
     }
 
