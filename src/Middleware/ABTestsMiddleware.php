@@ -144,7 +144,7 @@ class ABTestsMiddleware
             ->cookie('PAGE_REDIRECT', $cookies['PAGE_REDIRECT'] ?? 'FI1')
             ->cookie('TOP_WRITER_NOTIF', $_COOKIE['TOP_WRITER_NOTIF'] ?? $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $_COOKIE['PRO_WRITER_NOTIF'] ?? $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
-            ->cookie('TOOLTIP', $cookies['TOOLTIP'] ?? 'TO1')
+            ->cookie('TOOLTIP', $_COOKIE['TOOLTIP'] ?? $cookies['TOOLTIP'] ?? 'TO1')
             ->cookie('DESKTOP', $desktop ?? 'EC1');
 
     }
