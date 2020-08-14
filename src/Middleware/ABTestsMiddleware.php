@@ -91,13 +91,6 @@ class ABTestsMiddleware
                         'pageRedirectDesktopExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
-                case 'retentionDiscount':
-                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'retentionDiscount');
-                    $experimentsResults['retentionDiscountExperiment'] = [
-                        'retentionDiscountValue' => $experimentResultInfo['retentionDiscountValue'],
-                        'retentionDiscountExperimentGroup' => $experimentResultInfo['experimentGroup']
-                    ];
-                    break;
 
                 default:
                     return $next($request);
@@ -147,7 +140,6 @@ class ABTestsMiddleware
         }
         return $next($request)
             ->cookie('PAGE_REDIRECT_DESKTOP', $cookies['PAGE_REDIRECT_DESKTOP'] ?? 'SPH')
-            ->cookie('RETENTION_DISCOUNT', $_COOKIE['RETENTION_DISCOUNT'] ?? $cookies['RETENTION_DISCOUNT'] ?? 'GROUP_A')
             ->cookie('PAGE_REDIRECT', $cookies['PAGE_REDIRECT'] ?? 'FI1')
             ->cookie('TOP_WRITER_NOTIF', $_COOKIE['TOP_WRITER_NOTIF'] ?? $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $_COOKIE['PRO_WRITER_NOTIF'] ?? $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
