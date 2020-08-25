@@ -405,4 +405,10 @@ class ACHController extends Controller
         </html>
       ")->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
     }
+
+    public function clear()
+    {
+        $appId = request()->input('app_id');
+        return $this->separateManager->clear($appId, false);
+    }
 }
