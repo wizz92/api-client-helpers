@@ -91,6 +91,13 @@ class ABTestsMiddleware
                         'pageRedirectDesktopExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
+                case 'cashback':
+                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'cashback');
+                    $experimentsResults['cashbackExperiment'] = [
+                        'cashbackValue' => $experimentResultInfo['cashbackValue'],
+                        'cashbackExperimentGroup' => $experimentResultInfo['experimentGroup']
+                    ];
+                    break;
 
                 default:
                     return $next($request);
@@ -144,6 +151,7 @@ class ABTestsMiddleware
             ->cookie('TOP_WRITER_NOTIF', $_COOKIE['TOP_WRITER_NOTIF'] ?? $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $_COOKIE['PRO_WRITER_NOTIF'] ?? $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
             ->cookie('TOOLTIP', $_COOKIE['TOOLTIP'] ?? $cookies['TOOLTIP'] ?? 'TO1')
+            ->cookie('CASHBACK', $_COOKIE['CASHBACK'] ?? $cookies['CASHBACK'] ?? 'CASHBACK_GROUP_A')
             ->cookie('DESKTOP', $desktop ?? 'EC1');
     }
 
