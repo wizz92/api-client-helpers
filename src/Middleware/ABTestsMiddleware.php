@@ -100,7 +100,7 @@ class ABTestsMiddleware
                     break;
 
                 default:
-                    return $next($request);
+                    continue;
             }
 
             if (array_key_exists('cookie', $experimentResultInfo)) {
