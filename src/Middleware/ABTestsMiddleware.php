@@ -145,19 +145,28 @@ class ABTestsMiddleware
         if (!$detect->isMobile()) {
             $desktop = isset($_COOKIE['DESKTOP']) ? $_COOKIE['DESKTOP'] : $cookies['DESKTOP'] ?? 'EC1';
         }
+
         return $next($request)
             ->cookie('PAGE_REDIRECT_DESKTOP', $cookies['PAGE_REDIRECT_DESKTOP'] ?? 'SPH')
             ->cookie('PAGE_REDIRECT', $cookies['PAGE_REDIRECT'] ?? 'FI1')
             ->cookie('TOP_WRITER_NOTIF', $_COOKIE['TOP_WRITER_NOTIF'] ?? $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $_COOKIE['PRO_WRITER_NOTIF'] ?? $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
             ->cookie('TOOLTIP', $_COOKIE['TOOLTIP'] ?? $cookies['TOOLTIP'] ?? 'TO1')
-            ->cookie('CASHBACK', $_COOKIE['CASHBACK'] ?? $cookies['CASHBACK'] ?? 'CASHBACK_GROUP_A')
+            ->cookie('CASHBACK', $_COOKIE['CASHBACK'] ?? $this->getCashbackTagFromReferrer($request, $cookies) ?? 'CASHBACK_GROUP_B')
             ->cookie('DESKTOP', $desktop ?? 'EC1');
     }
+
 
     protected function getQueryParams($request)
     {
         $getQueryParams = http_build_query($request->query());
         return $getQueryParams ? '?'.$getQueryParams : null;
+    }
+
+    protected function getCashbackTagFromReferrer($request, $cookies)
+    {
+        if (!isset($request->query()['rt']) && isset($cookies['CASHBACK'])) {
+            return $cookies['CASHBACK'];
+        }
     }
 }
