@@ -68,7 +68,7 @@ class CurlRequest
         $headers =  [
                         'Accept-Language: '.$this->request->header('Accept-Language'),
                         'User-Agent: '.$this->request->header('user-agent'),
-                        'X-Forwarded-For: '.$this->request->ip()
+                        'X-Forwarded-For: '.$this->request->ip(),
                     ];
 
         if($this->request->header('Authorization')) {
