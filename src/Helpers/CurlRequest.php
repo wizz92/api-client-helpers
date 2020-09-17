@@ -71,6 +71,11 @@ class CurlRequest
                         'User-Agent: '.$this->request->header('user-agent'),
                         'X-Forwarded-For: '.$this->request->ip(),
                     ];
+
+        if($this->request->header('Authorization')) {
+            $headers[] = 'Authorization: ' . $this->request->header('Authorization');
+        }
+
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
