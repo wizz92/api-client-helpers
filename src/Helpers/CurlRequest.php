@@ -34,7 +34,6 @@ class CurlRequest
 
     public function execute()
     {
-
         $path = $this->request->path();
 
         $assets_proxy_on = CacheHelper::conf('assets_proxy') ?? false;
@@ -69,8 +68,13 @@ class CurlRequest
         $headers =  [
                         'Accept-Language: '.$this->request->header('Accept-Language'),
                         'User-Agent: '.$this->request->header('user-agent'),
-                        'X-Forwarded-For: '.$this->request->ip(),
+                        'X-Forwarded-For: '.$this->request->ip()
                     ];
+
+        if($this->request->header('Authorization')) {
+            $headers[] = 'Authorization: ' . $this->request->header('Authorization');
+        }
+
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
