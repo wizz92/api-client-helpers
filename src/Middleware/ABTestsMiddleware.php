@@ -84,13 +84,6 @@ class ABTestsMiddleware
                         'desktopExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
-                case 'pageRedirectDesktop':
-                    $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'pageRedirectDesktop');
-                    $experimentsResults['pageRedirectDesktopExperiment'] = [
-                        'pageRedirectDesktopValue' => $experimentResultInfo['pageRedirectDesktopValue'],
-                        'pageRedirectDesktopExperimentGroup' => $experimentResultInfo['experimentGroup']
-                    ];
-                    break;
                 case 'cashback':
                     $experimentResultInfo = $this->defaultExperimentMamager->run($request, $experimentInfo, 'cashback');
                     $experimentsResults['cashbackExperiment'] = [
@@ -104,22 +97,6 @@ class ABTestsMiddleware
             }
 
             if (array_key_exists('cookie', $experimentResultInfo)) {
-
-                if (!$detect->isMobile() && $isSpeedyPaper && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && request()->path() == '/') {
-                    $pageRedirectDesktop = $experimentResultInfo['cookie']['value'];
-                    switch ($pageRedirectDesktop) {
-                        case 'SPH1':
-                            $slug = 1;
-                            return redirect($slug . $this->getQueryParams($request))
-                                    ->withCookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
-                        case 'SPH2':
-                            $slug = 2;
-                            return redirect($slug . $this->getQueryParams($request))
-                                    ->withCookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
-                        default:
-                            break;
-                    }
-                }
                 if ($detect->isMobile() && $isSpeedyPaper && $experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT') {
                     $pageRedirect = $experimentResultInfo['cookie']['value'];
                     if ($pageRedirect == 'FI1' && request()->path() == '/') {
@@ -127,9 +104,6 @@ class ABTestsMiddleware
                         return redirect($slug . $this->getQueryParams($request))
                                 ->withCookie($experimentResultInfo['cookie']['name'], $experimentResultInfo['cookie']['value'], $cookiesMaxAge);
                     }
-                }
-                if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT_DESKTOP' && Cookie::get('PAGE_REDIRECT_DESKTOP')) {
-                    $experimentResultInfo['cookie']['value'] = 'SPH';
                 }
                 if ($experimentResultInfo['cookie']['name'] == 'PAGE_REDIRECT' && Cookie::get('PAGE_REDIRECT')) {
                     $experimentResultInfo['cookie']['value'] = 'FI2';
@@ -147,7 +121,6 @@ class ABTestsMiddleware
         }
 
         return $next($request)
-            ->cookie('PAGE_REDIRECT_DESKTOP', $cookies['PAGE_REDIRECT_DESKTOP'] ?? 'SPH')
             ->cookie('PAGE_REDIRECT', $cookies['PAGE_REDIRECT'] ?? 'FI1')
             ->cookie('TOP_WRITER_NOTIF', $_COOKIE['TOP_WRITER_NOTIF'] ?? $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $_COOKIE['PRO_WRITER_NOTIF'] ?? $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
