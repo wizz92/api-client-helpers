@@ -92,9 +92,6 @@ class ABTestsMiddleware
                         'cashbackExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
                     break;
-
-                default:
-                    break;
             }
 
             if (array_key_exists('cookie', $experimentResultInfo)) {
