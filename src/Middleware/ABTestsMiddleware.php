@@ -29,6 +29,7 @@ class ABTestsMiddleware
      */
     public function handle($request, Closure $next)
     {
+        $experimentResultInfo = [];
         $experiments = $this->clientConfigGetter->getExperimentsInfo();
         $experimentsResults = [];
         $cookiesMaxAge = 10 * 365 * 24 * 60;
@@ -90,9 +91,6 @@ class ABTestsMiddleware
                         'cashbackValue' => $experimentResultInfo['cashbackValue'],
                         'cashbackExperimentGroup' => $experimentResultInfo['experimentGroup']
                     ];
-                    break;
-
-                default:
                     break;
             }
 
