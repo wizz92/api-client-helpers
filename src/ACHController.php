@@ -78,7 +78,6 @@ class ACHController extends Controller
         if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
             return redirect($slug);
         }
-        $this->trackingHits();
         $parsed_url = UrlParser::fromString($current_url);
         $parsed_url_host = app()->environment('local') ? "{$parsed_url->getHost()}:{$parsed_url->getPort()}" : $parsed_url->getHost();
         $parsed_url_scheme = $parsed_url->getScheme();
@@ -316,6 +315,10 @@ class ACHController extends Controller
     }
 
     // save new hit
+    /**
+     * @deprecated
+     * @return |null
+     */
     public function trackingHits()
     {
         if (!CacheHelper::conf('tracking_hits')) {
