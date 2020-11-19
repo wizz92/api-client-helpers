@@ -99,6 +99,10 @@ class ContentHelper {
       'Content-Type' => array_get($response['headers'], 'Content-Type', 'text/html'),
       'Cache-Control' => array_get($response['headers'], 'Cache-Control', 'no-cache private'),
     ];
+
+    if(request()->get('rt')) {
+        $response_headers['X-Robots-Tag'] = 'noindex';
+    }
     
     return response($response['body'], $response['status'])
       ->withHeaders($response_headers);
