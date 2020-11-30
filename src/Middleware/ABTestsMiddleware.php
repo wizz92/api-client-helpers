@@ -123,7 +123,7 @@ class ABTestsMiddleware
             ->cookie('TOP_WRITER_NOTIF', $_COOKIE['TOP_WRITER_NOTIF'] ?? $cookies['TOP_WRITER_NOTIF'] ?? 'PG1')
             ->cookie('PRO_WRITER_NOTIF', $_COOKIE['PRO_WRITER_NOTIF'] ?? $cookies['PRO_WRITER_NOTIF'] ?? 'PH1')
             ->cookie('TOOLTIP', $_COOKIE['TOOLTIP'] ?? $cookies['TOOLTIP'] ?? 'TO1')
-            ->cookie('CASHBACK', 'CASHBACK_GROUP_B')
+            ->cookie('CASHBACK', $_COOKIE['CASHBACK'] ?? $this->getCashbackTagFromReferrer($request, $cookies) ?? 'CASHBACK_GROUP_B')
             ->cookie('DESKTOP', $desktop ?? 'EC1');
     }
 
