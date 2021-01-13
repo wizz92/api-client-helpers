@@ -135,12 +135,6 @@ class ACHController extends Controller
         $response = Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->get($cacheKey);
 
         if (!is_null($response)) { // meanse we have content in cache
-          //kostil for pagespeed
-          if (preg_match('/Lighthouse/', array_get($_SERVER, 'HTTP_USER_AGENT'))) {
-            $response['body'] = preg_replace('/<!-- Google Tag Manager -->(.*?)<!-- End Google Tag Manager -->/', '', $response['body']);
-            $response['body'] = preg_replace('~https://ms-hub.site.supplies/microservices-loader.js~', '', $response['body']);
-          }
-
           return ContentHelper::getValidResponse($response);
         }
         $cacheVersionKey = md5("{$appId}_{$domain}");
