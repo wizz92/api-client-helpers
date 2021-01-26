@@ -58,7 +58,7 @@ if (env('use_frontend_repo') === true) {
     Route::get('{slug?}', '\Wizz\ApiClientHelpers\ACHController@frontendRepo')
         ->middleware(UpdateGlobalsMiddleware::class)
         ->middleware(BlockUrlsMiddleware::class)
-        ->middleware(ABTestsMiddleware::class)
+//        ->middleware(ABTestsMiddleware::class)
         ->middleware(CheckBrowserMiddleware::class)
         ->middleware(\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class)
         ->where('slug', '.+');
