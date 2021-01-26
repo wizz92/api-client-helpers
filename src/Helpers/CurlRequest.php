@@ -74,6 +74,10 @@ class CurlRequest
         if($this->request->header('Authorization')) {
             $headers[] = 'Authorization: ' . $this->request->header('Authorization');
         }
+        
+        if($this->request->header('Visitor')) {
+            $headers[] = 'Visitor: ' . $this->request->header('Visitor');
+        }
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
