@@ -143,7 +143,7 @@ class CacheHelper
         $response->header('Access-Control-Allow-Origin', $origin)
           ->header('Access-Control-Allow-Credentials', 'true')
           ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE')
-          ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, X-Requested-With, remember-me');
+          ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, X-Requested-With, remember-me, visitor');
       }
 
       return $response;
