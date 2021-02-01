@@ -220,7 +220,9 @@ class ACHController extends Controller
         }
 
         if (strpos('q'.$r->content_type, 'text/html') || strpos('q'.$r->content_type, 'text/plain')) {
-            return $r->body;
+            $response = response($r->body);
+            $response = CacheHelper::attachCORSToResponse($response);
+            return $response;
         }
 
         if ($r->content_type == 'application/json') {
