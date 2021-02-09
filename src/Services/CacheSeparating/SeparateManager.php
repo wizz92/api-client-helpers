@@ -24,7 +24,7 @@ class SeparateManager implements SeparateManagerInterface
             return ['error' => 'You should choose type of pages or client id'];
         }
 
-        $configData = array_values(array_filter(config('api_configs'), function($index) use ($appId) {
+        $configData = array_values(array_filter(config('api_configs'), function ($index) use ($appId) {
             return array_get($index, 'client_id') == $appId && array_get($index, 'isAliasedDomain') == false;
         }));
 

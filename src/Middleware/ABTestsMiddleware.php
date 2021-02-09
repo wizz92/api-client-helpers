@@ -12,7 +12,6 @@ use Cookie;
 
 class ABTestsMiddleware
 {
-
     public function __construct(DefaultExperimentManagerInterface $defaultExperimentMamager)
     {
         $this->defaultExperimentMamager = $defaultExperimentMamager;

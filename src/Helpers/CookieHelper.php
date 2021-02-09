@@ -55,7 +55,7 @@ class CookieHelper
         foreach ($cookies as $cookieName => $cookieValue) {
             $cookies_string .= $cookieName.'='.$cookieValue.'; ';
         }
-         return $cookies_string;
+        return $cookies_string;
     }
 
     public static function setCookiesFromCurlResponse(array $cookies)
@@ -66,7 +66,8 @@ class CookieHelper
         }
     }
 
-    public static function setCustomCookie($name, $value, $minutes = 10 * 365 * 24 * 60) {
-      Cookie::queue($name, $value, $minutes, '/', null, false, false);
+    public static function setCustomCookie($name, $value, $minutes = 10 * 365 * 24 * 60)
+    {
+        Cookie::queue($name, $value, $minutes, '/', null, false, false);
     }
 }

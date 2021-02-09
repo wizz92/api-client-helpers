@@ -3,13 +3,14 @@ use Carbon\Carbon;
 
 class TestArrayHelper extends Orchestra\Testbench\TestCase
 {
-    public function testStringIsInArray(){
+    public function testStringIsInArray()
+    {
         $this->assertTrue(in_array('adfasdf', ['adfasdf', 'fsdaadfasd']));
-        
     }
         
 
-    public function testStringIsNotInArray(){
+    public function testStringIsNotInArray()
+    {
         $this->assertFalse(in_array('adfasdf', ['adfasdaf', 'xzcvxzcvzxvc']));
     }
 }

@@ -22,14 +22,14 @@ class Builder implements BuilderInterface
      */
     private function collectors($type)
     {
-         $values = [
+        $values = [
            self::STYLES => new StylesCollector($this->crawler),
            self::SCRIPTS => new ScriptsCollector($this->crawler),
 
            self::DOM => new DOMCollector($this->crawler),
          ];
 
-         return $values[$type];
+        return $values[$type];
     }
 
     /**
