@@ -48,7 +48,7 @@ class CurlRequest
         $referer = request()->headers->get('referer');
 
         if ($referer) {
-          $data['page_url'] = $referer;
+            $data['page_url'] = $referer;
         }
 
         $data['app_id'] = CacheHelper::conf('client_id');
@@ -71,11 +71,11 @@ class CurlRequest
                         'X-Forwarded-For: '.$this->request->ip(),
                     ];
 
-        if($this->request->header('Authorization')) {
+        if ($this->request->header('Authorization')) {
             $headers[] = 'Authorization: ' . $this->request->header('Authorization');
         }
         
-        if($this->request->header('Visitor')) {
+        if ($this->request->header('Visitor')) {
             $headers[] = 'Visitor: ' . $this->request->header('Visitor');
         }
 

@@ -50,13 +50,12 @@ class ScriptsCollector implements ComposingInterface
 
 
         if (!Storage::disk('public_assets')->exists($composedDirectoryName)) {
-             Storage::disk('public_assets')->makeDirectory($composedDirectoryName);
+            Storage::disk('public_assets')->makeDirectory($composedDirectoryName);
         }
         $bodyJSInStorage = "{$composedDirectoryName}/body-{$path}.js";
         $bodyJSFileName = "assets/$bodyJSInStorage";
         
         if (Storage::disk('public_assets')->exists($bodyJSInStorage) && Storage::disk('public_assets')->size($bodyJSInStorage) != 0) {
-
             $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) {
                 foreach ($node as $n) {
                     $n->parentNode->removeChild($n);
@@ -64,7 +63,7 @@ class ScriptsCollector implements ComposingInterface
             });
         } else {
             $jsFile = fopen($bodyJSFileName, 'a+');
-            if (flock($jsFile, LOCK_EX | LOCK_NB)) { 
+            if (flock($jsFile, LOCK_EX | LOCK_NB)) {
                 ftruncate($jsFile, 0);
                 
                 $this->crawler->filter('body > script.js-scripts-section')->each(function (Crawler $node, $i) use ($jsFile) {
@@ -78,7 +77,7 @@ class ScriptsCollector implements ComposingInterface
                 });
 
                 $this->customScriptManager->add($jsFile, $addScriptForRedirect);
-                fflush($jsFile);        
+                fflush($jsFile);
                 flock($jsFile, LOCK_UN);
             } else {
                 sleep(7);
@@ -87,14 +86,14 @@ class ScriptsCollector implements ComposingInterface
             fclose($jsFile);
         }
 
-         $rootUrl = env('root_url', 'https://' . request()->getHttpHost());  
-         return [
+        $rootUrl = env('root_url', 'https://' . request()->getHttpHost());
+        return [
              'body' => "{$rootUrl}/{$bodyJSFileName}",
          ];
     }
     
     /**
-     * get new castom dir and file names for composing files 
+     * get new castom dir and file names for composing files
      *
      * @param  string $composedDirectoryName
      *
@@ -126,7 +125,7 @@ class ScriptsCollector implements ComposingInterface
                 $pathForEssayOrCategory = preg_replace('^essays/^', '', $this->path);
                 $essaysUrl = $dataWithUrls->essay->urls ?? [];
 
-                $hashedEssaysUrl = array_map(function($url) {
+                $hashedEssaysUrl = array_map(function ($url) {
                     return md5($url);
                 }, $essaysUrl);
                 $flipedArray = array_flip($hashedEssaysUrl);
@@ -148,7 +147,7 @@ class ScriptsCollector implements ComposingInterface
                 $path = preg_replace("/\//", '-', $this->path);
                 break;
                 
-            case $essence == 'landing';
+            case $essence == 'landing':
                 $path = 'landing';
                 break;
 

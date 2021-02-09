@@ -11,13 +11,13 @@ class AutocomposeHelper
 {
     const CACHE_EXPIRE = 60 * 24 * 2;
 
-  /**
-   * Handle an incoming request.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @param \Closure $next
-   * @return mixed
-   */
+    /**
+     * Handle an incoming request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @return mixed
+     */
     public static function parseBody($pageContent, $queryName)
     {
         $builder = app()->make(BuilderInterface::class);

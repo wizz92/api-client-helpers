@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Storage;
  */
 class CacheCleanHelper
 {
-     /**
-     * removing composing files
-     *
-     * @param  string $composedDirectoryName
-     *
-     * @return void
-     */
+    /**
+    * removing composing files
+    *
+    * @param  string $composedDirectoryName
+    *
+    * @return void
+    */
     public function clearComposingFiles(string $folderPath)
     {
         $paths = Storage::disk('public_assets')->allDirectories();

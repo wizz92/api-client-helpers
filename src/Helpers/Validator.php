@@ -18,7 +18,7 @@ class Validator
         return ($func()) ? 'OK' : 'OFF';
     }
 
-     /*
+    /*
 
     Validating that all our configs necessary for frontend repo are in place.
 
