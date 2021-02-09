@@ -22,10 +22,10 @@ class ApiClientHelpersServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         include_once __DIR__.'/ACHController.php';
         // include __DIR__.'/Helpers/cache.php';
         $this->mergeConfigFrom(__DIR__.'/configs/api_configs.php', 'api_configs');
+        $this->mergeConfigFrom(__DIR__.'/configs/compose_configs.php', 'compose_configs');
         $this->app->make('Wizz\ApiClientHelpers\Token');
         $this->app->make('Wizz\ApiClientHelpers\ACHController');
         $this->app->make('Wizz\ApiClientHelpers\Middleware\BlockUrlsMiddleware');

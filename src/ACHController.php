@@ -63,7 +63,7 @@ class ACHController extends Controller
         $this->ensureBasicAuth();
 
         if (!Validator::validateFrontendConfig()) {
-          return $this->error_message;
+            return $this->error_message;
         }
 
 
@@ -75,7 +75,7 @@ class ACHController extends Controller
         $filter = array_filter($queryParams, function ($item) {
             return $item === '' || $item === null;
         });
-        if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter) ) {
+        if ((!is_null(request()->input('page')) && request()->input('page') <=0) || !empty($filter)) {
             return redirect($slug);
         }
         $parsed_url = UrlParser::fromString($current_url);
@@ -84,14 +84,14 @@ class ACHController extends Controller
 
 
         $domain = CacheHelper::conf('domain');
-        $slugForNewKey = substr($slug, 0, 1) == '/' ? $slug : "/$slug"; 
+        $slugForNewKey = substr($slug, 0, 1) == '/' ? $slug : "/$slug";
 
         //new cache key for cache separating
         $newCacheKey = "{$slugForNewKey}_{$appId}_{$domain}";
         
         // if req url contains dashboard substring cache this page
         // in one key 'http://domain.name/dashboard'
-        // because we have react on dash 
+        // because we have react on dash
         // it doesn`t matter which page by pass we cache
         $cacheKey = request()->is('dashboard*') ? "$parsed_url_scheme://$parsed_url_host/dashboard" : $newCacheKey;
         // get cache_key hash for use in Cache facade
@@ -101,18 +101,18 @@ class ACHController extends Controller
         $experiment_results = request()->get('experimentsResults') ?? null;
         $serialized_experiment_results = "";
         if ($experiment_results) {
-          $serialized_experiment_results = serialize($experiment_results);
-          $cacheKey .= md5($serialized_experiment_results);
+            $serialized_experiment_results = serialize($experiment_results);
+            $cacheKey .= md5($serialized_experiment_results);
         }
 
         $cacheExpire = CacheHelper::conf('cache_frontend_for') ?? 60 * 24 * 2; // 2 days by default
         $should_skip_cache = !CacheHelper::shouldWeCache();
 
         if ($should_skip_cache) {
-          // get page
-          $response = ContentHelper::getFrontendContent($slug, $serialized_experiment_results);
-          //and return it
-          return ContentHelper::getValidResponse($response);
+            // get page
+            $response = ContentHelper::getFrontendContent($slug, $serialized_experiment_results);
+            //and return it
+            return ContentHelper::getValidResponse($response);
         }
 
         $separatedSlug = explode('/', $slug);
@@ -135,19 +135,19 @@ class ACHController extends Controller
         $response = Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->get($cacheKey);
 
         if (!is_null($response)) { // meanse we have content in cache
-          return ContentHelper::getValidResponse($response);
+            return ContentHelper::getValidResponse($response);
         }
         $cacheVersionKey = md5("{$appId}_{$domain}");
         if (!Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->has($cacheVersionKey)) {
-          $version = $cacheVersionKey.time();
-          Cache::tags([$appId, $domain], $pageType, "{$appId}_{$pageType}")->put($cacheVersionKey, $version, $cacheExpire);
+            $version = $cacheVersionKey.time();
+            Cache::tags([$appId, $domain], $pageType, "{$appId}_{$pageType}")->put($cacheVersionKey, $version, $cacheExpire);
         }
       
-        // get page 
+        // get page
         $response = ContentHelper::getFrontendContent($slug, $serialized_experiment_results);
         // store in cache in case we do not have an error in response
         if (!in_array($response['status'], [500, 502, 503, 504])) {
-          Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->put($cacheKey, $response, $cacheExpire);
+            Cache::tags([$appId, $domain, $pageType, "{$appId}_{$pageType}"])->put($cacheKey, $response, $cacheExpire);
         }
         
         // and return it
@@ -165,26 +165,26 @@ class ACHController extends Controller
             return ['result' => 'no access'];
         }
         try {
-          $type = request()->input('type');
-          $appId = request()->input('app_id');
-          if ($type || $appId) {
-            $result = $this->separateManager->clear($appId, $type);
+            $type = request()->input('type');
+            $appId = request()->input('app_id');
+            if ($type || $appId) {
+                $result = $this->separateManager->clear($appId, $type);
 
+                \Artisan::call('view:clear');
+                \Artisan::call('config:clear');
+                exec('/usr/bin/php '.base_path().'/composer dump-autoload');
+                \Artisan::call('clear-compiled');
+                return $result;
+            }
+            \Log::info('old cache');
+            // dd('if you really wanna clear all cache - call landing repo developers');
+            \Artisan::call('cache:clear');
             \Artisan::call('view:clear');
             \Artisan::call('config:clear');
             exec('/usr/bin/php '.base_path().'/composer dump-autoload');
             \Artisan::call('clear-compiled');
-            return $result;
-          }
-          \Log::info('old cache');
-          // dd('if you really wanna clear all cache - call landing repo developers');
-          \Artisan::call('cache:clear');
-          \Artisan::call('view:clear');
-          \Artisan::call('config:clear');
-          exec('/usr/bin/php '.base_path().'/composer dump-autoload');
-          \Artisan::call('clear-compiled');
-          Storage::disk('public_assets')->deleteDirectory('/composed');
-          return ['result' => 'success'];
+            Storage::disk('public_assets')->deleteDirectory('/composed');
+            return ['result' => 'success'];
         } catch (Exception $e) {
             return ['result' => 'error'];
         }
@@ -226,8 +226,8 @@ class ACHController extends Controller
         }
 
         if ($r->content_type == 'application/json') {
-          $response = response()->json(json_decode($r->body));
-          return CacheHelper::attachCORSToResponse($response);
+            $response = response()->json(json_decode($r->body));
+            return CacheHelper::attachCORSToResponse($response);
         }
         // we need to check exactly '/xml' here because .xlsx .docx file has
         // content type like this application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
@@ -242,7 +242,7 @@ class ACHController extends Controller
               ->header('Content-Disposition', array_get($r->headers, 'content-disposition'));
 
         if ($assets_proxy_on && $assets_url_match) {
-          $response = $response->header('Cache-Control', "max-age=7776000");
+            $response = $response->header('Cache-Control', "max-age=7776000");
         }
 
         return $response;
@@ -255,7 +255,7 @@ class ACHController extends Controller
     */
     public function redirect($slug, Request $request)
     {
-// TODO needs fix to work in multi client mode
+        // TODO needs fix to work in multi client mode
         if (!Validator::validate_redirect_config()) {
             return $this->error_message;
         }
@@ -320,7 +320,7 @@ class ACHController extends Controller
         if (!CacheHelper::conf('tracking_hits')) {
             return null;
         }
-        if(in_array(request()->ip(), self::TEST_SERVERS)) {
+        if (in_array(request()->ip(), self::TEST_SERVERS)) {
             return null;
         }
         $can_track_hit = $this->validateHitTracking();
@@ -354,11 +354,11 @@ class ACHController extends Controller
 
     public function outerAuthForm(Request $request, $order_id, $token)
     {
-      $app_id = CacheHelper::conf('client_id');
-      $api_url = CacheHelper::conf('secret_url');
-      $api_url = ends_with($api_url, '/') ? $api_url : "$api_url/";
-      $url = "{$api_url}auth/order_form/{$order_id}/{$token}?app_id={$app_id}";
-      $stream_options = [
+        $app_id = CacheHelper::conf('client_id');
+        $api_url = CacheHelper::conf('secret_url');
+        $api_url = ends_with($api_url, '/') ? $api_url : "$api_url/";
+        $url = "{$api_url}auth/order_form/{$order_id}/{$token}?app_id={$app_id}";
+        $stream_options = [
         'http' => [
           'follow_location' => 0,
           'max_redirects' => 0,
@@ -373,22 +373,22 @@ class ACHController extends Controller
         ]
       ];
 
-      $response_body = file_get_contents($url, false, stream_context_create($stream_options));
-      $response_headers = ContentHelper::parseHeaders($http_response_header);
-      $response_status_code = $response_headers['StatusCode'];
+        $response_body = file_get_contents($url, false, stream_context_create($stream_options));
+        $response_headers = ContentHelper::parseHeaders($http_response_header);
+        $response_status_code = $response_headers['StatusCode'];
 
-      if ($response_status_code !== 200) {
-        return response()->redirectTo('/');
-      }
+        if ($response_status_code !== 200) {
+            return response()->redirectTo('/');
+        }
 
-      $response = json_decode($response_body);
-      $redirect_url = optional($response->data)->redirect;
+        $response = json_decode($response_body);
+        $redirect_url = optional($response->data)->redirect;
 
-      if (!$redirect_url) {
-        return response()->redirectTo('/');
-      }
+        if (!$redirect_url) {
+            return response()->redirectTo('/');
+        }
 
-      return response("
+        return response("
         <!DOCTYPE html>
         <html>
           <head>
@@ -402,7 +402,7 @@ class ACHController extends Controller
             </script>
           </body>
         </html>
-      ")->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', "") );
+      ")->header('Set-Cookie', array_get($response_headers, 'Set-Cookie', ""));
     }
 
     public function clear()

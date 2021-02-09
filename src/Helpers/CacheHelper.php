@@ -20,13 +20,13 @@ class CacheHelper
             return false;
         }
         if (request()->query('page', false)) {
-          return false;
+            return false;
         }
         if (request()->query('rate', false)) {
-          return false;
+            return false;
         }
         if (request()->is('services/bootstrap')) {
-          return false;
+            return false;
         }
 
         return true;
@@ -55,7 +55,7 @@ class CacheHelper
             if (strstr($httpHost, 'www.')) {
                 $httpHost = (substr($httpHost, 4, strlen($httpHost)));
             }
-          return $httpHost;
+            return $httpHost;
         }
         $switchDomain = request()->get('domain');
         $pname = request()->get('pname');
@@ -97,7 +97,7 @@ class CacheHelper
         return md5($slug);
     }
 
-        /**
+    /**
     * returns data from cache or calls a function from second parameter and puts result in cache
     *
     * @param {key} cache key
@@ -114,12 +114,8 @@ class CacheHelper
             throw new Exception('cacher function expects second parameter to be a function '.gettype($data_function).' given.');
         }
         // if we have logical reasons to not cache content -> just call function and return result
-        if (!self::shouldWeCache($key) && !$disableSWC) {
-          return call_user_func($data_function);
-        }
-
-        if ($skip) {
-          return call_user_func($data_function);          
+        if ((!self::shouldWeCache($key) && !$disableSWC)  || $skip) {
+            return call_user_func($data_function);
         }
 
         // if we can cache -> check if we have cache value by given key -> return from cache
@@ -133,20 +129,21 @@ class CacheHelper
         return $data;
     }
 
-    public static function attachCORSToResponse($response) {
-      $origin = request()->header('Origin') ?? '';
-      $allowed_origins = self::conf('allowed_origins') ?? [];
+    public static function attachCORSToResponse($response)
+    {
+        $origin = request()->header('Origin') ?? '';
+        $allowed_origins = self::conf('allowed_origins') ?? [];
 
-      $allowed_origins = is_array($allowed_origins) ? $allowed_origins : [$allowed_origins];
+        $allowed_origins = is_array($allowed_origins) ? $allowed_origins : [$allowed_origins];
 
-      if (in_array($origin, $allowed_origins)) {
-        $response->header('Access-Control-Allow-Origin', $origin)
-          ->header('Access-Control-Allow-Credentials', 'true')
-          ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE')
-          ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, X-Requested-With, remember-me, visitor, Authorization');
-      }
+        if (in_array($origin, $allowed_origins)) {
+            $response->header('Access-Control-Allow-Origin', $origin)
+            ->header('Access-Control-Allow-Credentials', 'true')
+            ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, X-Requested-With, remember-me, visitor, Authorization');
+        }
 
-      return $response;
+        return $response;
     }
 
     public static function getSpasificListOfUrls($params = [])
@@ -157,15 +154,15 @@ class CacheHelper
 
         //for right tags
         if (isset($params['type'])) {
-          $paramsForTags['app_id'] = $params['app_id'];
-          $paramsForTags['type'] = $params['type'].'s';
-          $paramsForTags['string_tag'] = $params['app_id'].'_'.$params['type'].'s';
+            $paramsForTags['app_id'] = $params['app_id'];
+            $paramsForTags['type'] = $params['type'].'s';
+            $paramsForTags['string_tag'] = $params['app_id'].'_'.$params['type'].'s';
         }
         $tags = array_values($paramsForTags ?? $params);
         
         $urls = Cache::tags($tags)->get($cacheKey);
         if (!$urls) {
-          $urls = self::getUrlsFromAPI($params, $tags);
+            $urls = self::getUrlsFromAPI($params, $tags);
         }
 
         return $urls;
@@ -191,13 +188,13 @@ class CacheHelper
         $result = json_decode($res);
         
         if (!is_object($result) || (property_exists($result, 'errors') && count($result->errors) > 0)) {
-          return false;
+            return false;
         }
 
         $urls = $result->data ?? false;
 
         if ($urls) {
-          Cache::tags($tags)->put($cacheKey, $urls, 60*24*30);
+            Cache::tags($tags)->put($cacheKey, $urls, 60*24*30);
         }
       
         return $urls;
