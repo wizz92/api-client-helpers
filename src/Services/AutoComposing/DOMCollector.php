@@ -42,13 +42,16 @@ class DOMCollector implements ComposingInterface
         $DOMDocument->loadHTML($this->crawler->html());
         libxml_use_internal_errors(false);
         $this->crawler = new Crawler($DOMDocument);
-        $headStyles = implode(array_get($this->styles, 'head'));
-        $bodyStyles = implode(array_get($this->styles, 'body'));
+        if (config('compose_configs.composeConditions.styles')) {
+            $headStyles = implode(array_get($this->styles, 'head'));
+            $bodyStyles = implode(array_get($this->styles, 'body'));
 
-        $this->addElementToDOM($DOMDocument, 'style', $headStyles, 'head');
-        $this->addElementToDOM($DOMDocument, 'style', $bodyStyles, 'body');
-        $this->addElementToDOM($DOMDocument, 'script', array_get($this->scripts, 'body'), 'body');
-
+            $this->addElementToDOM($DOMDocument, 'style', $headStyles, 'head');
+            $this->addElementToDOM($DOMDocument, 'style', $bodyStyles, 'body');
+        }
+        if (config('compose_configs.composeConditions.scripts')) {
+            $this->addElementToDOM($DOMDocument, 'script', array_get($this->scripts, 'body'), 'body');
+        }
         return ['html' => $this->crawler->html()];
     }
 

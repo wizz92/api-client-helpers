@@ -114,12 +114,8 @@ class CacheHelper
             throw new Exception('cacher function expects second parameter to be a function '.gettype($data_function).' given.');
         }
         // if we have logical reasons to not cache content -> just call function and return result
-        if (!self::shouldWeCache($key) && !$disableSWC) {
+        if ((!self::shouldWeCache($key) && !$disableSWC)  || $skip) {
           return call_user_func($data_function);
-        }
-
-        if ($skip) {
-          return call_user_func($data_function);          
         }
 
         // if we can cache -> check if we have cache value by given key -> return from cache

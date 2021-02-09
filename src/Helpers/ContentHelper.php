@@ -52,18 +52,15 @@ class ContentHelper {
     $response_body = file_get_contents($url, false, stream_context_create($stream_options));
 
     $exeptionPages = [
-      'OneSignalSDKWorker.js',
+        'OneSignalSDKWorker.js',
     ];
-      $projectsForTest = [
 
-      ];
+      $pName = $query['pname'] ?? null;
 
-    if (!in_array(request()->path(), $exeptionPages))
-    {
-//        if (in_array($query['pname'], $projectsForTest)) {
-            $response_body = AutocomposeHelper::parseBody($response_body, $query['pname']);
-//        }
+    if (!in_array(request()->path(), config('compose_configs.exceptionPages')) && (!config('compose_configs.composeTestModeEnabled') || in_array($pName, config('compose_configs.testProjectsNames')))) {
+        $response_body = AutocomposeHelper::parseBody($response_body, $pName);
     }
+
     $response_headers = self::parseHeaders($http_response_header);
     $response_status_code = $response_headers['StatusCode'];
 
