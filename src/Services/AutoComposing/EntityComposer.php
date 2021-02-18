@@ -3,6 +3,7 @@
 
 namespace Wizz\ApiClientHelpers\Services\AutoComposing;
 
+use Cache;
 use Symfony\Component\DomCrawler\Crawler;
 use Wizz\ApiClientHelpers\Helpers\CacheHelper;
 use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\EntityComposerInterface;
