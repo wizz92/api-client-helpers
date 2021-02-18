@@ -2,13 +2,18 @@
 
 namespace Wizz\ApiClientHelpers\Services\AutoComposing;
 
-use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\ComposingInterface;
-use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\CustomScriptManagerInterface;
-use Wizz\ApiClientHelpers\Helpers\CacheHelper;
-use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\DomCrawler\Crawler;
+use Wizz\ApiClientHelpers\Helpers\CacheHelper;
+use Wizz\ApiClientHelpers\Services\AutoComposing\EntityComposer;
+use Wizz\ApiClientHelpers\Services\AutoComposing\Contracts\CustomScriptManagerInterface;
 
-class ScriptsCollector implements ComposingInterface
+/**
+ * Class ScriptsCollector
+ * @package Wizz\ApiClientHelpers\Services\AutoComposing
+ * @deprecated
+ */
+class ScriptsCollector
 {
     /**
      * ScriptsCollector constructor.
@@ -31,11 +36,10 @@ class ScriptsCollector implements ComposingInterface
     }
 
     /**
-     * @param string $project_name
+     * @param string $cacheKey
      * @return array
-     * @throws \Exception
      */
-    public function get(): array
+    public function get(string $cacheKey): array
     {
         $viewRoot = CacheHelper::getDomain();
         $composedDirectoryName = "composed/{$viewRoot}";

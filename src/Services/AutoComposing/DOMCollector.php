@@ -8,7 +8,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use DOMDocument;
 use Cache;
 
-class DOMCollector implements ComposingInterface
+class DOMCollector
 {
     protected $styles;
     protected $bodyScripts;
@@ -52,7 +52,7 @@ class DOMCollector implements ComposingInterface
         if (config('compose_configs.composeConditions.scripts')) {
             $this->addElementToDOM($DOMDocument, 'script', array_get($this->scripts, 'body'), 'body');
         }
-        return ['html' => $this->crawler->html()];
+        return $this->crawler->html();
     }
 
     /**

@@ -25,10 +25,8 @@ class Builder implements BuilderInterface
         $values = [
            self::STYLES => new StylesCollector($this->crawler),
            self::SCRIPTS => new ScriptsCollector($this->crawler),
-
            self::DOM => new DOMCollector($this->crawler),
-         ];
-
+        ];
         return $values[$type];
     }
 
