@@ -35,7 +35,7 @@ class DOMCollector
     /**
      * @return array
      */
-    public function get(): array
+    public function get() : string
     {
         $DOMDocument = new DOMDocument;
         libxml_use_internal_errors(true);
@@ -45,12 +45,8 @@ class DOMCollector
         if (config('compose_configs.composeConditions.styles')) {
             $headStyles = implode(array_get($this->styles, 'head'));
             $bodyStyles = implode(array_get($this->styles, 'body'));
-
             $this->addElementToDOM($DOMDocument, 'style', $headStyles, 'head');
             $this->addElementToDOM($DOMDocument, 'style', $bodyStyles, 'body');
-        }
-        if (config('compose_configs.composeConditions.scripts')) {
-            $this->addElementToDOM($DOMDocument, 'script', array_get($this->scripts, 'body'), 'body');
         }
         return $this->crawler->html();
     }

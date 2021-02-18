@@ -37,7 +37,7 @@ abstract class EntityComposer implements EntityComposerInterface
         $limitedCacheKey = CacheHelper::getLimitedCacheKey($cacheKey);
         $headSelectors = config("compose_configs.selectors.$entityName.head");
         $bodySelectors = config("compose_configs.selectors.$entityName.body");
-        if (Cache::has($limitedCacheKey) || !CacheHelper::shouldWeCache()) {
+        if (Cache::has($limitedCacheKey) && CacheHelper::shouldWeCache()) {
             $composedEntities = Cache::get($limitedCacheKey);
         }
         else {
