@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'composeTestModeEnabled' => false,
+    'composeTestModeEnabled' => true,
     'testProjectsNames' => [
         'writepapersforme.online'
     ],
