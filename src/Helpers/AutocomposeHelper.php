@@ -25,26 +25,16 @@ class AutocomposeHelper
         $fullPathArray = explode('/', $path);
         $key = ($fullPathArray[0] === 'essays' && isset($fullPathArray[1])) ? 'nested-essays' : $path;
         $shouldComposeStyles = config('compose_configs.composeConditions.styles');
-        $shouldComposeScripts = config('compose_configs.composeConditions.scripts');
+        $cacheKeySuffix = $queryName . '_' . $key;
         if ($shouldComposeStyles) {
-            $style =  CacheHelper::cacher('parse_body_style' . $queryName . '_' . $key, function () use ($builder, $pageContent, $path) {
-                return $builder->make('collectStyles', $pageContent, true)->get();
-            }, self::CACHE_EXPIRE);
+            $styleCacheKey = 'parse_body_style'.$cacheKeySuffix;
+            $styles = $builder->make('collectStyles', $pageContent, true)->get($styleCacheKey, 'styles');
         }
-        if ($shouldComposeScripts) {
-            $scripts =  CacheHelper::cacher('parse_body_scripts' . $queryName . '_' . $key, function () use ($builder, $pageContent, $path) {
-                return $builder->make('collectScripts', $pageContent)->add('path', $path)->get();
-            }, self::CACHE_EXPIRE);
-        }
-
         $processedPageContent = $builder->make('collectDOM', $pageContent);
         if ($shouldComposeStyles) {
-            $processedPageContent = $processedPageContent->add('styles', $style);
+            $processedPageContent = $processedPageContent->add('styles', $styles);
         }
-        if ($shouldComposeScripts) {
-            $processedPageContent = $processedPageContent->add('scripts', $scripts);
-        }
-        $processedPageContent = $processedPageContent->get()['html'];
+        $processedPageContent = $processedPageContent->get();
         return '<!DOCTYPE html> <html lang="en">' . $processedPageContent . '</html>';
     }
 }

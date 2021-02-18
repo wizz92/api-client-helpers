@@ -7,6 +7,8 @@ use Cookie;
 
 class CacheHelper
 {
+    const MAX_FILENAME_LENGTH = 255;
+
     /**
      * Function to see if we should be caching response from frontend repo.
      * If $slug is passed, it will also check whether this $slug is already in cache;
@@ -110,22 +112,24 @@ class CacheHelper
 
     public static function cacher($key, $data_function, $life_time = 1000, $skip = false, $disableSWC = false)
     {
+        $limitedKey = self::getLimitedCacheKey($key);
+
         if (!is_callable($data_function)) {
             throw new Exception('cacher function expects second parameter to be a function '.gettype($data_function).' given.');
         }
         // if we have logical reasons to not cache content -> just call function and return result
-        if ((!self::shouldWeCache($key) && !$disableSWC)  || $skip) {
+        if ((!self::shouldWeCache($limitedKey) && !$disableSWC)  || $skip) {
             return call_user_func($data_function);
         }
 
         // if we can cache -> check if we have cache value by given key -> return from cache
-        if (Cache::has($key)) {
-            return Cache::get($key);
+        if (Cache::has($limitedKey)) {
+            return Cache::get($limitedKey);
         }
 
         // if we haven`t cache value by given key -> call user function and return result
         $data = call_user_func($data_function);
-        Cache::put($key, $data, $life_time);
+        Cache::put($limitedKey, $data, $life_time);
         return $data;
     }
 
@@ -198,5 +202,10 @@ class CacheHelper
         }
       
         return $urls;
+    }
+
+    public static function getLimitedCacheKey(string $key)
+    {
+        return substr($key, 0, self::MAX_FILENAME_LENGTH);
     }
 }
