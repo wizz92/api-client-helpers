@@ -17,7 +17,7 @@ class StylesCollector extends EntityComposer
     protected function compose(array $headSelectors, array $bodySelectors): array
     {
         $headStyles = $this->getSectionStylesArray($headSelectors);
-        $bodyStyles = $this->getSectionStylesArray($headSelectors);
+        $bodyStyles = $this->getSectionStylesArray($bodySelectors);
         return [
             'head' => $headStyles,
             'body' => $bodyStyles
@@ -41,7 +41,7 @@ class StylesCollector extends EntityComposer
     {
         $sectionStyles = [];
         foreach ($sectionSelectors as $selector => $selectorOptions) {
-            array_merge($this->getStylesByFilter($selector, $selectorOptions['use_http']), $sectionStyles);
+            $sectionStyles = array_merge($this->getStylesByFilter($selector, $selectorOptions['use_http']), $sectionStyles);
         }
         return $sectionStyles;
     }
